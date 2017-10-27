@@ -156,15 +156,21 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
 
     if plt is not None and not silent:
         # Plot directly
-        ax = custom_storage['sequences'].plot(kind='line',
-                                              drawstyle='steps-post')
+        custom_storage['sequences'].plot(kind='line',
+                                         drawstyle='steps-post')
         # ax.set_xlabel('Date')
         # plt.show()
         electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
         plt.show()
 
         # Plot using plot module
-        myplot = plot.ViewPlot(results)
+        try:
+            myplot = plot.ViewPlot(results)
+        except AttributeError as e:
+            print("\n\nYou have to use the branch 'features/plotting_module' "
+                  "to run this example\n\n")
+            raise e
+
         myplot.plot('storage', kind='line', drawstyle='steps-post')
         # myplot.ax.set_xlabel('Date')
         # myplot.set_datetime_ticks(tick_distance=300, date_format='%d-%m-%Y')

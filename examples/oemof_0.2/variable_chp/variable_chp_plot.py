@@ -162,7 +162,12 @@ def create_plots(plot_res):
         (('electricity_2', 'excess_bel_2'), 'flow'): '#f22222',
         (('fixed_chp_gas_2', 'heat_2'), 'flow'): '#20b4b6'}
 
-    myplot = outputlib.plot.ViewPlot(plot_res)
+    try:
+        myplot = outputlib.plot.ViewPlot(plot_res)
+    except AttributeError as e:
+        print("\n\nYou have to use the branch 'features/plotting_module' to run"
+              " this example\n\n")
+        raise e
 
     # Plotting
     fig = plt.figure(figsize=(18, 9))
