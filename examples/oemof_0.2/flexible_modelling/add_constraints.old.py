@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script shows how to a an individual constraint to the oemof solph
+This script shows how to add an individual constraint to the oemof solph
 OperationalModel.
 The constraint we add forces a flow to be greater or equal a certain share
 of all inflows of its target bus. Moreover we will set an emission constraint.
@@ -11,14 +11,14 @@ simon.hilpert@uni-flensburg.de
 import logging
 import pyomo.environ as po
 import pandas as pd
-from oemof.solph import (Sink, Transformer, Bus, Flow,
+from oemof.solph import (Sink, LinearTransformer, Bus, Flow,
                          OperationalModel, EnergySystem)
 
 
 def run_add_constraints_example(solver='cbc', nologg=False):
     if not nologg:
         logging.basicConfig(level=logging.INFO)
-    # ##### creating an oemof solph optimization model, nothing special here ##
+    # ### creating an oemof solph optimization model, nothing special here ###
     # create an energy system object for the oemof solph nodes
     es = EnergySystem(timeindex=pd.date_range('1/1/2012', periods=4, freq='H'))
     # add some nodes
@@ -30,16 +30,16 @@ def run_add_constraints_example(solver='cbc', nologg=False):
          inputs={b_el: Flow(nominal_value=40,
                             actual_value=[0.5, 0.4, 0.3, 1],
                             fixed=True)})
-    pp_oil = Transformer(label='pp_oil',
-                         inputs={boil: Flow()},
-                         outputs={b_el: Flow(nominal_value=50,
+    pp_oil = LinearTransformer(label='pp_oil',
+                               inputs={boil: Flow()},
+                               outputs={b_el: Flow(nominal_value=50,
                                                    variable_costs=25)},
-                         conversion_factors={b_el: 0.39})
-    Transformer(label='pp_lig',
-                inputs={blig: Flow()},
-                outputs={b_el: Flow(nominal_value=50,
+                               conversion_factors={b_el: 0.39})
+    LinearTransformer(label='pp_lig',
+                      inputs={blig: Flow()},
+                      outputs={b_el: Flow(nominal_value=50,
                                           variable_costs=10)},
-                conversion_factors={b_el: 0.41})
+                      conversion_factors={b_el: 0.41})
 
     # create the model
     om = OperationalModel(es=es)
@@ -95,6 +95,7 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     # you may print the model with om.pprint()
     om.solve(solver=solver)
     logging.info("Successfully finished.")
+
 
 if __name__ == "__main__":
     run_add_constraints_example()

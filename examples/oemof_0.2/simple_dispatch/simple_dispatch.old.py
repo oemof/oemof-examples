@@ -199,9 +199,6 @@ def run_simple_dispatch_example(**kwargs):
     plot_results(esys)
     pp.pprint(get_results(esys))
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e9508ed7fccc40184cbf9feb65ae3d18307345d5
 if __name__ == "__main__":
     run_simple_dispatch_example()
