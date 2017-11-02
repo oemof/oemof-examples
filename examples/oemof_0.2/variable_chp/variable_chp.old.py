@@ -118,7 +118,7 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
 
     logging.info('Optimise the energy system')
 
-    om = solph.OperationalModel(energysystem)
+    om = solph.Model(energysystem)
 
     if debug:
         filename = os.path.join(

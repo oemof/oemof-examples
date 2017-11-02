@@ -113,7 +113,7 @@ def run_variable_chp_example(number_timesteps=192,
 
     logging.info('Optimise the energy system')
 
-    om = solph.OperationalModel(energysystem)
+    om = solph.Model(energysystem)
 
     if debug:
         filename = os.path.join(

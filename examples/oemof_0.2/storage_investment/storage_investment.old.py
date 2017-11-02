@@ -127,7 +127,7 @@ def optimise_storage_size(filename="storage_investment.csv", solver='gurobi',
     logging.info('Optimise the energy system')
 
     # initialise the operational model
-    om = solph.OperationalModel(energysystem)
+    om = solph.Model(energysystem)
 
     # if debug is true an lp-file will be written
     if debug:

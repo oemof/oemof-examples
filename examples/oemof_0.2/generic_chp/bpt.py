@@ -79,7 +79,7 @@ def run_example(file_name='generic_chp', timesteps=200,
         fixed_costs=0, back_pressure=True)
 
     # create an optimization problem and solve it
-    om = solph.OperationalModel(es)
+    om = solph.Model(es)
 
     # debugging
     # om.write('bpt.lp', io_options={'symbolic_solver_labels': True})

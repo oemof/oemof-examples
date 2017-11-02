@@ -15,7 +15,7 @@ import os
 
 # solph imports
 from oemof.solph import (Sink, Source, LinearTransformer, LinearN1Transformer,
-                         Bus, Flow, OperationalModel, EnergySystem)
+                         Bus, Flow, Model, EnergySystem)
 import oemof.outputlib as output
 from oemof.tools import logger
 
@@ -125,7 +125,7 @@ def simulate(energysystem, filename=None, solver='cbc', tee_switch=True,
 # ################################ optimization ###############################
     # create Optimization model based on energy_system
     logging.info("Create optimization problem")
-    om = OperationalModel(es=energysystem)
+    om = Model(es=energysystem)
 
     # solve with specific optimization options (passed to pyomo)
     logging.info("Solve optimization problem")

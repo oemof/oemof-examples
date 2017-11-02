@@ -59,7 +59,7 @@ ccet = solph.components.GenericCHP(
     fixed_costs=0)
 
 # create an optimization problem and solve it
-om = solph.OperationalModel(es)
+om = solph.Model(es)
 
 # debugging
 #om.write('generic_chp.lp', io_options={'symbolic_solver_labels': True})
