@@ -194,9 +194,9 @@ def create_plots(plot_res):
         node='electricity', cdict=cdict, smooth=True,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
         inorder=[(('fixed_chp_gas', 'electricity'), 'flow'),
-                  (('variable_chp_gas', 'electricity'), 'flow')],
+                 (('variable_chp_gas', 'electricity'), 'flow')],
         outorder=[(('electricity', 'demand_elec'), 'flow'),
-                   (('electricity', 'excess_elec'), 'flow')])
+                  (('electricity', 'excess_elec'), 'flow')])
     myplot.ax.get_yaxis().set_visible(False)
     myplot.ax.set_xlabel('')
     myplot.ax.get_xaxis().set_visible(False)
@@ -210,7 +210,7 @@ def create_plots(plot_res):
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
         inorder=[(('fixed_chp_gas_2', 'heat_2'), 'flow')],
         outorder=[(('heat_2', 'demand_th_2'), 'flow'),
-                   (('heat_2', 'excess_bth_2'), 'flow')])
+                  (('heat_2', 'excess_bth_2'), 'flow')])
     myplot.ax.set_ylabel('Power in MW')
     myplot.ax.set_ylim([0, 600000])
     myplot.ax.get_xaxis().set_visible(False)
@@ -222,9 +222,9 @@ def create_plots(plot_res):
         node='heat', cdict=cdict, smooth=True,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
         inorder=[(('fixed_chp_gas', 'heat'), 'flow'),
-                  (('variable_chp_gas', 'heat'), 'flow')],
+                 (('variable_chp_gas', 'heat'), 'flow')],
         outorder=[(('heat', 'demand_therm'), 'flow'),
-                   (('heat', 'excess_therm'), 'flow')])
+                  (('heat', 'excess_therm'), 'flow')])
     myplot.ax.set_ylim([0, 600000])
     myplot.ax.get_yaxis().set_visible(False)
     myplot.ax.get_xaxis().set_visible(False)
