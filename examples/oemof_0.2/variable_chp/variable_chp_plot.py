@@ -145,6 +145,7 @@ def create_plots(plot_res):
     plot_res : dictionary
     """
     logging.info('Plot the results')
+    smoothplot = False
 
     cdict = {
         (('variable_chp_gas', 'electricity'), 'flow'): '#42c77a',
@@ -178,7 +179,7 @@ def create_plots(plot_res):
 
     # subplot of electricity bus (fixed chp) [1]
     myplot.io_plot(
-        node='electricity_2', cdict=cdict, smooth=True,
+        node='electricity_2', cdict=cdict, smooth=smoothplot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 1),
         inorder=[(('fixed_chp_gas_2', 'electricity_2'), 'flow')],
         outorder=[(('electricity_2', 'demand_el_2'), 'flow'),
@@ -191,7 +192,7 @@ def create_plots(plot_res):
 
     # subplot of electricity bus (variable chp) [2]
     myplot.io_plot(
-        node='electricity', cdict=cdict, smooth=True,
+        node='electricity', cdict=cdict, smooth=smoothplot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
         inorder=[(('fixed_chp_gas', 'electricity'), 'flow'),
                  (('variable_chp_gas', 'electricity'), 'flow')],
@@ -206,7 +207,7 @@ def create_plots(plot_res):
 
     # subplot of heat bus (fixed chp) [3]
     myplot.io_plot(
-        node='heat_2', cdict=cdict, smooth=True,
+        node='heat_2', cdict=cdict, smooth=smoothplot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
         inorder=[(('fixed_chp_gas_2', 'heat_2'), 'flow')],
         outorder=[(('heat_2', 'demand_th_2'), 'flow'),
@@ -219,7 +220,7 @@ def create_plots(plot_res):
 
     # subplot of heat bus (variable chp) [4]
     myplot.io_plot(
-        node='heat', cdict=cdict, smooth=True,
+        node='heat', cdict=cdict, smooth=smoothplot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
         inorder=[(('fixed_chp_gas', 'heat'), 'flow'),
                  (('variable_chp_gas', 'heat'), 'flow')],
@@ -232,6 +233,11 @@ def create_plots(plot_res):
     myplot.outside_legend(plotshare=1)
     myplot.clear_legend_labels()
 
+    if smoothplot:
+        style = None
+    else:
+        style = 'steps-mid'
+
     # subplot of efficiency (fixed chp) [5]
     myplot.update_node('fixed_chp_gas_2')
     ngas = myplot.seq[(('natural_gas', 'fixed_chp_gas_2'), 'flow')]
@@ -240,7 +246,7 @@ def create_plots(plot_res):
     e_ef = elec.div(ngas)
     h_ef = heat.div(ngas)
     df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-    my_ax = df.plot(ax=fig.add_subplot(3, 2, 5), linewidth=2)
+    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
     my_ax.set_ylabel('efficiency')
     my_ax.set_ylim([0, 0.55])
     my_ax.set_xlabel('Date')
@@ -257,7 +263,7 @@ def create_plots(plot_res):
     e_ef.name = 'electricity           '
     h_ef.name = 'heat'
     df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-    my_ax = df.plot(ax=fig.add_subplot(3, 2, 6), linewidth=2)
+    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
     my_ax.set_ylim([0, 0.55])
     my_ax.get_yaxis().set_visible(False)
     my_ax.set_xlabel('Date')
