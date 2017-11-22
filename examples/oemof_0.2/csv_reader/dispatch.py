@@ -65,7 +65,7 @@ def nodes_from_excel(filename):
 
     for i, s in storages.iterrows():
         solph.components.GenericStorage(
-            label='storage',
+            label=i,
             inputs={busd[s['bus']]: solph.Flow(
                 nominal_value=s['capacity pump'], max=s['max'])},
             outputs={busd[s['bus']]: solph.Flow(
@@ -105,8 +105,12 @@ es = solph.EnergySystem(timeindex=datetime_index)
 # (data taken from excel-file)
 nodes_from_excel(os.path.join(os.path.dirname(__file__), 'scenarios.xlsx',))
 
+print("********************************************************")
+print("The following objects has been created from excel sheet:")
 for n in es.nodes:
-    print(n.label)
+    oobj = str(type(n)).replace("<class 'oemof.solph.", "").replace("'>", "")
+    print(oobj + ':', n.label)
+print("********************************************************")
 
 # creation of a least cost model from the energy system
 om = solph.Model(es)
