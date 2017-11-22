@@ -88,7 +88,6 @@ def nodes_from_excel(filename):
             inputs={busd[p['bus_2']]: solph.Flow()},
             outputs={busd[p['bus_1']]: solph.Flow(nominal_value=p['capacity'])},
             conversion_factors={busd[p['bus_1']]: p['efficiency']})
-    return busd
 
 
 logger.define_logging()
