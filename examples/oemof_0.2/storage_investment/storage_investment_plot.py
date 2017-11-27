@@ -50,166 +50,212 @@ except ImportError:
     plt = None
 
 
-def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
-                          debug=True, number_timesteps=24 * 7 * 8,
-                          tee_switch=True, silent=False):
+def shape_legend(node, reverse=False, **kwargs):
+    handels = kwargs['handles']
+    labels = kwargs['labels']
+    axis = kwargs['ax']
+    parameter = {}
 
-    logging.info('Initialize the energy system')
-    date_time_index = pd.date_range('1/1/2012', periods=number_timesteps,
-                                    freq='H')
+    new_labels = []
+    for label in labels:
+        label = label.replace('(', '')
+        label = label.replace('), flow)', '')
+        label = label.replace(node, '')
+        label = label.replace(',', '')
+        label = label.replace(' ', '')
+        new_labels.append(label)
+    labels = new_labels
 
-    energysystem = solph.EnergySystem(timeindex=date_time_index)
+    parameter['bbox_to_anchor'] = kwargs.get('bbox_to_anchor', (1, 0.5))
+    parameter['loc'] = kwargs.get('loc', 'center left')
+    parameter['ncol'] = kwargs.get('ncol', 1)
+    plotshare = kwargs.get('plotshare', 0.9)
 
-    # Read data file
-    full_filename = os.path.join(os.path.dirname(__file__), filename)
-    data = pd.read_csv(full_filename, sep=",")
+    if reverse:
+        handels = handels.reverse()
+        labels = labels.reverse()
 
-    ##########################################################################
-    # Create oemof object
-    ##########################################################################
+    box = axis.get_position()
+    axis.set_position([box.x0, box.y0, box.width * plotshare, box.height])
 
-    logging.info('Create oemof objects')
-    # create natural gas bus
-    bgas = solph.Bus(label="natural_gas")
-
-    # create electricity bus
-    bel = solph.Bus(label="electricity")
-
-    # create excess component for the electricity bus to allow overproduction
-    solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
-
-    # create source object representing the natural gas commodity (annual limit)
-    solph.Source(label='rgas', outputs={bgas: solph.Flow(
-        nominal_value=194397000 * number_timesteps / 8760, summed_max=1)})
-
-    # create fixed source object representing wind power plants
-    solph.Source(label='wind', outputs={bel: solph.Flow(
-        actual_value=data['wind'], nominal_value=1000000, fixed=True,
-        fixed_costs=20)})
-
-    # create fixed source object representing pv power plants
-    solph.Source(label='pv', outputs={bel: solph.Flow(
-        actual_value=data['pv'], nominal_value=582000, fixed=True,
-        fixed_costs=15)})
-
-    # create simple sink object representing the electrical demand
-    solph.Sink(label='demand', inputs={bel: solph.Flow(
-        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
-
-    # create simple transformer object representing a gas power plant
-    solph.Transformer(
-        label="pp_gas",
-        inputs={bgas: solph.Flow()},
-        outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=50)},
-        conversion_factors={bel: 0.58})
-
-    # If the period is one year the equivalent periodical costs (epc) of an
-    # investment are equal to the annuity. Use oemof's economic tools.
-    epc = economics.annuity(capex=1000, n=20, wacc=0.05)
-
-    # create storage object representing a battery
-    storage = solph.components.GenericStorage(
-        label='storage',
-        inputs={bel: solph.Flow(variable_costs=10e10)},
-        outputs={bel: solph.Flow(variable_costs=10e10)},
-        capacity_loss=0.00, initial_capacity=0,
-        nominal_input_capacity_ratio=1/6,
-        nominal_output_capacity_ratio=1/6,
-        inflow_conversion_factor=1, outflow_conversion_factor=0.8,
-        fixed_costs=35,
-        investment=solph.Investment(ep_costs=epc),
-    )
-
-    ##########################################################################
-    # Optimise the energy system and plot the results
-    ##########################################################################
-
-    logging.info('Optimise the energy system')
-
-    # initialise the operational model
-    om = solph.Model(energysystem)
-    # if debug is true an lp-file will be written
-    if debug:
-        filename = os.path.join(
-            helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
-        logging.info('Store lp-file in {0}.'.format(filename))
-        om.write(filename, io_options={'symbolic_solver_labels': True})
-
-    # if tee_switch is true solver messages will be displayed
-    logging.info('Solve the optimization problem')
-    om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
-
-    # Check dump and restore
-    energysystem.dump()
-    energysystem = solph.EnergySystem(timeindex=date_time_index)
-    energysystem.restore()
-
-    # check if the new result object is working for custom components
-    results = processing.results(om)
-
-    if not silent:
-        print(results[(storage,)]['sequences'].head())
-        print(results[(storage,)]['scalars'])
-
-    custom_storage = views.node(results, 'storage')
-    electricity_bus = views.node(results, 'electricity')
-
-    if plt is not None and not silent:
-        # Plot directly
-        custom_storage['sequences'].plot(kind='line',
-                                         drawstyle='steps-post')
-        # ax.set_xlabel('Date')
-        # plt.show()
-        electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
-        plt.show()
-
-        # Plot using plot module
-        try:
-            myplot = plot.ViewPlot(results)
-        except AttributeError as e:
-            print("\n\nYou have to use the branch 'features/plotting_module' "
-                  "to run this example\n\n")
-            raise e
-
-        myplot.plot('storage', kind='line', drawstyle='steps-post')
-        # myplot.ax.set_xlabel('Date')
-        # myplot.set_datetime_ticks(tick_distance=300, date_format='%d-%m-%Y')
-        # plt.show()
-        myplot.plot('electricity', kind='line', drawstyle='steps-post')
-        plt.show()
-
-    if plt is not None and not silent:
-        # I/O plot - Try smooth=True!
-        cdict = {
-            (('electricity', 'demand'), 'flow'): '#ce4aff',
-            (('electricity', 'excess_bel'), 'flow'): '#555555',
-            (('electricity', 'storage'), 'flow'): '#42c77a',
-            (('pp_gas', 'electricity'), 'flow'): '#636f6b',
-            (('pv', 'electricity'), 'flow'): '#ffde32',
-            (('storage', 'electricity'), 'flow'): '#42c77a',
-            (('wind', 'electricity'), 'flow'): '#5b5bae'}
-        fig = plt.figure(figsize=(10, 5))
-        myplot = plot.ViewPlot(results, 'electricity')
-        myplot.slice_results(date_from=pd.datetime(2012, 2, 15))
-        myplot.io_plot(cdict=cdict, ax=fig.add_subplot(1, 1, 1), smooth=False)
-        myplot.ax.set_ylabel('Power in MW')
-        myplot.ax.set_xlabel('Date')
-        myplot.ax.set_title("Electricity bus")
-        myplot.set_datetime_ticks(tick_distance=48, date_format='%d-%m-%Y')
-        myplot.outside_legend()
-        myplot.clear_legend_labels()
-        plt.show()
-
-    my_results = electricity_bus['sequences'].sum(axis=0).to_dict()
-    my_results['storage_invest'] = results[(storage,)]['scalars']['invest']
-
-    if not silent:
-        meta_results = processing.meta_results(om)
-        pp.pprint(meta_results)
-
-    return my_results
+    parameter['handles'] = handels
+    parameter['labels'] = labels
+    axis.legend(**parameter)
+    return axis
 
 
-if __name__ == "__main__":
-    logger.define_logging()
-    pp.pprint(optimise_storage_size())
+filename = 'storage_investment.csv'
+solver = 'cbc'
+debug = True
+number_timesteps = 24 * 7 * 8
+tee_switch = True
+silent = False
+
+logging.info('Initialize the energy system')
+
+if plt is None:
+    logging.error('Matplotlib has to be installed.')
+    exit(0)
+
+date_time_index = pd.date_range('1/1/2012', periods=number_timesteps,
+                                freq='H')
+
+energysystem = solph.EnergySystem(timeindex=date_time_index)
+
+# Read data file
+full_filename = os.path.join(os.path.dirname(__file__), filename)
+data = pd.read_csv(full_filename, sep=",")
+
+##########################################################################
+# Create oemof object
+##########################################################################
+
+logging.info('Create oemof objects')
+# create natural gas bus
+bgas = solph.Bus(label="natural_gas")
+
+# create electricity bus
+bel = solph.Bus(label="electricity")
+
+# create excess component for the electricity bus to allow overproduction
+solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
+
+# create source object representing the natural gas commodity (annual limit)
+solph.Source(label='rgas', outputs={bgas: solph.Flow(
+    nominal_value=194397000 * number_timesteps / 8760, summed_max=1)})
+
+# create fixed source object representing wind power plants
+solph.Source(label='wind', outputs={bel: solph.Flow(
+    actual_value=data['wind'], nominal_value=1000000, fixed=True,
+    fixed_costs=20)})
+
+# create fixed source object representing pv power plants
+solph.Source(label='pv', outputs={bel: solph.Flow(
+    actual_value=data['pv'], nominal_value=582000, fixed=True,
+    fixed_costs=15)})
+
+# create simple sink object representing the electrical demand
+solph.Sink(label='demand', inputs={bel: solph.Flow(
+    actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+
+# create simple transformer object representing a gas power plant
+solph.Transformer(
+    label="pp_gas",
+    inputs={bgas: solph.Flow()},
+    outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=50)},
+    conversion_factors={bel: 0.58})
+
+# If the period is one year the equivalent periodical costs (epc) of an
+# investment are equal to the annuity. Use oemof's economic tools.
+epc = economics.annuity(capex=1000, n=20, wacc=0.05)
+
+# create storage object representing a battery
+storage = solph.components.GenericStorage(
+    label='storage',
+    inputs={bel: solph.Flow(variable_costs=10e10)},
+    outputs={bel: solph.Flow(variable_costs=10e10)},
+    capacity_loss=0.00, initial_capacity=0,
+    nominal_input_capacity_ratio=1/6,
+    nominal_output_capacity_ratio=1/6,
+    inflow_conversion_factor=1, outflow_conversion_factor=0.8,
+    fixed_costs=35,
+    investment=solph.Investment(ep_costs=epc),
+)
+
+##########################################################################
+# Optimise the energy system and plot the results
+##########################################################################
+
+logging.info('Optimise the energy system')
+
+# initialise the operational model
+om = solph.Model(energysystem)
+# if debug is true an lp-file will be written
+if debug:
+    filename = os.path.join(
+        helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
+    logging.info('Store lp-file in {0}.'.format(filename))
+    om.write(filename, io_options={'symbolic_solver_labels': True})
+
+# if tee_switch is true solver messages will be displayed
+logging.info('Solve the optimization problem')
+om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
+
+# Check dump and restore
+energysystem.dump()
+energysystem = solph.EnergySystem(timeindex=date_time_index)
+energysystem.restore()
+
+# check if the new result object is working for custom components
+results = processing.results(om)
+
+custom_storage = views.node(results, 'storage')
+electricity_bus = views.node(results, 'electricity')
+
+# ***** 1. example ***************************************************
+# Plot directly using pandas
+custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
+
+# Change the datetime ticks
+ax = custom_storage['sequences'].reset_index(drop=True).plot(
+    kind='line', drawstyle='steps-post')
+ax.set_xlabel('2012')
+ax.set_title('Change the xticks.')
+plot.set_datetime_ticks(ax, custom_storage['sequences'].index,
+                        date_format='%d-%m', number_autoticks=6)
+plt.show()
+
+# ***** 2. example ***************************************************
+cdict = {
+    (('electricity', 'demand'), 'flow'): '#ce4aff',
+    (('electricity', 'excess_bel'), 'flow'): '#555555',
+    (('electricity', 'storage'), 'flow'): '#42c77a',
+    (('pp_gas', 'electricity'), 'flow'): '#636f6b',
+    (('pv', 'electricity'), 'flow'): '#ffde32',
+    (('storage', 'electricity'), 'flow'): '#42c77a',
+    (('wind', 'electricity'), 'flow'): '#5b5bae'}
+
+# Plot directly using pandas
+electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+
+# Change the colors using a dictionary to define the colors
+colors = plot.color_from_dict(cdict, electricity_bus['sequences'])
+ax = electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post',
+                                       color=colors)
+ax.set_title('Change the colors.')
+plt.show()
+
+# ***** 3. example ***************************************************
+# Plot directly using pandas
+electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+
+# Plot only input flows
+in_cols = plot.divide_bus_columns(
+    'electricity', electricity_bus['sequences'].columns)['in_cols']
+ax = electricity_bus['sequences'][in_cols].plot(kind='line',
+                                                drawstyle='steps-post')
+ax.set_title('Show only input flows.')
+plt.show()
+
+# ***** 4. example ***************************************************
+# Create a plot to show the balance around a bus.
+# Order and colors are customisable.
+
+inorder = [(('pv', 'electricity'), 'flow'),
+           (('wind', 'electricity'), 'flow'),
+           (('storage', 'electricity'), 'flow'),
+           (('pp_gas', 'electricity'), 'flow')]
+
+fig = plt.figure(figsize=(10, 5))
+electricity_seq = views.node(results, 'electricity')['sequences']
+plot_slice = plot.slice_df(electricity_seq, date_from=pd.datetime(2012, 2, 15))
+my_plot = plot.io_plot('electricity', plot_slice, cdict=cdict, inorder=inorder,
+                       ax=fig.add_subplot(1, 1, 1), smooth=False)
+ax = shape_legend('electricity', **my_plot)
+ax = plot.set_datetime_ticks(ax, plot_slice.index, tick_distance=48,
+                             date_format='%d-%m-%H', offset=12)
+
+ax.set_ylabel('Power in MW')
+ax.set_xlabel('Date')
+ax.set_title("Electricity bus")
+plt.show()
