@@ -25,50 +25,52 @@ def nodes_from_excel(filename):
     timeseries = xls.parse('time_series')
 
     # Create Bus objects from buses table
-    busd = {}
+    noded = {}
     for i, b in buses.iterrows():
-        busd[b['label']] = solph.Bus(label=b['label'])
+        noded[b['label']] = solph.Bus(label=b['label'])
         if b['excess']:
-            solph.Sink(label=b['label'] + '_excess',
-                       inputs={busd[b['label']]: solph.Flow()})
+            label = b['label'] + '_excess'
+            noded[label] = solph.Sink(label=label, inputs={
+                noded[b['label']]: solph.Flow()})
         if b['shortage']:
-            solph.Source(label=b['label'] + '_shortage',
-                         outputs={busd[b['label']]: solph.Flow(
-                             variable_costs=b['shortage costs'])})
+            label = b['label'] + '_shortage'
+            noded[label] = solph.Source(label=label, outputs={
+                noded[b['label']]: solph.Flow(
+                    variable_costs=b['shortage costs'])})
 
     # Create Source objects from table 'commodity sources'
     for i, cs in commodity_sources.iterrows():
-        solph.Source(label=i, outputs={busd[cs['to']]: solph.Flow(
+        noded[i] = solph.Source(label=i, outputs={noded[cs['to']]: solph.Flow(
             variable_costs=cs['variable costs'])})
 
     # Create Source objects with fixed time series from 'renewables' table
     for i, re in renewables.iterrows():
-        solph.Source(label=i, outputs={busd[re['to']]: solph.Flow(
+        noded[i] = solph.Source(label=i, outputs={noded[re['to']]: solph.Flow(
             actual_value=timeseries[i], nominal_value=re['capacity'],
             fixed=True)})
 
     # Create Sink objects with fixed time series from 'demand' table
     for i, re in demand.iterrows():
-        solph.Sink(label=i, inputs={busd[re['from']]: solph.Flow(
+        noded[i] = solph.Sink(label=i, inputs={noded[re['from']]: solph.Flow(
             actual_value=timeseries[i], nominal_value=re['maximum'],
             fixed=True)})
 
     # Create Transformer objects from 'transformers' table
     for i, t in transformers.iterrows():
-        solph.Transformer(
+        noded[i] = solph.Transformer(
             label=i,
-            inputs={busd[t['from']]: solph.Flow()},
-            outputs={busd[t['to']]: solph.Flow(
+            inputs={noded[t['from']]: solph.Flow()},
+            outputs={noded[t['to']]: solph.Flow(
                 nominal_value=t['capacity'], variable_costs=t['variable costs'],
                 max=t['simultaneity'], fixed_costs=t['fixed costs'])},
-            conversion_factors={busd[t['to']]: t['efficiency']})
+            conversion_factors={noded[t['to']]: t['efficiency']})
 
     for i, s in storages.iterrows():
-        solph.components.GenericStorage(
+        noded[i] = solph.components.GenericStorage(
             label=i,
-            inputs={busd[s['bus']]: solph.Flow(
+            inputs={noded[s['bus']]: solph.Flow(
                 nominal_value=s['capacity pump'], max=s['max'])},
-            outputs={busd[s['bus']]: solph.Flow(
+            outputs={noded[s['bus']]: solph.Flow(
                 nominal_value=s['capacity turbine'], max=s['max'])},
             nominal_capacity=s['capacity storage'],
             capacity_loss=s['capacity loss'],
@@ -78,16 +80,21 @@ def nodes_from_excel(filename):
             outflow_conversion_factor=s['efficiency turbine'])
 
     for i, p in powerlines.iterrows():
-        solph.Transformer(
-            label='powerline_' + p['bus_1'] + '_' + p['bus_2'],
-            inputs={busd[p['bus_1']]: solph.Flow()},
-            outputs={busd[p['bus_2']]: solph.Flow(nominal_value=p['capacity'])},
-            conversion_factors={busd[p['bus_2']]: p['efficiency']})
-        solph.Transformer(
-            label='powerline_' + p['bus_2'] + '_' + p['bus_1'],
-            inputs={busd[p['bus_2']]: solph.Flow()},
-            outputs={busd[p['bus_1']]: solph.Flow(nominal_value=p['capacity'])},
-            conversion_factors={busd[p['bus_1']]: p['efficiency']})
+        label = 'powerline_' + p['bus_1'] + '_' + p['bus_2']
+        noded[label] = solph.Transformer(
+            label=label,
+            inputs={noded[p['bus_1']]: solph.Flow()},
+            outputs={noded[p['bus_2']]: solph.Flow(
+                nominal_value=p['capacity'])},
+            conversion_factors={noded[p['bus_2']]: p['efficiency']})
+        label = 'powerline_' + p['bus_2'] + '_' + p['bus_1']
+        noded[label] = solph.Transformer(
+            label=label,
+            inputs={noded[p['bus_2']]: solph.Flow()},
+            outputs={noded[p['bus_1']]: solph.Flow(
+                nominal_value=p['capacity'])},
+            conversion_factors={noded[p['bus_1']]: p['efficiency']})
+    return noded
 
 
 logger.define_logging()
@@ -102,7 +109,10 @@ es = solph.EnergySystem(timeindex=datetime_index)
 
 # adding all nodes and flows to the energy system
 # (data taken from excel-file)
-nodes_from_excel(os.path.join(os.path.dirname(__file__), 'scenarios.xlsx',))
+nodes = nodes_from_excel(
+    os.path.join(os.path.dirname(__file__), 'scenarios.xlsx',))
+
+es.add(*nodes.values())
 
 print("********************************************************")
 print("The following objects has been created from excel sheet:")
