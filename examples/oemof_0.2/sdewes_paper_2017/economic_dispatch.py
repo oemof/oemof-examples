@@ -14,8 +14,8 @@ import pandas as pd
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
-                         OperationalModel, LinearTransformer, components)
-from oemof.solph.overarching_constraints import emission_limit
+                         Model, Transformer, components)
+from oemof.solph.constraints import emission_limit
 
 timeindex = pd.date_range('1/1/2017', periods=5, freq='H')
 
@@ -89,24 +89,25 @@ Sink(label='demand_th',
          bel: Flow(actual_value=timeseries['demand_th'],
                    fixed=True, nominal_value=100)})
 
-LinearTransformer(label='pth',
-                  inputs={
-                      bel: Flow()},
-                  outputs={
-                      bth: Flow()},
-                  conversion_factors={bth: 0.99})
+Transformer(label='pth',
+            inputs={
+                bel: Flow()},
+            outputs={
+                bth: Flow()},
+            conversion_factors={bth: 0.99})
 
-LinearTransformer(label='chp',
-                  inputs={
-                      bgas: Flow(variable_costs=20)},
-                  outputs={
-                      bel: Flow(nominal_value=40),
-                      bth: Flow()},
-                  conversion_factors={bel: 0.35,
-                                      bth: 0.4})
+Transformer(label='chp',
+            inputs={
+                bgas: Flow(variable_costs=20)},
+            outputs={
+                 bel: Flow(nominal_value=40),
+                 bth: Flow()},
+            conversion_factors={bel: 0.35,
+                                bth: 0.4})
 
 Source(label='boiler_bio',
-       outputs={bel: Flow(nominal_value=100, variable_costs=60)})
+       outputs={
+           bel: Flow(nominal_value=100, variable_costs=60)})
 
 components.GenericStorage(
     label='storage_th',
@@ -123,15 +124,15 @@ components.GenericStorage(
 # Create model and solve
 ##########################################################################
 
-om = OperationalModel(energysystem)
-emission_limit(om, flows=om.flows, limit=954341)
+m = Model(energysystem)
+# emission_limit(m, flows=m.flows, limit=954341)
 
-om.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
+m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
 
-om.solve(solver='cbc', solve_kwargs={'tee': True})
+m.solve(solver='cbc', solve_kwargs={'tee': True})
 
-results = processing.results(om)
+results = processing.results(m)
 
 
-graph = graph(energysystem, om, plot=True, layout='neato', node_size=3000,
+graph = graph(energysystem, m, plot=True, layout='neato', node_size=3000,
               node_color={'bel': '#7EC0EE', 'bgas': '#eeac7e', 'bth': '#cd3333'})
