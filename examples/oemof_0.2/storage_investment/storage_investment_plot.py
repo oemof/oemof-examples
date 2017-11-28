@@ -32,17 +32,15 @@ The example models the following energy system:
 ###############################################################################
 
 # Default logger of oemof
-from oemof.tools import logger
-from oemof.tools import helpers
 from oemof.tools import economics
 
-import oemof.solph as solph
+from oemof import solph
 from oemof.outputlib import processing, plot, views
+from oemof.tools import logger
 
 import logging
 import os
 import pandas as pd
-import pprint as pp
 
 try:
     import matplotlib.pyplot as plt
@@ -53,7 +51,7 @@ except ImportError:
 def shape_legend(node, reverse=False, **kwargs):
     handels = kwargs['handles']
     labels = kwargs['labels']
-    axis = kwargs['ax']
+    axes = kwargs['ax']
     parameter = {}
 
     new_labels = []
@@ -75,35 +73,33 @@ def shape_legend(node, reverse=False, **kwargs):
         handels = handels.reverse()
         labels = labels.reverse()
 
-    box = axis.get_position()
-    axis.set_position([box.x0, box.y0, box.width * plotshare, box.height])
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0, box.width * plotshare, box.height])
 
     parameter['handles'] = handels
     parameter['labels'] = labels
-    axis.legend(**parameter)
-    return axis
+    axes.legend(**parameter)
+    return axes
 
 
-filename = 'storage_investment.csv'
 solver = 'cbc'
-debug = True
 number_timesteps = 24 * 7 * 8
-tee_switch = True
-silent = False
 
+# logger.define_logging(text="Starting chp example", screen_level=logging.DEBUG)
+logger.define_logging()
 logging.info('Initialize the energy system')
 
 if plt is None:
     logging.error('Matplotlib has to be installed.')
     exit(0)
 
-date_time_index = pd.date_range('1/1/2012', periods=number_timesteps,
-                                freq='H')
+date_time_index = pd.date_range('1/1/2012', periods=number_timesteps, freq='H')
 
 energysystem = solph.EnergySystem(timeindex=date_time_index)
 
 # Read data file
-full_filename = os.path.join(os.path.dirname(__file__), filename)
+full_filename = os.path.join(os.path.dirname(__file__),
+                             'storage_investment.csv')
 data = pd.read_csv(full_filename, sep=",")
 
 ##########################################################################
@@ -170,16 +166,10 @@ logging.info('Optimise the energy system')
 
 # initialise the operational model
 om = solph.Model(energysystem)
-# if debug is true an lp-file will be written
-if debug:
-    filename = os.path.join(
-        helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
-    logging.info('Store lp-file in {0}.'.format(filename))
-    om.write(filename, io_options={'symbolic_solver_labels': True})
 
 # if tee_switch is true solver messages will be displayed
 logging.info('Solve the optimization problem')
-om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
+om.solve(solver=solver)
 
 # Check dump and restore
 energysystem.dump()
