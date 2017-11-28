@@ -14,7 +14,7 @@ import pandas as pd
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow,
-                         OperationalModel, Investment, components)
+                         Model, Investment, components)
 from oemof.tools import economics
 
 timeindex = pd.date_range('1/1/2017', periods=168, freq='H')
@@ -109,15 +109,15 @@ components.GenericStorage(
 # Create model and solve
 #################################################################
 
-om = OperationalModel(energysystem)
+m = Model(energysystem)
 # om.write(filename, io_options={'symbolic_solver_labels': True})
 
-om.solve(solver='cbc', solve_kwargs={'tee': True})
+m.solve(solver='cbc', solve_kwargs={'tee': True})
 
-results = processing.results(om)
+results = processing.results(m)
 
 views.node(results, 'storage')
 
-graph = graph(energysystem, om, plot=True, layout='neato', node_size=3000,
+graph = graph(energysystem, m, plot=True, layout='neato', node_size=3000,
               node_color={'micro_grid': '#7EC0EE'})
 
