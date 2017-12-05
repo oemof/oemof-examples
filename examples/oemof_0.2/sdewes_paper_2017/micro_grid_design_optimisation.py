@@ -30,8 +30,8 @@ full_filename = os.path.join(os.path.dirname(__file__),
 timeseries = pd.read_csv(full_filename, sep=',')
 
 costs = {'pp_wind': {
-                'fix': 25,
-                'epc': economics.annuity(capex=1000, n=20, wacc=0.05)},
+             'fix': 25,
+             'epc': economics.annuity(capex=1000, n=20, wacc=0.05)},
          'pp_pv': {
              'fix': 20,
              'epc': economics.annuity(capex=750, n=20, wacc=0.05)},
@@ -54,7 +54,7 @@ costs = {'pp_wind': {
 bel = Bus(label='micro_grid')
 
 Sink(label='excess',
-     inputs={bel: Flow()})
+     inputs={bel: Flow(variable_costs=10e3)})
 
 Source(label='pp_wind',
        outputs={
@@ -117,6 +117,8 @@ m.solve(solver='cbc', solve_kwargs={'tee': True})
 results = processing.results(m)
 
 views.node(results, 'storage')
+
+views.node(results, 'micro_grid')['sequences'].plot(drawstyle='steps')
 
 graph = graph(energysystem, m, plot=True, layout='neato', node_size=3000,
               node_color={'micro_grid': '#7EC0EE'})
