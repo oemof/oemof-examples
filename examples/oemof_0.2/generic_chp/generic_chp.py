@@ -65,7 +65,7 @@ om = solph.Model(es)
 #om.write('generic_chp.lp', io_options={'symbolic_solver_labels': True})
 
 # solve model
-om.solve(solver='gurobi', solve_kwargs={'tee': True})
+om.solve(solver='cbc', solve_kwargs={'tee': True})
 
 # create result object
 results = processing.results(om)
