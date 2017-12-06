@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This script shows how to a an individual constraint to the oemof solph
+This script shows how to add an individual constraint to the oemof solph
 Model.
 The constraint we add forces a flow to be greater or equal a certain share
 of all inflows of its target bus. Moreover we will set an emission constraint.
@@ -11,6 +11,7 @@ simon.hilpert@uni-flensburg.de
 import logging
 import pyomo.environ as po
 import pandas as pd
+
 from oemof.solph import (Sink, Transformer, Bus, Flow,
                          Model, EnergySystem)
 
@@ -22,11 +23,16 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     # create an energy system object for the oemof solph nodes
     es = EnergySystem(timeindex=pd.date_range('1/1/2012', periods=4, freq='H'))
     # add some nodes
+    
+    
     boil = Bus(label="oil", balanced=False)
     blig = Bus(label="lignite", balanced=False)
     b_el = Bus(label="b_el")
+    
+    es.add(boil, blig, b_el)
+   
 
-    Sink(label="Sink",
+    sink = Sink(label="Sink",
          inputs={b_el: Flow(nominal_value=40,
                             actual_value=[0.5, 0.4, 0.3, 1],
                             fixed=True)})
@@ -35,12 +41,15 @@ def run_add_constraints_example(solver='cbc', nologg=False):
                          outputs={b_el: Flow(nominal_value=50,
                                                    variable_costs=25)},
                          conversion_factors={b_el: 0.39})
-    Transformer(label='pp_lig',
+    pp_lig = Transformer(label='pp_lig',
                 inputs={blig: Flow()},
                 outputs={b_el: Flow(nominal_value=50,
                                           variable_costs=10)},
                 conversion_factors={b_el: 0.41})
-
+    
+    
+    es.add(sink, pp_oil, pp_lig)
+  
     # create the model
     om = Model(es=es)
 
@@ -52,12 +61,13 @@ def run_add_constraints_example(solver='cbc', nologg=False):
             om.flows[s, t].emission_factor = 0.39  # t/MWh
     emission_limit = 60e3
 
+
     # add the outflow share
     om.flows[(boil, pp_oil)].outflow_share = [1, 0.5, 0, 0.3]
 
     # Now we are going to add a 'sub-model' and add a user specific constraint
-    # first we add ad pyomo Block() instance that we can use to add our
-    # constraints. Then, we add this Block to our previous defined
+    # first we add a pyomo Block() instance that we can use to add our
+    # constraints. Then, we add this Block to our previous defined 
     # Model instance and add the constraints.
     myblock = po.Block()
 
@@ -95,6 +105,8 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     # you may print the model with om.pprint()
     om.solve(solver=solver)
     logging.info("Successfully finished.")
+    
+
 
 if __name__ == "__main__":
     run_add_constraints_example()

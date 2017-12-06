@@ -75,33 +75,37 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
     # create electricity bus
     bel = solph.Bus(label="electricity")
 
+    energysystem.add(bgas, bel)
+
     # create excess component for the electricity bus to allow overproduction
-    solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
+    energysystem.add(solph.Sink(label='excess_bel', inputs={bel: solph.Flow()}))
 
     # create source object representing the natural gas commodity (annual limit)
-    solph.Source(label='rgas', outputs={bgas: solph.Flow(
-        nominal_value=194397000 * number_timesteps / 8760, summed_max=1)})
+    energysystem.add(solph.Source(label='rgas', outputs={bgas: solph.Flow(
+        nominal_value=194397000 * number_timesteps / 8760, summed_max=1)}))
 
     # create fixed source object representing wind power plants
-    solph.Source(label='wind', outputs={bel: solph.Flow(
+    energysystem.add(solph.Source(label='wind', outputs={bel: solph.Flow(
         actual_value=data['wind'], nominal_value=1000000, fixed=True,
-        fixed_costs=20)})
+        fixed_costs=20)}))
 
     # create fixed source object representing pv power plants
-    solph.Source(label='pv', outputs={bel: solph.Flow(
+    energysystem.add(solph.Source(label='pv', outputs={bel: solph.Flow(
         actual_value=data['pv'], nominal_value=582000, fixed=True,
-        fixed_costs=15)})
+        fixed_costs=15)}))
 
     # create simple sink object representing the electrical demand
-    solph.Sink(label='demand', inputs={bel: solph.Flow(
-        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+    energysystem.add(solph.Sink(label='demand', inputs={bel: solph.Flow(
+        actual_value=data['demand_el'], fixed=True, nominal_value=1)}))
 
     # create simple transformer object representing a gas power plant
-    solph.Transformer(
+    energysystem.add(solph.Transformer(
         label="pp_gas",
         inputs={bgas: solph.Flow()},
         outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=50)},
-        conversion_factors={bel: 0.58})
+        conversion_factors={bel: 0.58}))
+
+
 
     # If the period is one year the equivalent periodical costs (epc) of an
     # investment are equal to the annuity. Use oemof's economic tools.
@@ -119,6 +123,8 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
         fixed_costs=35,
         investment=solph.Investment(ep_costs=epc),
     )
+
+    energysystem.add(storage)
 
     ##########################################################################
     # Optimise the energy system and plot the results

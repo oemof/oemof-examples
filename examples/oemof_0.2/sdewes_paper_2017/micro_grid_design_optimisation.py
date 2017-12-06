@@ -11,16 +11,17 @@ Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
 import os
 import pandas as pd
 
+from oemof.network import Node
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow,
                          Model, Investment, components)
 from oemof.tools import economics
 
-timeindex = pd.date_range('1/1/2017', periods=168, freq='H')
+timeindex = pd.date_range('1/1/2017', periods=12, freq='H')
 
 energysystem = EnergySystem(timeindex=timeindex)
-
+Node.registry = energysystem
 #################################################################
 # data
 #################################################################
@@ -110,6 +111,7 @@ components.GenericStorage(
 #################################################################
 
 m = Model(energysystem)
+
 # om.write(filename, io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc', solve_kwargs={'tee': True})
