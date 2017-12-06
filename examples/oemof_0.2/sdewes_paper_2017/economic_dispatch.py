@@ -11,6 +11,7 @@ Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
 import os
 import pandas as pd
 
+from oemof.network import Node
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
@@ -20,7 +21,7 @@ from oemof.solph.constraints import emission_limit
 timeindex = pd.date_range('1/1/2017', periods=5, freq='H')
 
 energysystem = EnergySystem(timeindex=timeindex)
-
+Node.registry = energysystem
 ##########################################################################
 # data
 ##########################################################################
@@ -55,8 +56,8 @@ Source(label='pp_gas',
        outputs={
            bel: Flow(nominal_value=30, nonconvex=NonConvex(),
                      variable_costs=60,
-                     negative_gradient=0.05,
-                     positive_gradient=0.05)})
+                     negative_gradient={'ub': 0.05, 'costs': 0},
+                     positive_gradient={'ub': 0.05, 'costs': 0})})
 
 Source(label='pp_bio',
        outputs={
