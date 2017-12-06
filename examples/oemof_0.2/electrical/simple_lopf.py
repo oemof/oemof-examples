@@ -4,7 +4,7 @@
 import pandas as pd
 
 # solph imports
-from oemof.solph import (EnergySystem, Model, Bus, Flow, Source, Sink, components)
+from oemof.solph import (EnergySystem, Model, Bus, Flow, Source, Sink, custom)
 from oemof.outputlib import processing, views
 from oemof.outputlib.graph_tools import graph
 
@@ -15,29 +15,29 @@ es = EnergySystem(timeindex=datetimeindex)
 
 
 # electricity and heat
-b_el0 = components.ElectricalBus(label="b_el0")
+b_el0 = custom.ElectricalBus(label="b_el0", v_min=-1, v_max=1)
 
-b_el1 = components.ElectricalBus(label="b_el1")
+b_el1 = custom.ElectricalBus(label="b_el1", v_min=-1, v_max=1)
 
-b_el2 = components.ElectricalBus(label="b_el2")
+b_el2 = custom.ElectricalBus(label="b_el2", v_min=-1, v_max=1)
 
 es.add(b_el0, b_el1, b_el2)
 
-es.add(components.ElectricalLine(label="line1",
-                                 inputs={b_el0: Flow()},
-                                 outputs={b_el1: Flow(nominal_value=60,
-                                                      min=-1, max=1)},
-                                 reactance=0.0001))
-es.add(components.ElectricalLine(label="line2",
-                                 inputs={b_el1: Flow()},
-                                 outputs={b_el2: Flow(nominal_value=60,
-                                                      min=-1, max=1)},
-                                 reactance=0.0001))
-es.add(components.ElectricalLine(label="line3",
-                                 inputs={b_el2: Flow()},
-                                 outputs={b_el0: Flow(nominal_value=60,
-                                                      min=-1, max=1)},
-                                 reactance=0.0001))
+es.add(custom.ElectricalLine(label="line1",
+                             inputs={b_el0: Flow()},
+                             outputs={b_el1: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
+                             reactance=0.0001))
+es.add(custom.ElectricalLine(label="line2",
+                             inputs={b_el1: Flow()},
+                             outputs={b_el2: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
+                             reactance=0.0001))
+es.add(custom.ElectricalLine(label="line3",
+                             inputs={b_el2: Flow()},
+                             outputs={b_el0: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
+                             reactance=0.0001))
 
 es.add(Source(label="gen_0", outputs={b_el0: Flow(nominal_value=100,
                                                   variable_costs=50)}))
