@@ -86,9 +86,9 @@ def run_example(file_name='generic_chp', timesteps=200,
 
     # solve model
     if silent is not True:
-        om.solve(solver='gurobi', solve_kwargs={'tee': True})
+        om.solve(solver='cbc', solve_kwargs={'tee': True})
     else:
-        om.solve(solver='gurobi', solve_kwargs={'tee': False})
+        om.solve(solver='cbc', solve_kwargs={'tee': False})
 
     # create result object
     results = processing.results(om)

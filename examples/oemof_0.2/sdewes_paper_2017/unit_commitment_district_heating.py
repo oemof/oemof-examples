@@ -11,6 +11,7 @@ Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
 import os
 import pandas as pd
 
+from oemof.network import Node
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
@@ -19,7 +20,7 @@ from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
 timeindex = pd.date_range('1/1/2017', periods=168, freq='H')
 
 energysystem = EnergySystem(timeindex=timeindex)
-
+Node.registry = energysystem
 ##########################################################################
 # data
 ##########################################################################
