@@ -14,28 +14,28 @@ es = EnergySystem(timeindex=datetimeindex)
 
 
 # electricity and heat
-b_el0 = custom.ElectricalBus(label="b_el0", v_min=-1, v_max=1)
+b_el0 = custom.ElectricalBus(label="b_el0", v_min=-1000, v_max=1000)
 
-b_el1 = custom.ElectricalBus(label="b_el1", v_min=-1, v_max=1)
+b_el1 = custom.ElectricalBus(label="b_el1", v_min=-1000, v_max=1000)
 
-b_el2 = custom.ElectricalBus(label="b_el2", v_min=-1, v_max=1)
+b_el2 = custom.ElectricalBus(label="b_el2", v_min=-1000, v_max=1000)
 
 es.add(b_el0, b_el1, b_el2)
 
 es.add(custom.ElectricalLine(label="line0",
                              inputs={b_el0: Flow()},
                              outputs={b_el1: Flow(nominal_value=60,
-                                                  min=-1000, max=1000)},
+                                                  min=-1, max=1)},
                              reactance=0.0001))
 es.add(custom.ElectricalLine(label="line1",
                              inputs={b_el1: Flow()},
                              outputs={b_el2: Flow(nominal_value=60,
-                                                  min=-1000, max=1000)},
+                                                  min=-1, max=1)},
                              reactance=0.0001))
 es.add(custom.ElectricalLine(label="line2",
                              inputs={b_el2: Flow()},
                              outputs={b_el0: Flow(nominal_value=60,
-                                                  min=-1000, max=1000)},
+                                                  min=-1, max=1)},
                              reactance=0.0001))
 
 es.add(Source(label="gen_0", outputs={b_el0: Flow(nominal_value=100,
@@ -50,6 +50,7 @@ es.add(Sink(label="load", inputs={b_el2: Flow(nominal_value=100,
 
 m = Model(es=es)
 
+m.write('lopf.lp', io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc',
         solve_kwargs={'tee': True, 'keepfiles': False})
