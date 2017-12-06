@@ -14,11 +14,11 @@ es = EnergySystem(timeindex=datetimeindex)
 
 
 # electricity and heat
-b_el0 = custom.ElectricalBus(label="b_el0", v_min=-1000, v_max=1000)
+b_el0 = custom.ElectricalBus(label="b_0", v_min=-1, v_max=1)
 
-b_el1 = custom.ElectricalBus(label="b_el1", v_min=-1000, v_max=1000)
+b_el1 = custom.ElectricalBus(label="b_1", v_min=-1, v_max=1)
 
-b_el2 = custom.ElectricalBus(label="b_el2", v_min=-1000, v_max=1000)
+b_el2 = custom.ElectricalBus(label="b_2", v_min=-1, v_max=1)
 
 es.add(b_el0, b_el1, b_el2)
 
@@ -60,13 +60,13 @@ m.results()
 
 graph = graph(es, m, plot=True, layout='neato', node_size=3000,
               node_color={
-                  'b_el0': '#cd3333',
-                  'b_el1': '#7EC0EE',
-                  'b_el2': '#eeac7e'})
+                  'b_0': '#cd3333',
+                  'b_1': '#7EC0EE',
+                  'b_2': '#eeac7e'})
 
 
 results = processing.results(m)
-data = views.node(results, 'b_el0')
 
-
-
+print(views.node(results, 'gen_0'))
+print(views.node(results, 'gen_1'))
+print(views.node(results, 'line_1'))
