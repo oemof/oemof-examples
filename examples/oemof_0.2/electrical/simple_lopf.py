@@ -23,17 +23,20 @@ b_el2 = custom.ElectricalBus(label="b_2", v_min=-1, v_max=1)
 es.add(b_el0, b_el1, b_el2)
 
 es.add(custom.ElectricalLine(label="line0",
-                             inputs={b_el0: Flow()},
+                             inputs={b_el0: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
                              outputs={b_el1: Flow(nominal_value=60,
                                                   min=-1, max=1)},
                              reactance=0.0001))
 es.add(custom.ElectricalLine(label="line1",
-                             inputs={b_el1: Flow()},
+                             inputs={b_el1: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
                              outputs={b_el2: Flow(nominal_value=60,
                                                   min=-1, max=1)},
                              reactance=0.0001))
 es.add(custom.ElectricalLine(label="line2",
-                             inputs={b_el2: Flow()},
+                             inputs={b_el2: Flow(nominal_value=60,
+                                                  min=-1, max=1)},
                              outputs={b_el0: Flow(nominal_value=60,
                                                   min=-1, max=1)},
                              reactance=0.0001))
