@@ -17,14 +17,13 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from oemof.network import Node
 from oemof.tools import logger
 import oemof.solph as solph
 from oemof import outputlib
 try:
-    from oemof.outputlib import plot as oemof_plot
+    from oemof_visio import plot as oemof_plot
 except ImportError as e:
-    print("\n\nYou have to use the branch 'features/plotting_module' to run"
-          " this example\n\n")
     oemof_plot = None
     raise e
 
@@ -74,6 +73,7 @@ logging.info('Initialize the energy system')
 # create time index for 192 hours in May.
 date_time_index = pd.date_range('5/5/2012', periods=192, freq='H')
 energysystem = solph.EnergySystem(timeindex=date_time_index)
+Node.registry = energysystem
 
 # Read data file with heat and electrical demand (192 hours)
 full_filename = os.path.join(os.path.dirname(__file__), 'variable_chp.csv')

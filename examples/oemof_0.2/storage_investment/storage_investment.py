@@ -110,10 +110,12 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
     # If the period is one year the equivalent periodical costs (epc) of an
     # investment are equal to the annuity. Use oemof's economic tools.
     epc = economics.annuity(capex=1000, n=20, wacc=0.05)
+    my_list = [0.1] * number_timesteps
 
     # create storage object representing a battery
     storage = solph.components.GenericStorage(
         label='storage',
+        min=my_list,
         inputs={bel: solph.Flow(variable_costs=10e10)},
         outputs={bel: solph.Flow(variable_costs=10e10)},
         capacity_loss=0.00, initial_capacity=0,
