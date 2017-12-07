@@ -154,8 +154,8 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
     results = processing.results(om)
 
     if not silent:
-        print(results[(storage,)]['sequences'].head())
-        print(results[(storage,)]['scalars'])
+        print(results[(storage, None)]['sequences'].head())
+        print(results[(storage, None)]['scalars'])
     custom_storage = views.node(results, 'storage')
     electricity_bus = views.node(results, 'electricity')
 
@@ -166,7 +166,7 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
         plt.show()
 
     my_results = electricity_bus['sequences'].sum(axis=0).to_dict()
-    my_results['storage_invest'] = results[(storage,)]['scalars']['invest']
+    my_results['storage_invest'] = results[(storage, None)]['scalars']['invest']
 
     if not silent:
         meta_results = processing.meta_results(om)
