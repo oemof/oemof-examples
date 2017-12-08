@@ -184,6 +184,7 @@ fig.subplots_adjust(left=0.07, bottom=0.12, right=0.86, top=0.93,
 
 # subplot of electricity bus (fixed chp) [1]
 electricity_2 = outputlib.views.node(results, 'electricity_2')
+x_length = len(electricity_2['sequences'].index)
 myplot = oemof_plot.io_plot(
     bus_label='electricity_2', df=electricity_2['sequences'],
     cdict=cdict, smooth=smooth_plot,
@@ -194,6 +195,7 @@ myplot = oemof_plot.io_plot(
 myplot['ax'].set_ylabel('Power in MW')
 myplot['ax'].set_xlabel('')
 myplot['ax'].get_xaxis().set_visible(False)
+myplot['ax'].set_xlim(0, x_length)
 myplot['ax'].set_title("Electricity output (fixed chp)")
 myplot['ax'].legend_.remove()
 
@@ -211,6 +213,7 @@ myplot['ax'].get_yaxis().set_visible(False)
 myplot['ax'].set_xlabel('')
 myplot['ax'].get_xaxis().set_visible(False)
 myplot['ax'].set_title("Electricity output (variable chp)")
+myplot['ax'].set_xlim(0, x_length)
 shape_legend('electricity', plotshare=1, **myplot)
 
 # subplot of heat bus (fixed chp) [3]
@@ -226,6 +229,7 @@ myplot['ax'].set_ylabel('Power in MW')
 myplot['ax'].set_ylim([0, 600000])
 myplot['ax'].get_xaxis().set_visible(False)
 myplot['ax'].set_title("Heat output (fixed chp)")
+myplot['ax'].set_xlim(0, x_length)
 myplot['ax'].legend_.remove()
 
 # subplot of heat bus (variable chp) [4]
@@ -242,6 +246,7 @@ myplot['ax'].set_ylim([0, 600000])
 myplot['ax'].get_yaxis().set_visible(False)
 myplot['ax'].get_xaxis().set_visible(False)
 myplot['ax'].set_title("Heat output (variable chp)")
+myplot['ax'].set_xlim(0, x_length)
 shape_legend('heat', plotshare=1, **myplot)
 
 if smooth_plot:
@@ -257,10 +262,14 @@ heat = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'heat_2'), 'flow')]
 e_ef = elec.div(ngas)
 h_ef = heat.div(ngas)
 df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
+my_ax = df.reset_index(drop=True).plot(
+    drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
 my_ax.set_ylabel('efficiency')
 my_ax.set_ylim([0, 0.55])
-my_ax.set_xlabel('Date')
+my_ax.set_xlabel('May 2012')
+my_ax = oemof_plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                      date_format='%d', offset=12,
+                                      tight=True)
 my_ax.set_title('Efficiency (fixed chp)')
 my_ax.legend_.remove()
 
@@ -274,10 +283,15 @@ h_ef = heat.div(ngas)
 e_ef.name = 'electricity           '
 h_ef.name = 'heat'
 df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
+my_ax = df.reset_index(drop=True).plot(
+    drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
 my_ax.set_ylim([0, 0.55])
+my_ax = oemof_plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                      date_format='%d', offset=12,
+                                      tight=True)
 my_ax.get_yaxis().set_visible(False)
-my_ax.set_xlabel('Date')
+my_ax.set_xlabel('May 2012')
+
 my_ax.set_title('Efficiency (variable chp)')
 my_box = my_ax.get_position()
 my_ax.set_position([my_box.x0, my_box.y0, my_box.width * 1, my_box.height])

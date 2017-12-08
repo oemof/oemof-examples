@@ -243,12 +243,12 @@ fig = plt.figure(figsize=(10, 5))
 electricity_seq = views.node(results, 'electricity')['sequences']
 plot_slice = plot.slice_df(electricity_seq, date_from=pd.datetime(2012, 2, 15))
 my_plot = plot.io_plot('electricity', plot_slice, cdict=cdict, inorder=inorder,
-                       ax=fig.add_subplot(1, 1, 1), smooth=False)
+                       ax=fig.add_subplot(1, 1, 1), smooth=True)
 ax = shape_legend('electricity', **my_plot)
 ax = plot.set_datetime_ticks(ax, plot_slice.index, tick_distance=48,
-                             date_format='%d-%m-%H', offset=12)
+                             date_format='%d-%m', offset=12, tight=True)
 
 ax.set_ylabel('Power in MW')
-ax.set_xlabel('Date')
+ax.set_xlabel('2012')
 ax.set_title("Electricity bus")
 plt.show()
