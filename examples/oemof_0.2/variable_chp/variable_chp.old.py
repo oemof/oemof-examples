@@ -98,57 +98,69 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
 
     logging.info('Create oemof.solph objects')
 
+    # container for instantiated nodes
+    noded = {}
+
     # create natural gas bus
-    bgas = solph.Bus(label="natural_gas")
+    noded['bgas'] = solph.Bus(label="natural_gas")
 
     # create commodity object for gas resource
-    solph.Source(label='rgas', outputs={bgas: solph.Flow(variable_costs=50)})
+    noded['rgas'] = solph.Source(
+        label='rgas', outputs={noded['bgas']: solph.Flow(variable_costs=50)})
 
     # create two electricity buses and two heat buses
-    bel = solph.Bus(label="electricity")
-    bel2 = solph.Bus(label="electricity_2")
-    bth = solph.Bus(label="heat")
-    bth2 = solph.Bus(label="heat_2")
+    noded['bel'] = solph.Bus(label="electricity")
+    noded['bel2'] = solph.Bus(label="electricity_2")
+    noded['bth'] = solph.Bus(label="heat")
+    noded['bth2'] = solph.Bus(label="heat_2")
 
     # create excess components for the elec/heat bus to allow overproduction
-    solph.Sink(label='excess_bth_2', inputs={bth2: solph.Flow()})
-    solph.Sink(label='excess_therm', inputs={bth: solph.Flow()})
-    solph.Sink(label='excess_bel_2', inputs={bel2: solph.Flow()})
-    solph.Sink(label='excess_elec', inputs={bel: solph.Flow()})
+    noded['excess_bth_2'] = solph.Sink(
+        label='excess_bth_2', inputs={noded['bth2']: solph.Flow()})
+    noded['excess_therm'] = solph.Sink(
+        label='excess_therm', inputs={noded['bth']: solph.Flow()})
+    noded['excess_bel_2'] = solph.Sink(
+        label='excess_bel_2', inputs={noded['bel2']: solph.Flow()})
+    noded['excess_elec'] = solph.Sink(
+        label='excess_elec', inputs={noded['bel']: solph.Flow()})
 
     # create simple sink object for electrical demand for each electrical bus
-    solph.Sink(label='demand_elec', inputs={bel: solph.Flow(
-        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
-    solph.Sink(label='demand_el_2', inputs={bel2: solph.Flow(
-        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+    noded['demand_elec'] = solph.Sink(
+        label='demand_elec', inputs={noded['bel']: solph.Flow(
+            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+    noded['demand_el_2'] = solph.Sink(
+        label='demand_el_2', inputs={noded['bel2']: solph.Flow(
+            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
 
     # create simple sink object for heat demand for each thermal bus
-    solph.Sink(label='demand_therm', inputs={bth: solph.Flow(
-        actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
-    solph.Sink(label='demand_th_2', inputs={bth2: solph.Flow(
-        actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+    noded['demand_therm'] = solph.Sink(
+        label='demand_therm', inputs={noded['bth']: solph.Flow(
+            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+    noded['demand_therm_2'] = solph.Sink(
+        label='demand_th_2', inputs={noded['bth2']: solph.Flow(
+            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
 
     # This is just a dummy transformer with a nominal input of zero
-    solph.LinearTransformer(
+    noded['fixed_chp_gas'] = solph.Transformer(
         label='fixed_chp_gas',
-        inputs={bgas: solph.Flow(nominal_value=0)},
-        outputs={bel: solph.Flow(), bth: solph.Flow()},
-        conversion_factors={bel: 0.3, bth: 0.5})
+        inputs={noded['bgas']: solph.Flow(nominal_value=0)},
+        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
+        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5})
 
     # create a fixed transformer to distribute to the heat_2 and elec_2 buses
-    solph.LinearTransformer(
+    noded['fixed_chp_gas_2'] = solph.Transformer(
         label='fixed_chp_gas_2',
-        inputs={bgas: solph.Flow(nominal_value=10e10)},
-        outputs={bel2: solph.Flow(), bth2: solph.Flow()},
-        conversion_factors={bel2: 0.3, bth2: 0.5})
+        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
+        outputs={noded['bel2']: solph.Flow(), noded['bth2']: solph.Flow()},
+        conversion_factors={noded['bel2']: 0.3, noded['bth2']: 0.5})
 
     # create a fixed transformer to distribute to the heat and elec buses
-    solph.VariableFractionTransformer(
+    noded['variable_chp_gas'] = solph.components.ExtractionTurbineCHP(
         label='variable_chp_gas',
-        inputs={bgas: solph.Flow(nominal_value=10e10)},
-        outputs={bel: solph.Flow(), bth: solph.Flow()},
-        conversion_factors={bel: 0.3, bth: 0.5},
-        conversion_factor_single_flow={bel: 0.5}
+        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
+        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
+        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5},
+        conversion_factor_full_condensation={noded['bel']: 0.5}
         )
 
     ##########################################################################
@@ -156,6 +168,8 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
     ##########################################################################
 
     logging.info('Optimise the energy system')
+
+    energysystem.add(*noded.values())
 
     om = solph.Model(energysystem)
 
