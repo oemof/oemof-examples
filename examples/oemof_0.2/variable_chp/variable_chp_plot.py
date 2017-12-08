@@ -16,125 +16,141 @@ import logging
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from oemof.tools import helpers
+
+from oemof.tools import logger
 import oemof.solph as solph
 from oemof import outputlib
+try:
+    from oemof.outputlib import plot as oemof_plot
+except ImportError as e:
+    print("\n\nYou have to use the branch 'features/plotting_module' to run"
+          " this example\n\n")
+    oemof_plot = None
+    raise e
 
 
-def run_variable_chp_example(number_timesteps=192,
-                             filename="variable_chp.csv", solver='cbc',
-                             debug=True, tee_switch=True):
+def shape_legend(node, reverse=False, **kwargs):
+    handels = kwargs['handles']
+    labels = kwargs['labels']
+    axes = kwargs['ax']
+    parameter = {}
 
-    logging.info('Initialize the energy system')
+    new_labels = []
+    for label in labels:
+        label = label.replace('(', '')
+        label = label.replace('), flow)', '')
+        label = label.replace(node, '')
+        label = label.replace(',', '')
+        label = label.replace(' ', '')
+        new_labels.append(label)
+    labels = new_labels
 
-    # create time index for 192 hours in May.
-    date_time_index = pd.date_range('5/5/2012', periods=number_timesteps,
-                                    freq='H')
-    energysystem = solph.EnergySystem(timeindex=date_time_index)
+    parameter['bbox_to_anchor'] = kwargs.get('bbox_to_anchor', (1, 0.5))
+    parameter['loc'] = kwargs.get('loc', 'center left')
+    parameter['ncol'] = kwargs.get('ncol', 1)
+    plotshare = kwargs.get('plotshare', 0.9)
 
-    # Read data file with heat and electrical demand (192 hours)
-    full_filename = os.path.join(os.path.dirname(__file__), filename)
-    data = pd.read_csv(full_filename, sep=",")
+    if reverse:
+        handels = handels.reverse()
+        labels = labels.reverse()
 
-    ##########################################################################
-    # Create oemof.solph objects
-    ##########################################################################
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0, box.width * plotshare, box.height])
 
-    logging.info('Create oemof.solph objects')
+    parameter['handles'] = handels
+    parameter['labels'] = labels
+    axes.legend(**parameter)
+    return axes
 
-    # container for instantiated nodes
-    noded = {}
 
-    # create natural gas bus
-    noded['bgas'] = solph.Bus(label="natural_gas")
+# Parameter
+solver = 'cbc'
+smooth_plot = True
 
-    # create commodity object for gas resource
-    noded['rgas'] = solph.Source(
-        label='rgas', outputs={noded['bgas']: solph.Flow(variable_costs=50)})
+# logger.define_logging(text="Starting chp example", screen_level=logging.DEBUG)
+logger.define_logging()
+logging.info('Initialize the energy system')
 
-    # create two electricity buses and two heat buses
-    noded['bel'] = solph.Bus(label="electricity")
-    noded['bel2'] = solph.Bus(label="electricity_2")
-    noded['bth'] = solph.Bus(label="heat")
-    noded['bth2'] = solph.Bus(label="heat_2")
+# create time index for 192 hours in May.
+date_time_index = pd.date_range('5/5/2012', periods=192, freq='H')
+energysystem = solph.EnergySystem(timeindex=date_time_index)
 
-    # create excess components for the elec/heat bus to allow overproduction
-    noded['excess_bth_2'] = solph.Sink(
-        label='excess_bth_2', inputs={noded['bth2']: solph.Flow()})
-    noded['excess_therm'] = solph.Sink(
-        label='excess_therm', inputs={noded['bth']: solph.Flow()})
-    noded['excess_bel_2'] = solph.Sink(
-        label='excess_bel_2', inputs={noded['bel2']: solph.Flow()})
-    noded['excess_elec'] = solph.Sink(
-        label='excess_elec', inputs={noded['bel']: solph.Flow()})
+# Read data file with heat and electrical demand (192 hours)
+full_filename = os.path.join(os.path.dirname(__file__), 'variable_chp.csv')
+data = pd.read_csv(full_filename, sep=",")
 
-    # create simple sink object for electrical demand for each electrical bus
-    noded['demand_elec'] = solph.Sink(
-        label='demand_elec', inputs={noded['bel']: solph.Flow(
-            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
-    noded['demand_el_2'] = solph.Sink(
-        label='demand_el_2', inputs={noded['bel2']: solph.Flow(
-            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+##########################################################################
+# Create oemof.solph objects
+##########################################################################
 
-    # create simple sink object for heat demand for each thermal bus
-    noded['demand_therm'] = solph.Sink(
-        label='demand_therm', inputs={noded['bth']: solph.Flow(
-            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
-    noded['demand_therm_2'] = solph.Sink(
-        label='demand_th_2', inputs={noded['bth2']: solph.Flow(
-            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+logging.info('Create oemof.solph objects')
 
-    # This is just a dummy transformer with a nominal input of zero
-    noded['fixed_chp_gas'] = solph.Transformer(
-        label='fixed_chp_gas',
-        inputs={noded['bgas']: solph.Flow(nominal_value=0)},
-        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
-        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5})
+# create natural gas bus
+bgas = solph.Bus(label="natural_gas")
 
-    # create a fixed transformer to distribute to the heat_2 and elec_2 buses
-    noded['fixed_chp_gas_2'] = solph.Transformer(
-        label='fixed_chp_gas_2',
-        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
-        outputs={noded['bel2']: solph.Flow(), noded['bth2']: solph.Flow()},
-        conversion_factors={noded['bel2']: 0.3, noded['bth2']: 0.5})
+# create commodity object for gas resource
+solph.Source(label='rgas', outputs={bgas: solph.Flow(variable_costs=50)})
 
-    # create a fixed transformer to distribute to the heat and elec buses
-    noded['variable_chp_gas'] = solph.components.ExtractionTurbineCHP(
-        label='variable_chp_gas',
-        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
-        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
-        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5},
-        conversion_factor_full_condensation={noded['bel']: 0.5}
-        )
+# create two electricity buses and two heat buses
+bel = solph.Bus(label="electricity")
+bel2 = solph.Bus(label="electricity_2")
+bth = solph.Bus(label="heat")
+bth2 = solph.Bus(label="heat_2")
 
-    ##########################################################################
-    # Optimise the energy system and plot the results
-    ##########################################################################
+# create excess components for the elec/heat bus to allow overproduction
+solph.Sink(label='excess_bth_2', inputs={bth2: solph.Flow()})
+solph.Sink(label='excess_therm', inputs={bth: solph.Flow()})
+solph.Sink(label='excess_bel_2', inputs={bel2: solph.Flow()})
+solph.Sink(label='excess_elec', inputs={bel: solph.Flow()})
 
-    logging.info('Optimise the energy system')
+# create simple sink object for electrical demand for each electrical bus
+solph.Sink(label='demand_elec', inputs={bel: solph.Flow(
+    actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+solph.Sink(label='demand_el_2', inputs={bel2: solph.Flow(
+    actual_value=data['demand_el'], fixed=True, nominal_value=1)})
 
-    energysystem.add(*noded.values())
+# create simple sink object for heat demand for each thermal bus
+solph.Sink(label='demand_therm', inputs={bth: solph.Flow(
+    actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+solph.Sink(label='demand_th_2', inputs={bth2: solph.Flow(
+    actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
 
-    om = solph.Model(energysystem)
+# This is just a dummy transformer with a nominal input of zero
+solph.Transformer(
+    label='fixed_chp_gas',
+    inputs={bgas: solph.Flow(nominal_value=0)},
+    outputs={bel: solph.Flow(), bth: solph.Flow()},
+    conversion_factors={bel: 0.3, bth: 0.5})
 
-    if debug:
-        filename = os.path.join(
-            helpers.extend_basic_path('lp_files'), 'variable_chp.lp')
-        logging.info('Store lp-file in {0}.'.format(filename))
-        om.write(filename, io_options={'symbolic_solver_labels': True})
+# create a fixed transformer to distribute to the heat_2 and elec_2 buses
+solph.Transformer(
+    label='fixed_chp_gas_2',
+    inputs={bgas: solph.Flow(nominal_value=10e10)},
+    outputs={bel2: solph.Flow(), bth2: solph.Flow()},
+    conversion_factors={bel2: 0.3, bth2: 0.5})
 
-    logging.info('Solve the optimization problem')
-    om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
+# create a fixed transformer to distribute to the heat and elec buses
+solph.components.ExtractionTurbineCHP(
+    label='variable_chp_gas',
+    inputs={bgas: solph.Flow(nominal_value=10e10)},
+    outputs={bel: solph.Flow(), bth: solph.Flow()},
+    conversion_factors={bel: 0.3, bth: 0.5},
+    conversion_factor_full_condensation={bel: 0.5}
+    )
 
-    optimisation_results = outputlib.processing.results(om)
+##########################################################################
+# Optimise the energy system and plot the results
+##########################################################################
 
-#    myresults = outputlib.views.node(optimisation_results, 'natural_gas')
-#    myresults = myresults['sequences'].sum(axis=0).to_dict()
-#    myresults['objective'] = outputlib.processing.meta_results(om)['objective']
+logging.info('Optimise the energy system')
 
-    return optimisation_results, om
+om = solph.Model(energysystem)
 
-results, om = run_variable_chp_example()
+logging.info('Solve the optimization problem')
+om.solve(solver=solver, solve_kwargs={'tee': False})
+
+results = outputlib.processing.results(om)
+
 myresults = outputlib.views.node(results, 'natural_gas')
 myresults = myresults['sequences'].sum(axis=0).to_dict()
 myresults['objective'] = outputlib.processing.meta_results(om)['objective']
