@@ -3,7 +3,6 @@
 """
 General description:
 ---------------------
-
 The example models the following energy system:
 
                 input/output  bgas     bel
@@ -24,6 +23,11 @@ The example models the following energy system:
  storage(Storage)    |<------------------|       |
                      |------------------>|       |
 
+Installation requirements:
+---------------------------
+This example requires oemof 0.1.4. Install by:
+
+    pip install oemof==0.1.4
 
 """
 
