@@ -303,21 +303,22 @@ def create_plots(results, smooth_plot=True):
     my_ax.legend_.remove()
 
     # subplot of efficiency (variable chp) [6]
-    ngas = myplot.loc['natural_gas', 'from_bus', 'variable_chp_gas']['val']
-    elec = myplot.loc['electricity', 'to_bus', 'variable_chp_gas']['val']
-    heat = myplot.loc['heat', 'to_bus', 'variable_chp_gas']['val']
+    var_chp_gas = outputlib.views.node(results, 'variable_chp_gas')
+    ngas = var_chp_gas['sequences'][(('natural_gas', 'variable_chp_gas'), 'flow')]
+    elec = var_chp_gas['sequences'][(('variable_chp_gas', 'electricity'), 'flow')]
+    heat = var_chp_gas['sequences'][(('variable_chp_gas', 'heat'), 'flow')]
     e_ef = elec.div(ngas)
     h_ef = heat.div(ngas)
     e_ef.name = 'electricity           '
     h_ef.name = 'heat'
-    df = pd.concat([h_ef, e_ef], axis=1)
-    my_ax = df.plot(ax=fig.add_subplot(3, 2, 6), linewidth=2)
+    df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
+    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
     my_ax.set_ylim([0, 0.55])
     my_ax.get_yaxis().set_visible(False)
     my_ax.set_xlabel('Date')
     my_ax.set_title('Efficiency (variable chp)')
-    box = my_ax.get_position()
-    my_ax.set_position([box.x0, box.y0, box.width * 1, box.height])
+    my_box = my_ax.get_position()
+    my_ax.set_position([my_box.x0, my_box.y0, my_box.width * 1, my_box.height])
     my_ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1)
 
     plt.show()
