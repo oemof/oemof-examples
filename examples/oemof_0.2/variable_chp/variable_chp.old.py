@@ -326,28 +326,32 @@ def create_plots(results, smooth_plot=True):
 
 def run_variable_chp_example(**kwargs):
     logger.define_logging()
-    plot_only = False  # set to True if you want to plot your stored results
 
     # Switch to True to show the solver output
     kwargs.setdefault('tee_switch', False)
 
     esys = initialise_energy_system()
-    if not plot_only:
-        esys = optimise_storage_size(esys, **kwargs)
-        esys.dump()
-    else:
-        esys.restore()
+
+#    if not plot_only:
+#        esys, om = optimise_storage_size(esys, **kwargs)
+#        esys.dump()
+#    else:
+#        esys.restore()
+
+    esys, om = optimise_storage_size(esys, **kwargs)
+
+    optimisation_results = outputlib.processing.results(om)
 
     if plt is not None:
-        create_plots(esys)
+        create_plots(optimisation_results)
     else:
         msg = ("\nIt is not possible to plot the results, due to a missing " +
                "python package: 'matplotlib'. \nType 'pip install " +
                "matplotlib' to see the plots.")
         warnings.warn(msg)
 
-    for k, v in get_result_dict(esys).items():
-        logging.info('{0}: {1}'.format(k, v))
+#    for k, v in get_result_dict(esys).items():
+#        logging.info('{0}: {1}'.format(k, v))
 
 
 if __name__ == "__main__":
