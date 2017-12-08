@@ -40,8 +40,11 @@ This example requires the latest version of oemof. Install by:
 from oemof.tools import economics
 
 from oemof import solph
-from oemof.outputlib import processing, plot, views
+from oemof.outputlib import processing, views
 from oemof.tools import logger
+from oemof.network import Node
+
+from oemof_visio import plot
 
 import logging
 import os
@@ -101,7 +104,7 @@ if plt is None:
 date_time_index = pd.date_range('1/1/2012', periods=number_timesteps, freq='H')
 
 energysystem = solph.EnergySystem(timeindex=date_time_index)
-
+Node.registry = energysystem
 # Read data file
 full_filename = os.path.join(os.path.dirname(__file__),
                              'storage_investment.csv')
