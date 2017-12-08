@@ -182,36 +182,7 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
     logging.info('Solve the optimization problem')
     om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
 
-    return energysystem
-
-
-def get_result_dict(energysystem):
-    """Get some representative results.
-
-    Parameters
-    ----------
-    energysystem : solph.EnergySystem
-
-    Returns
-    -------
-    dict : Results of the optimisation.
-
-    """
-    logging.info('Check the results')
-    myresults = outputlib.ResultsDataFrame(energy_system=energysystem)
-
-    res = dict()
-
-    res['natural_gas'] = myresults.slice_by(
-        bus_typ='natural_gas', obj_label='rgas', type='to_bus').sum()[0]
-    res['input_variable_chp'] = myresults.slice_by(
-        bus_typ='natural_gas', obj_label='variable_chp_gas', type='from_bus'
-        ).sum()[0]
-    res['input_fixed_chp'] = myresults.slice_by(
-        bus_typ='natural_gas', obj_label='fixed_chp_gas_2', type='from_bus'
-        ).sum()[0]
-    res['objective'] = energysystem.results.objective
-    return res
+    return energysystem, om
 
 
 def create_plots(energysystem):
