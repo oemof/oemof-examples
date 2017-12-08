@@ -185,7 +185,7 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
     return energysystem, om
 
 
-def create_plots(energysystem):
+def create_plots(results, smooth_plot=True):
     """Create a plot with 6 tiles that shows the difference between the
     LinearTransformer and the VariableFractionTransformer used for chp plants.
 
@@ -195,23 +195,25 @@ def create_plots(energysystem):
     """
     logging.info('Plot the results')
 
-    cdict = {'variable_chp_gas': '#42c77a',
-             'fixed_chp_gas': '#20b4b6',
-             'fixed_chp_gas_2': '#20b4b6',
-             'heat_gas': '#12341f',
-             'demand_therm': '#5b5bae',
-             'demand_th_2': '#5b5bae',
-             'demand_elec': '#5b5bae',
-             'demand_el_2': '#5b5bae',
-             'free': '#ffde32',
-             'excess_therm': '#f22222',
-             'excess_bth_2': '#f22222',
-             'excess_elec': '#f22222',
-             'excess_bel_2': '#f22222'}
+    cdict = {
+        (('variable_chp_gas', 'electricity'), 'flow'): '#42c77a',
+        (('fixed_chp_gas_2', 'electricity_2'), 'flow'): '#20b4b6',
+        (('fixed_chp_gas', 'electricity'), 'flow'): '#20b4b6',
+        (('fixed_chp_gas', 'heat'), 'flow'): '#20b4b6',
+        (('variable_chp_gas', 'heat'), 'flow'): '#42c77a',
+        (('heat', 'demand_therm'), 'flow'): '#5b5bae',
+        (('heat_2', 'demand_th_2'), 'flow'): '#5b5bae',
+        (('electricity', 'demand_elec'), 'flow'): '#5b5bae',
+        (('electricity_2', 'demand_el_2'), 'flow'): '#5b5bae',
+        (('heat', 'excess_therm'), 'flow'): '#f22222',
+        (('heat_2', 'excess_bth_2'), 'flow'): '#f22222',
+        (('electricity', 'excess_elec'), 'flow'): '#f22222',
+        (('electricity_2', 'excess_bel_2'), 'flow'): '#f22222',
+        (('fixed_chp_gas_2', 'heat_2'), 'flow'): '#20b4b6'}
 
-    myplot = outputlib.DataFramePlot(energy_system=energysystem)
-
+    ##########################################################################
     # Plotting
+    ##########################################################################
     fig = plt.figure(figsize=(18, 9))
     plt.rc('legend', **{'fontsize': 13})
     plt.rcParams.update({'font.size': 13})
@@ -219,65 +221,81 @@ def create_plots(energysystem):
                         wspace=0.03, hspace=0.2)
 
     # subplot of electricity bus (fixed chp) [1]
-    myplot.io_plot(
-        bus_label='electricity_2', cdict=cdict,
-        barorder=['fixed_chp_gas_2'],
-        lineorder=['demand_el_2', 'excess_bel_2'],
-        line_kwa={'linewidth': 4},
-        ax=fig.add_subplot(3, 2, 1))
-    myplot.ax.set_ylabel('Power in MW')
-    myplot.ax.set_xlabel('')
-    myplot.ax.get_xaxis().set_visible(False)
-    myplot.ax.set_title("Electricity output (fixed chp)")
-    myplot.ax.legend_.remove()
+    electricity_2 = outputlib.views.node(results, 'electricity_2')
+    myplot = io_plot(
+        bus_label='electricity_2', df=electricity_2['sequences'],
+        cdict=cdict, smooth=smooth_plot,
+        line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 1),
+        inorder=[(('fixed_chp_gas_2', 'electricity_2'), 'flow')],
+        outorder=[(('electricity_2', 'demand_el_2'), 'flow'),
+                  (('electricity_2', 'excess_bel_2'), 'flow')])
+    myplot['ax'].set_ylabel('Power in MW')
+    myplot['ax'].set_xlabel('')
+    myplot['ax'].get_xaxis().set_visible(False)
+    myplot['ax'].set_title("Electricity output (fixed chp)")
+    myplot['ax'].legend_.remove()
 
     # subplot of electricity bus (variable chp) [2]
-    handles, labels = myplot.io_plot(
-        bus_label='electricity', cdict=cdict,
-        barorder=['variable_chp_gas', 'fixed_chp_gas'],
-        lineorder=['demand_elec', 'excess_elec'],
-        line_kwa={'linewidth': 4},
-        ax=fig.add_subplot(3, 2, 2))
-    myplot.ax.get_yaxis().set_visible(False)
-    myplot.ax.set_xlabel('')
-    myplot.ax.get_xaxis().set_visible(False)
-    myplot.ax.set_title("Electricity output (variable chp)")
-    myplot.outside_legend(handles=handles, labels=labels, plotshare=1)
+    electricity = outputlib.views.node(results, 'electricity')
+    myplot = io_plot(
+        bus_label='electricity', df=electricity['sequences'],
+        cdict=cdict, smooth=smooth_plot,
+        line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
+        inorder=[(('fixed_chp_gas', 'electricity'), 'flow'),
+                 (('variable_chp_gas', 'electricity'), 'flow')],
+        outorder=[(('electricity', 'demand_elec'), 'flow'),
+                  (('electricity', 'excess_elec'), 'flow')])
+    myplot['ax'].get_yaxis().set_visible(False)
+    myplot['ax'].set_xlabel('')
+    myplot['ax'].get_xaxis().set_visible(False)
+    myplot['ax'].set_title("Electricity output (variable chp)")
+    shape_legend('electricity', plotshare=1, **myplot)
 
     # subplot of heat bus (fixed chp) [3]
-    myplot.io_plot(
-        bus_label='heat_2', cdict=cdict,
-        barorder=['fixed_chp_gas_2'],
-        lineorder=['demand_th_2', 'excess_bth_2'],
-        line_kwa={'linewidth': 4},
-        ax=fig.add_subplot(3, 2, 3))
-    myplot.ax.set_ylabel('Power in MW')
-    myplot.ax.set_ylim([0, 600000])
-    myplot.ax.get_xaxis().set_visible(False)
-    myplot.ax.set_title("Heat output (fixed chp)")
-    myplot.ax.legend_.remove()
+    heat_2 = outputlib.views.node(results, 'heat_2')
+    myplot = io_plot(
+        bus_label='heat_2', df=heat_2['sequences'],
+        cdict=cdict, smooth=smooth_plot,
+        line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
+        inorder=[(('fixed_chp_gas_2', 'heat_2'), 'flow')],
+        outorder=[(('heat_2', 'demand_th_2'), 'flow'),
+                  (('heat_2', 'excess_bth_2'), 'flow')])
+    myplot['ax'].set_ylabel('Power in MW')
+    myplot['ax'].set_ylim([0, 600000])
+    myplot['ax'].get_xaxis().set_visible(False)
+    myplot['ax'].set_title("Heat output (fixed chp)")
+    myplot['ax'].legend_.remove()
 
     # subplot of heat bus (variable chp) [4]
-    handles, labels = myplot.io_plot(
-        bus_label='heat', cdict=cdict,
-        barorder=['variable_chp_gas', 'fixed_chp_gas', 'heat_gas'],
-        lineorder=['demand_therm', 'excess_therm'],
-        line_kwa={'linewidth': 4},
-        ax=fig.add_subplot(3, 2, 4))
-    myplot.ax.set_ylim([0, 600000])
-    myplot.ax.get_yaxis().set_visible(False)
-    myplot.ax.get_xaxis().set_visible(False)
-    myplot.ax.set_title("Heat output (variable chp)")
-    myplot.outside_legend(handles=handles, labels=labels, plotshare=1)
+    heat = outputlib.views.node(results, 'heat')
+    myplot = io_plot(
+        bus_label='heat', df=heat['sequences'],
+        cdict=cdict, smooth=smooth_plot,
+        line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
+        inorder=[(('fixed_chp_gas', 'heat'), 'flow'),
+                 (('variable_chp_gas', 'heat'), 'flow')],
+        outorder=[(('heat', 'demand_therm'), 'flow'),
+                  (('heat', 'excess_therm'), 'flow')])
+    myplot['ax'].set_ylim([0, 600000])
+    myplot['ax'].get_yaxis().set_visible(False)
+    myplot['ax'].get_xaxis().set_visible(False)
+    myplot['ax'].set_title("Heat output (variable chp)")
+    shape_legend('heat', plotshare=1, **myplot)
+
+    if smooth_plot:
+        style = None
+    else:
+        style = 'steps-mid'
 
     # subplot of efficiency (fixed chp) [5]
-    ngas = myplot.loc['natural_gas', 'from_bus', 'fixed_chp_gas_2']['val']
-    elec = myplot.loc['electricity_2', 'to_bus', 'fixed_chp_gas_2']['val']
-    heat = myplot.loc['heat_2', 'to_bus', 'fixed_chp_gas_2']['val']
+    fix_chp_gas2 = outputlib.views.node(results, 'fixed_chp_gas_2')
+    ngas = fix_chp_gas2['sequences'][(('natural_gas', 'fixed_chp_gas_2'), 'flow')]
+    elec = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'electricity_2'), 'flow')]
+    heat = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'heat_2'), 'flow')]
     e_ef = elec.div(ngas)
     h_ef = heat.div(ngas)
-    df = pd.concat([h_ef, e_ef], axis=1)
-    my_ax = df.plot(ax=fig.add_subplot(3, 2, 5), linewidth=2)
+    df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
+    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
     my_ax.set_ylabel('efficiency')
     my_ax.set_ylim([0, 0.55])
     my_ax.set_xlabel('Date')
