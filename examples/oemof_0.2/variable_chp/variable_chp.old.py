@@ -30,6 +30,9 @@ import os
 import pandas as pd
 import warnings
 
+# import oemof plots
+from oemof_visio.plot import io_plot
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
