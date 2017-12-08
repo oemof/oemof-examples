@@ -9,7 +9,7 @@ from oemof.solph import (EnergySystem, Model, Flow, Source, Sink, custom,
 from oemof.outputlib import processing, views
 from oemof.outputlib.graph_tools import graph
 
-datetimeindex = pd.date_range('1/1/2012', periods=2, freq='H')
+datetimeindex = pd.date_range('1/1/2017', periods=2, freq='H')
 
 es = EnergySystem(timeindex=datetimeindex)
 
