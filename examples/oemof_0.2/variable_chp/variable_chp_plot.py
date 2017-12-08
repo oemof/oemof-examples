@@ -160,96 +160,78 @@ cdict = {
 ##########################################################################
 # Plotting
 ##########################################################################
-
+fig = plt.figure(figsize=(18, 9))
 plt.rc('legend', **{'fontsize': 13})
 plt.rcParams.update({'font.size': 13})
-
-fig = plt.figure(figsize=(18, 9))
 fig.subplots_adjust(left=0.07, bottom=0.12, right=0.86, top=0.93,
                     wspace=0.03, hspace=0.2)
 
 # subplot of electricity bus (fixed chp) [1]
-ax = fig.add_subplot(3, 2, 1)
 electricity_2 = outputlib.views.node(results, 'electricity_2')
-electricity_2 = electricity_2['sequences'].reset_index()
-
-ix = (('fixed_chp_gas_2', 'electricity_2'), 'flow')
-electricity_2[ix].plot(
-    kind='bar', linewidth=0, stacked=True, width=1, ax=ax, color=cdict[ix])
-
-ix = [(('electricity_2', 'demand_el_2'), 'flow'),
-      (('electricity_2', 'excess_bel_2'), 'flow')]
-electricity_2[ix].plot(
-    ax=ax, linewidth=4, kind='line', drawstyle='steps-mid',
-    colors=[cdict[k] for k in electricity_2[ix].columns])
-
-ax.set_ylabel('Power in MW')
-ax.set_xlabel('')
-ax.get_xaxis().set_visible(False)
-ax.set_title("Electricity output (fixed chp)")
-ax.legend_.remove()
+myplot = oemof_plot.io_plot(
+    bus_label='electricity_2', df=electricity_2['sequences'],
+    cdict=cdict, smooth=smooth_plot,
+    line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 1),
+    inorder=[(('fixed_chp_gas_2', 'electricity_2'), 'flow')],
+    outorder=[(('electricity_2', 'demand_el_2'), 'flow'),
+              (('electricity_2', 'excess_bel_2'), 'flow')])
+myplot['ax'].set_ylabel('Power in MW')
+myplot['ax'].set_xlabel('')
+myplot['ax'].get_xaxis().set_visible(False)
+myplot['ax'].set_title("Electricity output (fixed chp)")
+myplot['ax'].legend_.remove()
 
 # subplot of electricity bus (variable chp) [2]
-ax = fig.add_subplot(3, 2, 2)
 electricity = outputlib.views.node(results, 'electricity')
-electricity = electricity['sequences'].reset_index()
-
-ix = (('variable_chp_gas', 'electricity'), 'flow')
-electricity[ix].plot(
-    kind='bar', linewidth=0, stacked=True, width=1, ax=ax, color=cdict[ix])
-
-ix = [(('electricity', 'demand_elec'), 'flow'),
-      (('electricity', 'excess_elec'), 'flow')]
-electricity[ix].plot(
-    ax=ax, linewidth=4, kind='line', drawstyle='steps-mid',
-    colors=[cdict[k] for k in electricity[ix].columns])
-
-ax.get_yaxis().set_visible(False)
-ax.set_xlabel('')
-ax.get_xaxis().set_visible(False)
-ax.set_title("Electricity output (variable chp)")
-ax.legend_.remove()
+myplot = oemof_plot.io_plot(
+    bus_label='electricity', df=electricity['sequences'],
+    cdict=cdict, smooth=smooth_plot,
+    line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
+    inorder=[(('fixed_chp_gas', 'electricity'), 'flow'),
+             (('variable_chp_gas', 'electricity'), 'flow')],
+    outorder=[(('electricity', 'demand_elec'), 'flow'),
+              (('electricity', 'excess_elec'), 'flow')])
+myplot['ax'].get_yaxis().set_visible(False)
+myplot['ax'].set_xlabel('')
+myplot['ax'].get_xaxis().set_visible(False)
+myplot['ax'].set_title("Electricity output (variable chp)")
+shape_legend('electricity', plotshare=1, **myplot)
 
 # subplot of heat bus (fixed chp) [3]
-ax = fig.add_subplot(3, 2, 3)
 heat_2 = outputlib.views.node(results, 'heat_2')
-heat_2 = heat_2['sequences'].reset_index()
-
-ix = (('fixed_chp_gas_2', 'heat_2'), 'flow')
-heat_2[ix].plot(
-    kind='bar', linewidth=0, stacked=True, width=1, ax=ax, color=cdict[ix])
-
-ix = [(('heat_2', 'demand_th_2'), 'flow'),
-      (('heat_2', 'excess_bth_2'), 'flow')]
-heat_2[ix].plot(
-    ax=ax, linewidth=4, kind='line', drawstyle='steps-mid',
-    colors=[cdict[k] for k in heat_2[ix].columns])
-ax.set_ylabel('Power in MW')
-ax.set_ylim([0, 600000])
-ax.get_xaxis().set_visible(False)
-ax.set_title("Heat output (fixed chp)")
-ax.legend_.remove()
+myplot = oemof_plot.io_plot(
+    bus_label='heat_2', df=heat_2['sequences'],
+    cdict=cdict, smooth=smooth_plot,
+    line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
+    inorder=[(('fixed_chp_gas_2', 'heat_2'), 'flow')],
+    outorder=[(('heat_2', 'demand_th_2'), 'flow'),
+              (('heat_2', 'excess_bth_2'), 'flow')])
+myplot['ax'].set_ylabel('Power in MW')
+myplot['ax'].set_ylim([0, 600000])
+myplot['ax'].get_xaxis().set_visible(False)
+myplot['ax'].set_title("Heat output (fixed chp)")
+myplot['ax'].legend_.remove()
 
 # subplot of heat bus (variable chp) [4]
-ax = fig.add_subplot(3, 2, 4)
 heat = outputlib.views.node(results, 'heat')
-heat = heat['sequences'].reset_index()
+myplot = oemof_plot.io_plot(
+    bus_label='heat', df=heat['sequences'],
+    cdict=cdict, smooth=smooth_plot,
+    line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
+    inorder=[(('fixed_chp_gas', 'heat'), 'flow'),
+             (('variable_chp_gas', 'heat'), 'flow')],
+    outorder=[(('heat', 'demand_therm'), 'flow'),
+              (('heat', 'excess_therm'), 'flow')])
+myplot['ax'].set_ylim([0, 600000])
+myplot['ax'].get_yaxis().set_visible(False)
+myplot['ax'].get_xaxis().set_visible(False)
+myplot['ax'].set_title("Heat output (variable chp)")
+shape_legend('heat', plotshare=1, **myplot)
 
-ix = (('variable_chp_gas', 'heat'), 'flow')
-heat[ix].plot(
-    kind='bar', linewidth=0, stacked=True, width=1, ax=ax, color=cdict[ix])
-
-ix = [(('heat', 'demand_therm'), 'flow'),
-      (('heat', 'excess_therm'), 'flow')]
-heat[ix].plot(
-    ax=ax, linewidth=4, kind='line', drawstyle='steps-mid',
-    colors=[cdict[k] for k in heat[ix].columns])
-ax.get_yaxis().set_visible(False)
-ax.set_ylabel('Power in MW')
-ax.set_ylim([0, 600000])
-ax.get_xaxis().set_visible(False)
-ax.set_title("Heat output (variable chp)")
-ax.legend_.remove()
+if smooth_plot:
+    style = None
+else:
+    style = 'steps-mid'
 
 # subplot of efficiency (fixed chp) [5]
 fix_chp_gas2 = outputlib.views.node(results, 'fixed_chp_gas_2')
@@ -259,7 +241,7 @@ heat = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'heat_2'), 'flow')]
 e_ef = elec.div(ngas)
 h_ef = heat.div(ngas)
 df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-my_ax = df.plot(drawstyle='steps-mid', ax=fig.add_subplot(3, 2, 5), linewidth=2)
+my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
 my_ax.set_ylabel('efficiency')
 my_ax.set_ylim([0, 0.55])
 my_ax.set_xlabel('Date')
@@ -276,7 +258,7 @@ h_ef = heat.div(ngas)
 e_ef.name = 'electricity           '
 h_ef.name = 'heat'
 df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-my_ax = df.plot(drawstyle='steps-mid', ax=fig.add_subplot(3, 2, 6), linewidth=2)
+my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
 my_ax.set_ylim([0, 0.55])
 my_ax.get_yaxis().set_visible(False)
 my_ax.set_xlabel('Date')
