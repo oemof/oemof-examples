@@ -39,6 +39,42 @@ except ImportError:
     plt = None
 
 
+def shape_legend(node, reverse=False, **kwargs):
+    """
+    """
+    handels = kwargs['handles']
+    labels = kwargs['labels']
+    axes = kwargs['ax']
+    parameter = {}
+
+    new_labels = []
+    for label in labels:
+        label = label.replace('(', '')
+        label = label.replace('), flow)', '')
+        label = label.replace(node, '')
+        label = label.replace(',', '')
+        label = label.replace(' ', '')
+        new_labels.append(label)
+    labels = new_labels
+
+    parameter['bbox_to_anchor'] = kwargs.get('bbox_to_anchor', (1, 0.5))
+    parameter['loc'] = kwargs.get('loc', 'center left')
+    parameter['ncol'] = kwargs.get('ncol', 1)
+    plotshare = kwargs.get('plotshare', 0.9)
+
+    if reverse:
+        handels = handels.reverse()
+        labels = labels.reverse()
+
+    box = axes.get_position()
+    axes.set_position([box.x0, box.y0, box.width * plotshare, box.height])
+
+    parameter['handles'] = handels
+    parameter['labels'] = labels
+    axes.legend(**parameter)
+    return axes
+
+
 def initialise_energy_system(number_timesteps=192):
     """Create an energy system"""
     logging.info('Initialize the energy system')
