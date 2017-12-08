@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-
 """
 General description:
 ---------------------
-
 This example is not a real use case of an energy system but an example to show
 how a variable combined heat and power plant (chp) works in contrast to a fixed
 chp (eg. block device). Both chp plants distribute power and heat to a separate
 heat and power Bus with a heat and power demand. The plot shows that the fixed
 chp plant produces heat and power excess and therefore needs more natural gas.
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
 
 """
 
