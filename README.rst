@@ -30,13 +30,21 @@ oemof 0.2.x
 
 * **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
 * **generic_chp**: Illustrates how the custom component `GenericCHP` can be used...
+
   * bpt: \.\.\. to model a back pressure turbine.
+
   * ccet: \.\.\. to model a combined cycle extraction turbine.
+
   * mchp: \.\.\. to model a motoric chp.
+
 * **sdewes_paper_2017**: Examples from the SDEWES conference paper.
+
   * economic_dispatch
+
   * micro_grid_design_optimisation
+
   * unit_commitment_district_heating
+
 * **sector_coupling**: Jupyter notebook giving a simple example of how to couple the sectors power, heat and mobility.
 * **simple_dispatch**: Shows how to set up a dispatch model.
 * **storage_investment**: Example of storage capacity optimization.
@@ -46,9 +54,12 @@ oemof 0.2.x
 oemof 0.1.x
 -------------
 
-* **csv_reader**
+* **csv_reader**:
+
   * dispatch: Dispatch optimisation using oemof's csv-reader.
+
   * investment: Investment optimisation using oemof's csv-reader.
+
 * **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
 * **sector_coupling**: Jupyter notebook giving a simple example of how to couple the sectors power, heat and mobility.
 * **simple_dispatch**: Shows how to set up a dispatch model.
