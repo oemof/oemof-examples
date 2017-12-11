@@ -46,7 +46,8 @@ Transformer(label='boiler',
             inputs={
                 bgas: Flow()},
             outputs={
-                bth: Flow(nominal_value=300, min=0.2,
+                bth: Flow(nominal_value=500,
+                          variable_cost=50,
                           binary=NonConvex())},
             conversion_factors={bth: 0.9})
 
@@ -54,8 +55,8 @@ Transformer(label='chp',
             inputs={
                 bgas: Flow()},
             outputs={
-                bel: Flow(nominal_value=100, min=0,
-                          binary=NonConvex()),
+                bel: Flow(nominal_value=300, min=0.5,
+                          nonconvex=NonConvex()),
                 bth: Flow()},
             conversion_factors={bth: 0.3, bel: 0.45})
 
@@ -76,11 +77,11 @@ components.GenericStorage(
         bth: Flow()},
     outputs={
         bth: Flow()},
-    nominal_capacity=1000,
+    nominal_capacity=1500,
     capacity_loss=0.00,
     initial_capacity=0.5,
-    nominal_input_capacity_ratio=1/61,
-    nominal_output_capacity_ratio=1/61)
+    nominal_input_capacity_ratio=1/6,
+    nominal_output_capacity_ratio=1/6)
 
 ##########################################################################
 # Create model and solve
@@ -92,5 +93,7 @@ m = Model(energysystem)
 m.solve(solver='cbc', solve_kwargs={'tee': True})
 
 results = processing.results(m)
+
+views.node(results, 'bth')['sequences'][1:168].plot(drawstyle='steps')
 
 graph = graph(energysystem, m, plot=True)

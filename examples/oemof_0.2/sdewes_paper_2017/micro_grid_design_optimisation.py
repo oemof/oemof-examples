@@ -18,7 +18,7 @@ from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow,
                          Model, Investment, components)
 from oemof.tools import economics
 
-timeindex = pd.date_range('1/1/2017', periods=12, freq='H')
+timeindex = pd.date_range('1/1/2017', periods=8760, freq='H')
 
 energysystem = EnergySystem(timeindex=timeindex)
 Node.registry = energysystem
@@ -124,4 +124,3 @@ views.node(results, 'micro_grid')['sequences'].plot(drawstyle='steps')
 
 graph = graph(energysystem, m, plot=True, layout='neato', node_size=3000,
               node_color={'micro_grid': '#7EC0EE'})
-
