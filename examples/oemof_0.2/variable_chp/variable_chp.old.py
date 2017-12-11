@@ -3,14 +3,25 @@
 """
 General description:
 ---------------------
-
 This example is not a real use case of an energy system but an example to show
-how a variable combined heat and power plant (chp) works in contrast to a fixed
-chp (eg. block device). Both chp plants distribute power and heat to a separate
-heat and power Bus with a heat and power demand. The plot shows that the fixed
-chp plant produces heat and power excess and therefore needs more natural gas.
+how a combined heat and power plant (chp) with an extraction turbine works in
+contrast to a chp (eg. block device) with a fixed heat fraction. Both chp plants
+distribute power and heat to a separate heat and power Bus with a heat and power
+demand. The i/o balance plot shows that the fixed chp plant produces heat and
+power excess and therefore needs more natural gas. The bar plot just shows the
+difference in the usage of natural gas.
+
+Requirements:
+-------------
+pip install "oemof>=0.2,<0.3"
+pip install matplotlib (to see the bar plot)
+pip install git+https://github.com/oemof/oemof_visio.git (to see the i/o balance
+ plot)
 
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
 
 ###############################################################################
 # imports
@@ -28,15 +39,13 @@ import oemof.solph as solph
 import logging
 import os
 import pandas as pd
-import warnings
+import matplotlib.pyplot as plt
 
 # import oemof plots
-from oemof_visio.plot import io_plot
-
 try:
-    import matplotlib.pyplot as plt
+    from oemof_vidsio import plot as oeplot
 except ImportError:
-    plt = None
+    oeplot = None
 
 
 def shape_legend(node, reverse=False, **kwargs):
@@ -75,124 +84,130 @@ def shape_legend(node, reverse=False, **kwargs):
     return axes
 
 
-def initialise_energy_system(number_timesteps=192):
-    """Create an energy system"""
-    logging.info('Initialize the energy system')
-
-    # create time index for 192 hours in May.
-    date_time_index = pd.date_range('5/5/2012', periods=number_timesteps,
-                                    freq='H')
-    return solph.EnergySystem(timeindex=date_time_index)
+def write_lp_file():
+    filename = os.path.join(
+        helpers.extend_basic_path('lp_files'), 'variable_chp.lp')
+    logging.info('Store lp-file in {0}.'.format(filename))
+    om.write(filename, io_options={'symbolic_solver_labels': True})
 
 
-def optimise_storage_size(energysystem, filename="variable_chp.csv",
-                          solver='cbc', debug=True, tee_switch=True):
+logger.define_logging()
+logging.info('Initialize the energy system')
 
-    # Read data file with heat and electrical demand (192 hours)
-    full_filename = os.path.join(os.path.dirname(__file__), filename)
-    data = pd.read_csv(full_filename, sep=",")
+# create time index for 192 hours in May.
+date_time_index = pd.date_range('5/5/2012', periods=192, freq='H')
 
-    ##########################################################################
-    # Create oemof.solph objects
-    ##########################################################################
+energysystem = solph.EnergySystem(timeindex=date_time_index)
 
-    logging.info('Create oemof.solph objects')
+# Read data file with heat and electrical demand (192 hours)
+full_filename = os.path.join(os.path.dirname(__file__), 'variable_chp.csv')
+data = pd.read_csv(full_filename, sep=",")
 
-    # container for instantiated nodes
-    noded = {}
+##########################################################################
+# Create oemof.solph objects
+##########################################################################
+logging.info('Create oemof.solph objects')
 
-    # create natural gas bus
-    noded['bgas'] = solph.Bus(label="natural_gas")
+# container for instantiated nodes
+noded = {}
 
-    # create commodity object for gas resource
-    noded['rgas'] = solph.Source(
-        label='rgas', outputs={noded['bgas']: solph.Flow(variable_costs=50)})
+# create natural gas bus
+noded['bgas'] = solph.Bus(label="natural_gas")
 
-    # create two electricity buses and two heat buses
-    noded['bel'] = solph.Bus(label="electricity")
-    noded['bel2'] = solph.Bus(label="electricity_2")
-    noded['bth'] = solph.Bus(label="heat")
-    noded['bth2'] = solph.Bus(label="heat_2")
+# create commodity object for gas resource
+noded['rgas'] = solph.Source(
+    label='rgas', outputs={noded['bgas']: solph.Flow(variable_costs=50)})
 
-    # create excess components for the elec/heat bus to allow overproduction
-    noded['excess_bth_2'] = solph.Sink(
-        label='excess_bth_2', inputs={noded['bth2']: solph.Flow()})
-    noded['excess_therm'] = solph.Sink(
-        label='excess_therm', inputs={noded['bth']: solph.Flow()})
-    noded['excess_bel_2'] = solph.Sink(
-        label='excess_bel_2', inputs={noded['bel2']: solph.Flow()})
-    noded['excess_elec'] = solph.Sink(
-        label='excess_elec', inputs={noded['bel']: solph.Flow()})
+# create two electricity buses and two heat buses
+noded['bel'] = solph.Bus(label="electricity")
+noded['bel2'] = solph.Bus(label="electricity_2")
+noded['bth'] = solph.Bus(label="heat")
+noded['bth2'] = solph.Bus(label="heat_2")
 
-    # create simple sink object for electrical demand for each electrical bus
-    noded['demand_elec'] = solph.Sink(
-        label='demand_elec', inputs={noded['bel']: solph.Flow(
-            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
-    noded['demand_el_2'] = solph.Sink(
-        label='demand_el_2', inputs={noded['bel2']: solph.Flow(
-            actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+# create excess components for the elec/heat bus to allow overproduction
+noded['excess_bth_2'] = solph.Sink(
+    label='excess_bth_2', inputs={noded['bth2']: solph.Flow()})
+noded['excess_therm'] = solph.Sink(
+    label='excess_therm', inputs={noded['bth']: solph.Flow()})
+noded['excess_bel_2'] = solph.Sink(
+    label='excess_bel_2', inputs={noded['bel2']: solph.Flow()})
+noded['excess_elec'] = solph.Sink(
+    label='excess_elec', inputs={noded['bel']: solph.Flow()})
 
-    # create simple sink object for heat demand for each thermal bus
-    noded['demand_therm'] = solph.Sink(
-        label='demand_therm', inputs={noded['bth']: solph.Flow(
-            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
-    noded['demand_therm_2'] = solph.Sink(
-        label='demand_th_2', inputs={noded['bth2']: solph.Flow(
-            actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+# create simple sink object for electrical demand for each electrical bus
+noded['demand_elec'] = solph.Sink(
+    label='demand_elec', inputs={noded['bel']: solph.Flow(
+        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
+noded['demand_el_2'] = solph.Sink(
+    label='demand_el_2', inputs={noded['bel2']: solph.Flow(
+        actual_value=data['demand_el'], fixed=True, nominal_value=1)})
 
-    # This is just a dummy transformer with a nominal input of zero
-    noded['fixed_chp_gas'] = solph.Transformer(
-        label='fixed_chp_gas',
-        inputs={noded['bgas']: solph.Flow(nominal_value=0)},
-        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
-        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5})
+# create simple sink object for heat demand for each thermal bus
+noded['demand_therm'] = solph.Sink(
+    label='demand_therm', inputs={noded['bth']: solph.Flow(
+        actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
+noded['demand_therm_2'] = solph.Sink(
+    label='demand_th_2', inputs={noded['bth2']: solph.Flow(
+        actual_value=data['demand_th'], fixed=True, nominal_value=741000)})
 
-    # create a fixed transformer to distribute to the heat_2 and elec_2 buses
-    noded['fixed_chp_gas_2'] = solph.Transformer(
-        label='fixed_chp_gas_2',
-        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
-        outputs={noded['bel2']: solph.Flow(), noded['bth2']: solph.Flow()},
-        conversion_factors={noded['bel2']: 0.3, noded['bth2']: 0.5})
+# This is just a dummy transformer with a nominal input of zero
+noded['fixed_chp_gas'] = solph.Transformer(
+    label='fixed_chp_gas',
+    inputs={noded['bgas']: solph.Flow(nominal_value=0)},
+    outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
+    conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5})
 
-    # create a fixed transformer to distribute to the heat and elec buses
-    noded['variable_chp_gas'] = solph.components.ExtractionTurbineCHP(
-        label='variable_chp_gas',
-        inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
-        outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
-        conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5},
-        conversion_factor_full_condensation={noded['bel']: 0.5}
-        )
+# create a fixed transformer to distribute to the heat_2 and elec_2 buses
+noded['fixed_chp_gas_2'] = solph.Transformer(
+    label='fixed_chp_gas_2',
+    inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
+    outputs={noded['bel2']: solph.Flow(), noded['bth2']: solph.Flow()},
+    conversion_factors={noded['bel2']: 0.3, noded['bth2']: 0.5})
 
-    ##########################################################################
-    # Optimise the energy system and plot the results
-    ##########################################################################
+# create a fixed transformer to distribute to the heat and elec buses
+noded['variable_chp_gas'] = solph.components.ExtractionTurbineCHP(
+    label='variable_chp_gas',
+    inputs={noded['bgas']: solph.Flow(nominal_value=10e10)},
+    outputs={noded['bel']: solph.Flow(), noded['bth']: solph.Flow()},
+    conversion_factors={noded['bel']: 0.3, noded['bth']: 0.5},
+    conversion_factor_full_condensation={noded['bel']: 0.5}
+    )
 
-    logging.info('Optimise the energy system')
+##########################################################################
+# Optimise the energy system
+##########################################################################
 
-    energysystem.add(*noded.values())
+logging.info('Optimise the energy system')
 
-    om = solph.Model(energysystem)
+energysystem.add(*noded.values())
 
-    if debug:
-        filename = os.path.join(
-            helpers.extend_basic_path('lp_files'), 'variable_chp.lp')
-        logging.info('Store lp-file in {0}.'.format(filename))
-        om.write(filename, io_options={'symbolic_solver_labels': True})
+om = solph.Model(energysystem)
 
-    logging.info('Solve the optimization problem')
-    om.solve(solver=solver, solve_kwargs={'tee': tee_switch})
+# If uncomment the following line you can store the lp file but you should use
+# less timesteps (3) to make it better readable and smaller.
+# write_lp_file()
 
-    return energysystem, om
+logging.info('Solve the optimization problem')
+om.solve(solver='cbc', solve_kwargs={'tee': False})
 
+results = outputlib.processing.results(om)
 
-def create_plots(results, smooth_plot=True):
-    """Create a plot with 6 tiles that shows the difference between the
-    LinearTransformer and the VariableFractionTransformer used for chp plants.
+##########################################################################
+# Plot the results
+##########################################################################
 
-    Parameters
-    ----------
-    energysystem : solph.EnergySystem
-    """
+myresults = outputlib.views.node(results, 'natural_gas')
+myresults = myresults['sequences'].sum(axis=0)
+myresults = myresults.drop(myresults.index[0]).reset_index(drop=True)
+myresults.rename({0: 'fixed', 1: 'variable', 2: 'total'}, inplace=True)
+myresults.plot(kind='bar', rot=0, title="Usage of natural gas")
+plt.show()
+
+# Create a plot with 6 tiles that shows the difference between the
+# Transformer and the ExtractionTurbineCHP used for chp plants.
+smooth_plot = True
+
+if oeplot:
     logging.info('Plot the results')
 
     cdict = {
@@ -211,9 +226,6 @@ def create_plots(results, smooth_plot=True):
         (('electricity_2', 'excess_bel_2'), 'flow'): '#f22222',
         (('fixed_chp_gas_2', 'heat_2'), 'flow'): '#20b4b6'}
 
-    ##########################################################################
-    # Plotting
-    ##########################################################################
     fig = plt.figure(figsize=(18, 9))
     plt.rc('legend', **{'fontsize': 13})
     plt.rcParams.update({'font.size': 13})
@@ -222,7 +234,8 @@ def create_plots(results, smooth_plot=True):
 
     # subplot of electricity bus (fixed chp) [1]
     electricity_2 = outputlib.views.node(results, 'electricity_2')
-    myplot = io_plot(
+    x_length = len(electricity_2['sequences'].index)
+    myplot = oeplot.io_plot(
         bus_label='electricity_2', df=electricity_2['sequences'],
         cdict=cdict, smooth=smooth_plot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 1),
@@ -232,12 +245,13 @@ def create_plots(results, smooth_plot=True):
     myplot['ax'].set_ylabel('Power in MW')
     myplot['ax'].set_xlabel('')
     myplot['ax'].get_xaxis().set_visible(False)
+    myplot['ax'].set_xlim(0, x_length)
     myplot['ax'].set_title("Electricity output (fixed chp)")
     myplot['ax'].legend_.remove()
 
     # subplot of electricity bus (variable chp) [2]
     electricity = outputlib.views.node(results, 'electricity')
-    myplot = io_plot(
+    myplot = oeplot.io_plot(
         bus_label='electricity', df=electricity['sequences'],
         cdict=cdict, smooth=smooth_plot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
@@ -249,11 +263,12 @@ def create_plots(results, smooth_plot=True):
     myplot['ax'].set_xlabel('')
     myplot['ax'].get_xaxis().set_visible(False)
     myplot['ax'].set_title("Electricity output (variable chp)")
+    myplot['ax'].set_xlim(0, x_length)
     shape_legend('electricity', plotshare=1, **myplot)
 
     # subplot of heat bus (fixed chp) [3]
     heat_2 = outputlib.views.node(results, 'heat_2')
-    myplot = io_plot(
+    myplot = oeplot.io_plot(
         bus_label='heat_2', df=heat_2['sequences'],
         cdict=cdict, smooth=smooth_plot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
@@ -264,11 +279,12 @@ def create_plots(results, smooth_plot=True):
     myplot['ax'].set_ylim([0, 600000])
     myplot['ax'].get_xaxis().set_visible(False)
     myplot['ax'].set_title("Heat output (fixed chp)")
+    myplot['ax'].set_xlim(0, x_length)
     myplot['ax'].legend_.remove()
 
     # subplot of heat bus (variable chp) [4]
     heat = outputlib.views.node(results, 'heat')
-    myplot = io_plot(
+    myplot = oeplot.io_plot(
         bus_label='heat', df=heat['sequences'],
         cdict=cdict, smooth=smooth_plot,
         line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
@@ -280,6 +296,7 @@ def create_plots(results, smooth_plot=True):
     myplot['ax'].get_yaxis().set_visible(False)
     myplot['ax'].get_xaxis().set_visible(False)
     myplot['ax'].set_title("Heat output (variable chp)")
+    myplot['ax'].set_xlim(0, x_length)
     shape_legend('heat', plotshare=1, **myplot)
 
     if smooth_plot:
@@ -289,33 +306,46 @@ def create_plots(results, smooth_plot=True):
 
     # subplot of efficiency (fixed chp) [5]
     fix_chp_gas2 = outputlib.views.node(results, 'fixed_chp_gas_2')
-    ngas = fix_chp_gas2['sequences'][(('natural_gas', 'fixed_chp_gas_2'), 'flow')]
-    elec = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'electricity_2'), 'flow')]
+    ngas = fix_chp_gas2['sequences'][
+        (('natural_gas', 'fixed_chp_gas_2'), 'flow')]
+    elec = fix_chp_gas2['sequences'][
+        (('fixed_chp_gas_2', 'electricity_2'), 'flow')]
     heat = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'heat_2'), 'flow')]
     e_ef = elec.div(ngas)
     h_ef = heat.div(ngas)
     df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
+    my_ax = df.reset_index(drop=True).plot(
+        drawstyle=style, ax=fig.add_subplot(3, 2, 5), linewidth=2)
     my_ax.set_ylabel('efficiency')
     my_ax.set_ylim([0, 0.55])
-    my_ax.set_xlabel('Date')
+    my_ax.set_xlabel('May 2012')
+    my_ax = oeplot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                      date_format='%d', offset=12,
+                                      tight=True)
     my_ax.set_title('Efficiency (fixed chp)')
     my_ax.legend_.remove()
 
     # subplot of efficiency (variable chp) [6]
     var_chp_gas = outputlib.views.node(results, 'variable_chp_gas')
-    ngas = var_chp_gas['sequences'][(('natural_gas', 'variable_chp_gas'), 'flow')]
-    elec = var_chp_gas['sequences'][(('variable_chp_gas', 'electricity'), 'flow')]
+    ngas = var_chp_gas['sequences'][
+        (('natural_gas', 'variable_chp_gas'), 'flow')]
+    elec = var_chp_gas['sequences'][
+        (('variable_chp_gas', 'electricity'), 'flow')]
     heat = var_chp_gas['sequences'][(('variable_chp_gas', 'heat'), 'flow')]
     e_ef = elec.div(ngas)
     h_ef = heat.div(ngas)
     e_ef.name = 'electricity           '
     h_ef.name = 'heat'
     df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
-    my_ax = df.plot(drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
+    my_ax = df.reset_index(drop=True).plot(
+        drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
     my_ax.set_ylim([0, 0.55])
+    my_ax = oeplot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                      date_format='%d', offset=12,
+                                      tight=True)
     my_ax.get_yaxis().set_visible(False)
-    my_ax.set_xlabel('Date')
+    my_ax.set_xlabel('May 2012')
+
     my_ax.set_title('Efficiency (variable chp)')
     my_box = my_ax.get_position()
     my_ax.set_position([my_box.x0, my_box.y0, my_box.width * 1, my_box.height])
@@ -323,36 +353,7 @@ def create_plots(results, smooth_plot=True):
 
     plt.show()
 
-
-def run_variable_chp_example(**kwargs):
-    logger.define_logging()
-
-    # Switch to True to show the solver output
-    kwargs.setdefault('tee_switch', False)
-
-    esys = initialise_energy_system()
-
-#    if not plot_only:
-#        esys, om = optimise_storage_size(esys, **kwargs)
-#        esys.dump()
-#    else:
-#        esys.restore()
-
-    esys, om = optimise_storage_size(esys, **kwargs)
-
-    optimisation_results = outputlib.processing.results(om)
-
-    if plt is not None:
-        create_plots(optimisation_results)
-    else:
-        msg = ("\nIt is not possible to plot the results, due to a missing " +
-               "python package: 'matplotlib'. \nType 'pip install " +
-               "matplotlib' to see the plots.")
-        warnings.warn(msg)
-
-#    for k, v in get_result_dict(esys).items():
-#        logging.info('{0}: {1}'.format(k, v))
-
-
-if __name__ == "__main__":
-    run_variable_chp_example()
+else:
+    logging.warning("You have to install 'oemof-visio' to see the i/o-plot")
+    logging.warning(
+        "Use: pip install git+https://github.com/oemof/oemof_visio.git")
