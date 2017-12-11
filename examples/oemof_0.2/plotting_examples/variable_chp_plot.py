@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
+
 """
-General description:
----------------------
-This example is not a real use case of an energy system but an example to show
-how a variable combined heat and power plant (chp) works in contrast to a fixed
-chp (eg. block device). Both chp plants distribute power and heat to a separate
-heat and power Bus with a heat and power demand. The plot shows that the fixed
-chp plant produces heat and power excess and therefore needs more natural gas.
+General description
+-------------------
+This example shows a complex 6 tiles plot using the i/o-plot function of the
+oemof-visio package. This examples focuses on the plotting function and not on
+the general oemof functions.
 
-Installation requirements:
----------------------------
-This example requires the latest version of oemof. Install by:
+Installation requirements
+-------------------------
+The example is made for oemof v0.2.x.
 
-    pip install oemof
+    pip install "oemof>=0.2,<0.3"
+
+The oemof-visio provides the base for the created i/o plot.
+
+    pip install git+https://github.com/oemof/oemof_visio.git
 
 """
 
@@ -25,11 +28,7 @@ from oemof.network import Node
 from oemof.tools import logger
 import oemof.solph as solph
 from oemof import outputlib
-try:
-    from oemof_visio import plot as oemof_plot
-except ImportError as e:
-    oemof_plot = None
-    raise e
+import oemof_visio as oev
 
 
 def shape_legend(node, reverse=False, **kwargs):
@@ -155,9 +154,9 @@ om.solve(solver=solver, solve_kwargs={'tee': False})
 
 results = outputlib.processing.results(om)
 
-myresults = outputlib.views.node(results, 'natural_gas')
-myresults = myresults['sequences'].sum(axis=0).to_dict()
-myresults['objective'] = outputlib.processing.meta_results(om)['objective']
+##########################################################################
+# Plotting
+##########################################################################
 
 logging.info('Plot the results')
 
@@ -177,9 +176,6 @@ cdict = {
     (('electricity_2', 'excess_bel_2'), 'flow'): '#f22222',
     (('fixed_chp_gas_2', 'heat_2'), 'flow'): '#20b4b6'}
 
-##########################################################################
-# Plotting
-##########################################################################
 fig = plt.figure(figsize=(18, 9))
 plt.rc('legend', **{'fontsize': 13})
 plt.rcParams.update({'font.size': 13})
@@ -189,7 +185,7 @@ fig.subplots_adjust(left=0.07, bottom=0.12, right=0.86, top=0.93,
 # subplot of electricity bus (fixed chp) [1]
 electricity_2 = outputlib.views.node(results, 'electricity_2')
 x_length = len(electricity_2['sequences'].index)
-myplot = oemof_plot.io_plot(
+myplot = oev.plot.io_plot(
     bus_label='electricity_2', df=electricity_2['sequences'],
     cdict=cdict, smooth=smooth_plot,
     line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 1),
@@ -205,7 +201,7 @@ myplot['ax'].legend_.remove()
 
 # subplot of electricity bus (variable chp) [2]
 electricity = outputlib.views.node(results, 'electricity')
-myplot = oemof_plot.io_plot(
+myplot = oev.plot.io_plot(
     bus_label='electricity', df=electricity['sequences'],
     cdict=cdict, smooth=smooth_plot,
     line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 2),
@@ -222,7 +218,7 @@ shape_legend('electricity', plotshare=1, **myplot)
 
 # subplot of heat bus (fixed chp) [3]
 heat_2 = outputlib.views.node(results, 'heat_2')
-myplot = oemof_plot.io_plot(
+myplot = oev.plot.io_plot(
     bus_label='heat_2', df=heat_2['sequences'],
     cdict=cdict, smooth=smooth_plot,
     line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 3),
@@ -238,7 +234,7 @@ myplot['ax'].legend_.remove()
 
 # subplot of heat bus (variable chp) [4]
 heat = outputlib.views.node(results, 'heat')
-myplot = oemof_plot.io_plot(
+myplot = oev.plot.io_plot(
     bus_label='heat', df=heat['sequences'],
     cdict=cdict, smooth=smooth_plot,
     line_kwa={'linewidth': 4}, ax=fig.add_subplot(3, 2, 4),
@@ -260,8 +256,10 @@ else:
 
 # subplot of efficiency (fixed chp) [5]
 fix_chp_gas2 = outputlib.views.node(results, 'fixed_chp_gas_2')
-ngas = fix_chp_gas2['sequences'][(('natural_gas', 'fixed_chp_gas_2'), 'flow')]
-elec = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'electricity_2'), 'flow')]
+ngas = fix_chp_gas2['sequences'][
+    (('natural_gas', 'fixed_chp_gas_2'), 'flow')]
+elec = fix_chp_gas2['sequences'][
+    (('fixed_chp_gas_2', 'electricity_2'), 'flow')]
 heat = fix_chp_gas2['sequences'][(('fixed_chp_gas_2', 'heat_2'), 'flow')]
 e_ef = elec.div(ngas)
 h_ef = heat.div(ngas)
@@ -271,9 +269,8 @@ my_ax = df.reset_index(drop=True).plot(
 my_ax.set_ylabel('efficiency')
 my_ax.set_ylim([0, 0.55])
 my_ax.set_xlabel('May 2012')
-my_ax = oemof_plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
-                                      date_format='%d', offset=12,
-                                      tight=True)
+my_ax = oev.plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                    date_format='%d', offset=12, tight=True)
 my_ax.set_title('Efficiency (fixed chp)')
 my_ax.legend_.remove()
 
@@ -290,9 +287,8 @@ df = pd.DataFrame(pd.concat([h_ef, e_ef], axis=1))
 my_ax = df.reset_index(drop=True).plot(
     drawstyle=style, ax=fig.add_subplot(3, 2, 6), linewidth=2)
 my_ax.set_ylim([0, 0.55])
-my_ax = oemof_plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
-                                      date_format='%d', offset=12,
-                                      tight=True)
+my_ax = oev.plot.set_datetime_ticks(my_ax, df.index, tick_distance=24,
+                                    date_format='%d', offset=12, tight=True)
 my_ax.get_yaxis().set_visible(False)
 my_ax.set_xlabel('May 2012')
 
