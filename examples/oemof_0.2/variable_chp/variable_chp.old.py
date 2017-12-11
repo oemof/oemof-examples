@@ -43,7 +43,7 @@ import matplotlib.pyplot as plt
 
 # import oemof plots
 try:
-    from oemof_vidsio import plot as oeplot
+    from oemof_visio import plot as oeplot
 except ImportError:
     oeplot = None
 
