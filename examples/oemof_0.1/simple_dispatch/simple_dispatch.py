@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
-
-""" This example shows how to create an energysystem with oemof objects and
+"""
+General description:
+---------------------
+This example shows how to create an energysystem with oemof objects and
 solve it with the solph module. Results are plotted with outputlib.
 Some functions are only for testing purposes. The main stuff going on
 is pretty straightforward.
 
 Data: example_data.csv
+
+Installation requirements:
+---------------------------
+This example requires oemof 0.1.4. Install by:
+
+    pip install oemof==0.1.4
+
 """
 # ############################### imports #####################################
 import pandas as pd

@@ -1,6 +1,15 @@
 # -*- coding: utf-8 -*-
 """
+General description:
+---------------------
 Dispatch optimisation using oemof's csv-reader.
+
+Installation requirements:
+---------------------------
+This example requires oemof 0.1.4. Install by:
+
+    pip install oemof==0.1.4
+
 """
 
 import os

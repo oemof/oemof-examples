@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 """
+General description:
+---------------------
 Example that illustrates how to use custom component `GenericCHP` can be used.
-
 In this case it is used to model a motoric chp.
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
+
 """
 
 import pandas as pd

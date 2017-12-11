@@ -3,8 +3,8 @@
 """
 General description:
 ---------------------
-
-The example models the following energy system:
+This example shows how to perform a capacity optimization for a storage.
+The following energy system is modeled:
 
                 input/output  bgas     bel
                      |          |        |       |
@@ -24,6 +24,11 @@ The example models the following energy system:
  storage(Storage)    |<------------------|       |
                      |------------------>|       |
 
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
 
 """
 

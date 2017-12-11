@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
 """
+General description:
+---------------------
 Example from the SDEWES conference paper:
 
 Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
 'Solph - An Open Multi Purpose Optimisation Library for Flexible
          Energy System Analysis'. Paper presented at SDEWES Conference,
          Dubrovnik.
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
 
 """
 import os
