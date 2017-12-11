@@ -3,6 +3,7 @@
 """
 General description:
 ---------------------
+
 The example models the following energy system:
 
                 input/output  bgas     bel
@@ -23,11 +24,6 @@ The example models the following energy system:
  storage(Storage)    |<------------------|       |
                      |------------------>|       |
 
-Installation requirements:
----------------------------
-This example requires oemof 0.1.4. Install by:
-
-    pip install oemof==0.1.4
 
 """
 
@@ -56,7 +52,7 @@ except ImportError:
     plt = None
 
 
-def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
+def optimise_storage_size(filename="storage_investment.csv", solver='gurobi',
                           debug=True, number_timesteps=8760, tee_switch=True):
     logging.info('Initialize the energy system')
     date_time_index = pd.date_range('1/1/2012', periods=number_timesteps,
@@ -131,7 +127,7 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
     logging.info('Optimise the energy system')
 
     # initialise the operational model
-    om = solph.OperationalModel(energysystem)
+    om = solph.Model(energysystem)
 
     # if debug is true an lp-file will be written
     if debug:

@@ -1,20 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-General description:
----------------------
-This example shows how to create an energysystem with oemof objects and
+
+""" This example shows how to create an energysystem with oemof objects and
 solve it with the solph module. Results are plotted with outputlib.
 Some functions are only for testing purposes. The main stuff going on
 is pretty straightforward.
 
 Data: example_data.csv
-
-Installation requirements:
----------------------------
-This example requires oemof 0.1.4. Install by:
-
-    pip install oemof==0.1.4
-
 """
 # ############################### imports #####################################
 import pandas as pd
@@ -24,7 +15,7 @@ import os
 
 # solph imports
 from oemof.solph import (Sink, Source, LinearTransformer, LinearN1Transformer,
-                         Bus, Flow, OperationalModel, EnergySystem)
+                         Bus, Flow, Model, EnergySystem)
 import oemof.outputlib as output
 from oemof.tools import logger
 
@@ -134,7 +125,7 @@ def simulate(energysystem, filename=None, solver='cbc', tee_switch=True,
 # ################################ optimization ###############################
     # create Optimization model based on energy_system
     logging.info("Create optimization problem")
-    om = OperationalModel(es=energysystem)
+    om = Model(es=energysystem)
 
     # solve with specific optimization options (passed to pyomo)
     logging.info("Solve optimization problem")

@@ -3,17 +3,12 @@
 """
 General description:
 ---------------------
+
 This example is not a real use case of an energy system but an example to show
 how a variable combined heat and power plant (chp) works in contrast to a fixed
 chp (eg. block device). Both chp plants distribute power and heat to a separate
 heat and power Bus with a heat and power demand. The plot shows that the fixed
 chp plant produces heat and power excess and therefore needs more natural gas.
-
-Installation requirements:
----------------------------
-This example requires oemof 0.1.4. Install by:
-
-    pip install oemof==0.1.4
 
 """
 
@@ -123,7 +118,7 @@ def optimise_storage_size(energysystem, filename="variable_chp.csv",
 
     logging.info('Optimise the energy system')
 
-    om = solph.OperationalModel(energysystem)
+    om = solph.Model(energysystem)
 
     if debug:
         filename = os.path.join(
