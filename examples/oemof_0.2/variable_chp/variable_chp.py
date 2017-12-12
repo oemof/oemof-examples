@@ -53,7 +53,7 @@ except ImportError:
     oeplot = None
 
 
-def shape_legend(node, reverse=False, **kwargs):
+def shape_legend(node, reverse=True, **kwargs):
     handels = kwargs['handles']
     labels = kwargs['labels']
     axes = kwargs['ax']

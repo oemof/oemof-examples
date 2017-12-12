@@ -31,7 +31,7 @@ from oemof import outputlib
 import oemof_visio as oev
 
 
-def shape_legend(node, reverse=False, **kwargs):
+def shape_legend(node, reverse=True, **kwargs):
     handels = kwargs['handles']
     labels = kwargs['labels']
     axes = kwargs['ax']
@@ -53,8 +53,8 @@ def shape_legend(node, reverse=False, **kwargs):
     plotshare = kwargs.get('plotshare', 0.9)
 
     if reverse:
-        handels = handels.reverse()
-        labels = labels.reverse()
+        handels.reverse()
+        labels.reverse()
 
     box = axes.get_position()
     axes.set_position([box.x0, box.y0, box.width * plotshare, box.height])
