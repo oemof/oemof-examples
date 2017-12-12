@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 """
+General description:
+---------------------
+This script shows how to do a linear optimal powerflow (lopf) calculation
+based on custom oemof components. The example is based on the PyPSA
+simple lopf example.
+
+Note: As oemof currently does not support models with one timesteps, therefore
+there are two.
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
+
+12.12.2017
+simon.hilpert@uni-flensburg.de
 """
 import pandas as pd
 

@@ -1,5 +1,19 @@
 # -*- coding: utf-8 -*-
 """
+General description:
+---------------------
+This script shows how use the custom component `solph.custom.Link` to build
+a simple transshipment model.
+
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof. Install by:
+
+    pip install oemof
+
+12.12.2017
+simon.hilpert@uni-flensburg.de
 """
 import pandas as pd
 
