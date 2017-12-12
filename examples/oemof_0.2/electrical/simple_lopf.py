@@ -51,7 +51,7 @@ es.add(Sink(label="load", inputs={b_el2: Flow(nominal_value=100,
 
 m = Model(es=es)
 
-m.write('lopf.lp', io_options={'symbolic_solver_labels': True})
+# m.write('lopf.lp', io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc',
         solve_kwargs={'tee': True, 'keepfiles': False})

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
 """
 """
 import pandas as pd
@@ -50,7 +49,7 @@ es.add(Sink(label="load_1", inputs={
 
 m = Model(es=es)
 
-m.write('transshipment.lp', io_options={'symbolic_solver_labels': True})
+# m.write('transshipment.lp', io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc',
         solve_kwargs={'tee': True, 'keepfiles': False})
