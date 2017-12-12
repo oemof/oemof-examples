@@ -136,7 +136,7 @@ components.GenericStorage(
 m = Model(energysystem)
 # emission_limit(m, flows=m.flows, limit=954341)
 
-m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
+# m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc', solve_kwargs={'tee': True})
 
