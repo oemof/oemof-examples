@@ -29,6 +29,7 @@ __license__ = "GPLv3"
 import logging
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from oemof import solph
 from oemof.outputlib import processing, views
@@ -37,11 +38,6 @@ from oemof.tools import economics
 from oemof.network import Node
 
 import oemof_visio as oev
-
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    plt = None
 
 
 def shape_legend(node, reverse=False, **kwargs):
@@ -78,24 +74,16 @@ def shape_legend(node, reverse=False, **kwargs):
     return axes
 
 
-solver = 'cbc'
-number_timesteps = 24 * 7 * 8
-
-# logger.define_logging(text="Starting chp example", screen_level=logging.DEBUG)
 logger.define_logging()
 logging.info('Initialize the energy system')
 
-if plt is None:
-    logging.error('Matplotlib has to be installed.')
-    exit(0)
-
-date_time_index = pd.date_range('1/1/2012', periods=number_timesteps, freq='H')
+date_time_index = pd.date_range('1/1/2012', periods=24*7*8, freq='H')
 
 energysystem = solph.EnergySystem(timeindex=date_time_index)
 Node.registry = energysystem
+
 full_filename = os.path.join(os.path.dirname(__file__),
                              'storage_investment.csv')
-
 data = pd.read_csv(full_filename, sep=",")
 
 logging.info('Create oemof objects')
@@ -104,8 +92,8 @@ bel = solph.Bus(label="electricity")
 
 solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
 
-solph.Source(label='rgas', outputs={bgas: solph.Flow(
-    nominal_value=194397000 * number_timesteps / 8760, summed_max=1)})
+solph.Source(label='rgas', outputs={bgas: solph.Flow(nominal_value=29825293,
+                                                     summed_max=1)})
 
 solph.Source(label='wind', outputs={bel: solph.Flow(
     actual_value=data['wind'], nominal_value=1000000, fixed=True,
@@ -142,10 +130,14 @@ logging.info('Optimise the energy system')
 om = solph.Model(energysystem)
 
 logging.info('Solve the optimization problem')
-om.solve(solver=solver)
+om.solve(solver='cbc')
 
+##########################################################################
+# Plotting
+##########################################################################
+
+# Getting results and views
 results = processing.results(om)
-
 custom_storage = views.node(results, 'storage')
 electricity_bus = views.node(results, 'electricity')
 
