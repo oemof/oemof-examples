@@ -61,8 +61,9 @@ def nodes_from_excel(filename):
             label=i,
             inputs={noded[t['from']]: solph.Flow()},
             outputs={noded[t['to']]: solph.Flow(
-                nominal_value=t['capacity'], variable_costs=t['variable costs'],
-                max=t['simultaneity'], fixed_costs=t['fixed costs'])},
+                nominal_value=t['capacity'],
+                variable_costs=t['variable costs'],
+                max=t['simultaneity'])},
             conversion_factors={noded[t['to']]: t['efficiency']})
 
     for i, s in storages.iterrows():
