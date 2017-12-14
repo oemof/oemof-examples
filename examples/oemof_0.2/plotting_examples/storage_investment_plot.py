@@ -96,12 +96,10 @@ solph.Source(label='rgas', outputs={bgas: solph.Flow(nominal_value=29825293,
                                                      summed_max=1)})
 
 solph.Source(label='wind', outputs={bel: solph.Flow(
-    actual_value=data['wind'], nominal_value=1000000, fixed=True,
-    fixed_costs=20)})
+    actual_value=data['wind'], nominal_value=1000000, fixed=True)})
 
 solph.Source(label='pv', outputs={bel: solph.Flow(
-    actual_value=data['pv'], nominal_value=582000, fixed=True,
-    fixed_costs=15)})
+    actual_value=data['pv'], nominal_value=582000, fixed=True)})
 
 solph.Sink(label='demand', inputs={bel: solph.Flow(
     actual_value=data['demand_el'], fixed=True, nominal_value=1)})
@@ -120,8 +118,7 @@ storage = solph.components.GenericStorage(
     capacity_loss=0.00, initial_capacity=0,
     nominal_input_capacity_ratio=1/6,
     nominal_output_capacity_ratio=1/6,
-    inflow_conversion_factor=1, outflow_conversion_factor=0.8,
-    fixed_costs=35,
+    inflow_conversion_factor=1, outflow_conversion_factor=0.8
     investment=solph.Investment(ep_costs=epc),
 )
 

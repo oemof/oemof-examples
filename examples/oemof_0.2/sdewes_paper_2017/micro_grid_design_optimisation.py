@@ -39,21 +39,16 @@ full_filename = os.path.join(os.path.dirname(__file__),
 timeseries = pd.read_csv(full_filename, sep=',')
 
 costs = {'pp_wind': {
-             'fix': 25,
              'epc': economics.annuity(capex=1000, n=20, wacc=0.05)},
          'pp_pv': {
-             'fix': 20,
              'epc': economics.annuity(capex=750, n=20, wacc=0.05)},
          'pp_diesel': {
-             'fix': 10,
              'epc': economics.annuity(capex=300, n=10, wacc=0.05),
              'var': 30},
          'pp_bio': {
-             'fix': 10,
              'epc': economics.annuity(capex=1000, n=10, wacc=0.05),
              'var': 50},
          'storage': {
-             'fix': 8,
              'epc': economics.annuity(capex=1500, n=10, wacc=0.05),
              'var': 0}}
 #################################################################
@@ -69,27 +64,23 @@ Source(label='pp_wind',
        outputs={
            bel: Flow(nominal_value=None, fixed=True,
                      actual_value=timeseries['wind'],
-                     fixed_costs=costs['pp_wind']['fix'],
                      investment=Investment(ep_costs=costs['pp_wind']['epc']))})
 
 Source(label='pp_pv',
        outputs={
            bel: Flow(nominal_value=None, fixed=True,
                      actual_value=timeseries['pv'],
-                     fixed_costs=costs['pp_pv']['fix'],
                      investment=Investment(ep_costs=costs['pp_wind']['epc']))})
 
 Source(label='pp_diesel',
        outputs={
            bel: Flow(nominal_value=None,
-                     fixed_costs=costs['pp_diesel']['fix'],
                      variable_costs=costs['pp_diesel']['var'],
                      investment=Investment(ep_costs=costs['pp_diesel']['epc']))})
 
 Source(label='pp_bio',
        outputs={
            bel: Flow(nominal_value=None,
-                     fixed_costs=costs['pp_bio']['fix'],
                      variable_costs=costs['pp_bio']['var'],
                      summed_max=300e3,
                      investment=Investment(ep_costs=costs['pp_bio']['epc']))})
@@ -111,7 +102,6 @@ components.GenericStorage(
     nominal_output_capacity_ratio=1/6,
     inflow_conversion_factor=0.95,
     outflow_conversion_factor=0.95,
-    fixed_costs=costs['storage']['fix'],
     investment=Investment(ep_costs=costs['storage']['epc']))
 
 #################################################################
