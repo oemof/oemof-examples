@@ -56,7 +56,7 @@ except ImportError:
 
 
 def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
-                          debug=True, number_timesteps=24 * 7 * 8,
+                          debug=True, number_timesteps=8760,
                           tee_switch=True, silent=False):
 
     logging.info('Initialize the energy system')
