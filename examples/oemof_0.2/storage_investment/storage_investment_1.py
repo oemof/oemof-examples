@@ -13,7 +13,8 @@ an energy system with storage. The following energy system is modeled:
                      |          |        |       |
  pv(FixedSource)     |------------------>|       |
                      |          |        |       |
- rgas(Commodity)     |--------->|        |       |
+ gas_resource        |--------->|        |       |
+ (Commodity)         |          |        |       |
                      |          |        |       |
  demand(Sink)        |<------------------|       |
                      |          |        |       |
@@ -24,12 +25,22 @@ an energy system with storage. The following energy system is modeled:
  storage(Storage)    |<------------------|       |
                      |------------------>|       |
 
-The following paramaters describe the main setting for the optimization:
+The example exists in four variations. The following parameters describe
+the main setting for the optimization variation 1:
 
+    - optimize wind, pv, gas_resource and storage
+    - set gas price for kWh
+    - set investment cost for wind, pv and storage
+
+    Results show an installation of wind and the use of the gas resource.
+    A renewable energy share of 51 % is achieved.
+
+    Have a look at different parameter settings. There are four variations
+    of this example in the same folder.
 
 Installation requirements:
 ---------------------------
-This example requires the latest version of oemof. Install by:
+This example requires oemof v0.2. Install by:
 
     pip install oemof
 
