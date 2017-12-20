@@ -18,6 +18,7 @@ This example requires the latest version of oemof. Install by:
 
 import os
 import pandas as pd
+from oemof.network import Node
 from oemof.solph import (Sink, Source, Transformer, Bus, Flow, Model,
                          EnergySystem)
 from oemof.outputlib import processing, views
@@ -34,6 +35,8 @@ def run_simple_dispatch_example(solver='cbc', periods=24*60, tee_var=True,
 
     datetimeindex = pd.date_range('1/1/2012', periods=periods, freq='H')
     energysystem = EnergySystem(timeindex=datetimeindex)
+    # automatic registration of nodes
+    Node.registry = energysystem
     filename = os.path.join(os.path.dirname(__file__), 'input_data.csv')
     data = pd.read_csv(filename, sep=",")
 
@@ -99,8 +102,8 @@ def run_simple_dispatch_example(solver='cbc', periods=24*60, tee_var=True,
     pp_chp = Transformer(label='pp_chp',
                          inputs={bgas: Flow()},
                          outputs={bel: Flow(nominal_value=30,
-                                                  variable_costs=42),
-                                        bth: Flow(nominal_value=40)},
+                                            variable_costs=42),
+                                  bth: Flow(nominal_value=40)},
                          conversion_factors={bel: 0.3, bth: 0.4})
 
     # heatpump with a coefficient of performance (COP) of 3

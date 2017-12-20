@@ -21,12 +21,11 @@ import pandas as pd
 
 from oemof.network import Node
 from oemof.outputlib.graph_tools import graph
-from oemof.outputlib import processing, views
+from oemof.outputlib import processing
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
                          Model, Transformer, components)
-from oemof.solph.constraints import emission_limit
 
-timeindex = pd.date_range('1/1/2017', periods=5, freq='H')
+timeindex = pd.date_range('1/1/2017', periods=168, freq='H')
 
 energysystem = EnergySystem(timeindex=timeindex)
 Node.registry = energysystem
@@ -52,24 +51,24 @@ Sink(label='demand_el',
 
 Source(label='pp_wind',
        outputs={
-           bel: Flow(nominal_value=15, fixed=True,
+           bel: Flow(nominal_value=40, fixed=True,
                      actual_value=timeseries['wind'])})
 
 Source(label='pp_pv',
        outputs={
-           bel: Flow(nominal_value=10, fixed=True,
+           bel: Flow(nominal_value=20, fixed=True,
                      actual_value=timeseries['pv'])})
 
 Source(label='pp_gas',
        outputs={
-           bel: Flow(nominal_value=30, nonconvex=NonConvex(),
+           bel: Flow(nominal_value=50, nonconvex=NonConvex(),
                      variable_costs=60,
                      negative_gradient={'ub': 0.05, 'costs': 0},
                      positive_gradient={'ub': 0.05, 'costs': 0})})
 
 Source(label='pp_bio',
        outputs={
-           bel: Flow(nominal_value=7,
+           bel: Flow(nominal_value=5,
                      variable_costs=100)})
 
 components.GenericStorage(
@@ -78,7 +77,7 @@ components.GenericStorage(
         bel: Flow()},
     outputs={
         bel: Flow()},
-    nominal_capacity=10,
+    nominal_capacity=40,
     nominal_input_capacity_ratio=1/10,
     nominal_output_capacity_ratio=1/10,
 )
@@ -95,28 +94,29 @@ Source(label='gas',
 
 Sink(label='demand_th',
      inputs={
-         bel: Flow(actual_value=timeseries['demand_th'],
+         bth: Flow(actual_value=timeseries['demand_th'],
                    fixed=True, nominal_value=100)})
 
 Transformer(label='pth',
             inputs={
                 bel: Flow()},
             outputs={
-                bth: Flow()},
+                bth: Flow(nominal_value=30)},
             conversion_factors={bth: 0.99})
 
 Transformer(label='chp',
             inputs={
-                bgas: Flow(variable_costs=20)},
+                bgas: Flow(variable_costs=80)},
             outputs={
                  bel: Flow(nominal_value=40),
                  bth: Flow()},
-            conversion_factors={bel: 0.35,
+            conversion_factors={bel: 0.4,
                                 bth: 0.4})
 
 Source(label='boiler_bio',
        outputs={
-           bel: Flow(nominal_value=100, variable_costs=60)})
+           bth: Flow(nominal_value=100,
+                     variable_costs=60)})
 
 components.GenericStorage(
     label='storage_th',
@@ -136,7 +136,7 @@ components.GenericStorage(
 m = Model(energysystem)
 # emission_limit(m, flows=m.flows, limit=954341)
 
-m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
+# m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
 
 m.solve(solver='cbc', solve_kwargs={'tee': True})
 
