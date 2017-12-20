@@ -26,14 +26,16 @@ an energy system with storage. The following energy system is modeled:
                      |------------------>|       |
 
 The example exists in four variations. The following parameters describe
-the main setting for the optimization variation 1:
+the main setting for the optimization variation 2:
 
-    - optimize wind, pv, gas_resource and storage
-    - set investment cost for wind, pv and storage
+    - optimize gas_resource and storage
+    - set installed capacities for wind and pv
+    - set investment cost for storage
     - set gas price for kWh
 
-    Results show an installation of wind and the use of the gas resource.
-    A renewable energy share of 51% is achieved.
+    Results show a higher renewable energy share than in variation 1
+    (78% compared to 51%) due to preinstalled renewable capacities.
+    Storage is not installed as the gas resource is cheapter.
 
     Have a look at different parameter settings. There are four variations
     of this example in the same folder.
@@ -92,8 +94,6 @@ price_gas = 0.04
 
 # If the period is one year the equivalent periodical costs (epc) of an
 # investment are equal to the annuity. Use oemof's economic tools.
-epc_wind = economics.annuity(capex=1000, n=20, wacc=0.05)
-epc_pv = economics.annuity(capex=1000, n=20, wacc=0.05)
 epc_storage = economics.annuity(capex=1000, n=20, wacc=0.05)
 
 ##########################################################################
@@ -119,12 +119,12 @@ gas_resource = solph.Source(label='rgas', outputs={bgas: solph.Flow(
 # create fixed source object representing wind power plants
 wind = solph.Source(label='wind', outputs={bel: solph.Flow(
     actual_value=data['wind'], fixed=True,
-    investment=solph.Investment(ep_costs=epc_wind))})
+    nominal_value=1000000)})
 
 # create fixed source object representing pv power plants
 pv = solph.Source(label='pv', outputs={bel: solph.Flow(
     actual_value=data['pv'], fixed=True,
-    investment=solph.Investment(ep_costs=epc_pv))})
+    nominal_value=600000)})
 
 # create simple sink object representing the electrical demand
 demand = solph.Sink(label='demand', inputs={bel: solph.Flow(
@@ -194,7 +194,6 @@ if not silent:
 
     my_results = electricity_bus['scalars']
     my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
-    my_results['wind_invest_MW'] = results[(wind, bel)]['scalars']['invest']/1e3
     my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
     pp.pprint(my_results)
 

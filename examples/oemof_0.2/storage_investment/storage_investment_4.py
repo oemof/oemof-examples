@@ -26,14 +26,15 @@ an energy system with storage. The following energy system is modeled:
                      |------------------>|       |
 
 The example exists in four variations. The following parameters describe
-the main setting for the optimization variation 1:
+the main setting for the optimization variation 4:
 
-    - optimize wind, pv, gas_resource and storage
+    - optimize wind, pv, and storage
     - set investment cost for wind, pv and storage
-    - set gas price for kWh
+    - set a fossil share
 
-    Results show an installation of wind and the use of the gas resource.
-    A renewable energy share of 51% is achieved.
+    Results show now the achievement of 80% renewable energy share
+    by solely installing a little more wind and pv (compared to
+    variation 2). Storage is not installed.
 
     Have a look at different parameter settings. There are four variations
     of this example in the same folder.
@@ -88,7 +89,8 @@ full_filename = os.path.join(os.path.dirname(__file__),
     'storage_investment.csv')
 data = pd.read_csv(full_filename, sep=",")
 
-price_gas = 0.04
+fossil_share = 0.2
+consumption_total = data['demand_el'].sum()
 
 # If the period is one year the equivalent periodical costs (epc) of an
 # investment are equal to the annuity. Use oemof's economic tools.
@@ -114,7 +116,8 @@ excess = solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
 
 # create source object representing the natural gas commodity (annual limit)
 gas_resource = solph.Source(label='rgas', outputs={bgas: solph.Flow(
-    variable_costs=price_gas)})
+    nominal_value=fossil_share * consumption_total / 0.58
+    * number_timesteps / 8760, summed_max=1)})
 
 # create fixed source object representing wind power plants
 wind = solph.Source(label='wind', outputs={bel: solph.Flow(
@@ -195,6 +198,7 @@ if not silent:
     my_results = electricity_bus['scalars']
     my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
     my_results['wind_invest_MW'] = results[(wind, bel)]['scalars']['invest']/1e3
+    my_results['pv_invest_MW'] = results[(pv, bel)]['scalars']['invest']/1e3
     my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
     pp.pprint(my_results)
 
