@@ -174,25 +174,24 @@ energysystem.restore()
 # check if the new result object is working for custom components
 results = processing.results(om)
 
-if not silent:
-    # print(results[(storage, None)]['sequences'].head())
-    print(results[(storage, None)]['scalars'])
-    print(results[(wind, bel)]['scalars'])
 custom_storage = views.node(results, 'storage')
 electricity_bus = views.node(results, 'electricity')
-
-if plt is not None and not silent:
-    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
-    plt.show()
-    electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
-    plt.show()
-
-my_results = electricity_bus['sequences'].sum(axis=0).to_dict()
-my_results['storage_invest'] = results[(storage, None)]['scalars']['invest']
-my_results['wind_invest'] = results[(wind, bel)]['scalars']['invest']
 
 if not silent:
     meta_results = processing.meta_results(om)
     pp.pprint(meta_results)
 
-pp.pprint(my_results)
+    my_results = electricity_bus['scalars']
+    my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
+    my_results['wind_invest_MW'] = results[(wind, bel)]['scalars']['invest']/1e3
+    my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
+    pp.pprint(my_results)
+
+
+if plt is not None and not silent:
+    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
+    plt.show()
+
+    electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+    plt.show()
+
