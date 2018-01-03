@@ -28,6 +28,12 @@ Examples
 oemof 0.2.x
 -------------
 
+* **basic_example**: Introduction to the basic usage of oemof.solph
+  * basic optimisation with different solvers
+  * initiate the logger
+  * use the lp-file for debugging
+  * show/hide output of the solver
+  * store and process results
 * **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
 * **generic_chp**: Illustrates how the custom component `GenericCHP` can be used...
 
