@@ -54,25 +54,15 @@ This example requires oemof v0.2. Install by:
 
 # Default logger of oemof
 from oemof.tools import logger
-from oemof.tools import helpers
 from oemof.tools import economics
-
 import oemof.solph as solph
 from oemof.outputlib import processing, views
-
 import logging
 import os
 import pandas as pd
 import pprint as pp
 
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    plt = None
-
 number_timesteps = 8760
-debug = True
-silent = False
 
 ##########################################################################
 # Initialize the energy system and read/calculate necessary parameters
@@ -162,21 +152,10 @@ logging.info('Optimise the energy system')
 
 # initialise the operational model
 om = solph.Model(energysystem)
-# if debug is true an lp-file will be written
-if debug:
-    filename = os.path.join(
-        helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
-    logging.info('Store lp-file in {0}.'.format(filename))
-    om.write(filename, io_options={'symbolic_solver_labels': True})
 
 # if tee_switch is true solver messages will be displayed
 logging.info('Solve the optimization problem')
 om.solve(solver='cbc', solve_kwargs={'tee': True})
-
-# Check dump and restore
-energysystem.dump()
-energysystem = solph.EnergySystem(timeindex=date_time_index)
-energysystem.restore()
 
 ##########################################################################
 # Check and plot the results
@@ -188,20 +167,11 @@ results = processing.results(om)
 custom_storage = views.node(results, 'storage')
 electricity_bus = views.node(results, 'electricity')
 
-if not silent:
-    meta_results = processing.meta_results(om)
-    pp.pprint(meta_results)
+meta_results = processing.meta_results(om)
+pp.pprint(meta_results)
 
-    my_results = electricity_bus['scalars']
-    my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
-    my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
-    pp.pprint(my_results)
-
-
-if plt is not None and not silent:
-    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
-    plt.show()
-
-    electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
-    plt.show()
+my_results = electricity_bus['scalars']
+my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
+my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
+pp.pprint(my_results)
 
