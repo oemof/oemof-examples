@@ -23,12 +23,12 @@ from oemof.network import Node
 from oemof.outputlib.graph_tools import graph
 from oemof.outputlib import processing
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
-                         Model, Transformer, components)
+                         Model, Transformer, components, sequence)
 
-timeindex = pd.date_range('1/1/2017', periods=168, freq='H')
+timeindex = pd.date_range('1/1/2017', periods=15, freq='H')
 
-energysystem = EnergySystem(timeindex=timeindex)
-Node.registry = energysystem
+es = EnergySystem(timeindex=timeindex)
+Node.registry = es
 ##########################################################################
 # data
 ##########################################################################
@@ -132,16 +132,32 @@ components.GenericStorage(
 ##########################################################################
 # Create model and solve
 ##########################################################################
+m = Model(name='my_model', auto_construct=False)
+es.add_model(m)
 
-m = Model(energysystem)
-# emission_limit(m, flows=m.flows, limit=954341)
+es.use('my_model')
 
-# m.write('test_nc.lp', io_options={'symbolic_solver_labels': True})
+es.compute()
 
-m.solve(solver='cbc', solve_kwargs={'tee': True})
+results_before = es.get_results()
 
-results = processing.results(m)
+##########################################################################
+# Update the objective function and re-compute model
+##########################################################################
+print("Before obj. update: " + str(es.models['my_model'].objective()))
 
+# set new value for variable costs
+es.flows()[(es.groups['bgas'], es.groups['chp'])].variable_costs = sequence(40)
+# update the objective function
+es.models['my_model']._update_objective()
+# re-compute
+es.compute()
 
-graph = graph(energysystem, m, plot=True, layout='neato', node_size=3000,
-              node_color={'bel': '#7EC0EE', 'bgas': '#eeac7e', 'bth': '#cd3333'})
+print("After obj. update: " + str(es.models['my_model'].objective()))
+
+results_after = es.get_results()
+#graph = graph(es, m, plot=True, layout='neato', node_size=3000,
+#              node_color={
+#                  'bel': '#7EC0EE',
+#                  'bgas': '#eeac7e',
+#                  'bth': '#cd3333'})
