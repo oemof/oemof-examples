@@ -1,6 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-Dispatch optimisation using oemof's csv-reader.
+General description:
+---------------------
+As the csv-reader was removed with version 0.2 this example shows how to create
+an excel-reader. The example is equivalent to the old csv-reader example.
+Following the example one can customise the excel reader to ones own needs.
+
+The pandas package supports the '.xls' and the '.xlsx' format but one can create
+read and adept the files with open source software such as libreoffice,
+openoffice, gnumeric,...
+
+
+Installation requirements:
+---------------------------
+This example requires the latest version of oemof, matplotlib and xlrd. Install
+by:
+
+    pip install 'oemof<0.3,>=0.2'
+    pip install xlrd
+    pip install matplotlib
+
+5.1.2018 - uwe.krien@rl-institut.de
 """
 
 import os
@@ -127,7 +147,7 @@ om = solph.Model(es)
 om.receive_duals()
 
 # solving the linear problem using the given solver
-om.solve(solver='cbc', solve_kwargs={'tee': True})
+om.solve(solver='cbc')
 
 results = outputlib.processing.results(om)
 
