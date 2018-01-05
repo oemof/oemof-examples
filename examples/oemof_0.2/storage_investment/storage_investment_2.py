@@ -35,7 +35,7 @@ the main setting for the optimization variation 2:
 
     Results show a higher renewable energy share than in variation 1
     (78% compared to 51%) due to preinstalled renewable capacities.
-    Storage is not installed as the gas resource is cheapter.
+    Storage is not installed as the gas resource is cheaper.
 
     Have a look at different parameter settings. There are four variations
     of this example in the same folder.
