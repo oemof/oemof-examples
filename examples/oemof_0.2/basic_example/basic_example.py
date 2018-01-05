@@ -128,9 +128,9 @@ energysystem.add(solph.Transformer(
 storage = solph.components.GenericStorage(
     nominal_capacity=10077997,
     label='storage',
-    inputs={bel: solph.Flow(variable_costs=10e10)},
-    outputs={bel: solph.Flow(variable_costs=10e10)},
-    capacity_loss=0.00, initial_capacity=0,
+    inputs={bel: solph.Flow()},
+    outputs={bel: solph.Flow(variable_costs=0.001)},
+    capacity_loss=0.00, initial_capacity=None,
     nominal_input_capacity_ratio=1/6,
     nominal_output_capacity_ratio=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
