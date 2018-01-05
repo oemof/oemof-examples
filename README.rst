@@ -48,7 +48,7 @@ oemof 0.2.x
 
 * **sector_coupling**: Jupyter notebook giving a simple example of how to couple the sectors power, heat and mobility.
 * **simple_dispatch**: Shows how to set up a dispatch model.
-* **storage_investment**: Example of storage capacity optimization.
+* **storage_investment**: Variation of parameters for a storage capacity optimization.
 * **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
 
