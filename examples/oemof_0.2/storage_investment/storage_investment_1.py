@@ -168,8 +168,19 @@ meta_results = processing.meta_results(om)
 pp.pprint(meta_results)
 
 my_results = electricity_bus['scalars']
-my_results['storage_invest_GWh'] = results[(storage, None)]['scalars']['invest']/1e6
-my_results['wind_invest_MW'] = results[(wind, bel)]['scalars']['invest']/1e3
-my_results['res_share'] = 1 - results[(pp_gas, bel)]['sequences'].sum()/results[(bel, demand)]['sequences'].sum()
+
+# installed capacity of storage in GWh
+my_results['storage_invest_GWh'] = (results[(storage, None)]
+                            ['scalars']['invest']/1e6)
+
+# installed capacity of wind power plant in MW
+my_results['wind_invest_MW'] = (results[(wind, bel)]
+                            ['scalars']['invest']/1e3)
+
+# resulting renewable energy share
+my_results['res_share'] = (1 - results[(pp_gas, bel)]
+                            ['sequences'].sum()/results[(bel, demand)]
+                            ['sequences'].sum())
+
 pp.pprint(my_results)
 
