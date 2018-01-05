@@ -52,7 +52,7 @@ from oemof.tools import logger
 from oemof.tools import helpers
 
 import oemof.solph as solph
-from oemof.outputlib import processing, views
+import oemof.outputlib as outputlib
 
 import logging
 import os
@@ -90,12 +90,17 @@ data = pd.read_csv(filename)
 ##########################################################################
 
 logging.info('Create oemof objects')
+
+# The bus objects were assigned to variables which makes it easier to connect
+# components to these buses (see below).
+
 # create natural gas bus
 bgas = solph.Bus(label="natural_gas")
 
 # create electricity bus
 bel = solph.Bus(label="electricity")
 
+# adding the buses to the energy system
 energysystem.add(bgas, bel)
 
 # create excess component for the electricity bus to allow overproduction
@@ -145,7 +150,7 @@ energysystem.add(storage)
 logging.info('Optimise the energy system')
 
 # initialise the operational model
-om = solph.Model(energysystem)
+model = solph.Model(energysystem)
 
 # This is for debugging only. It is not(!) necessary to solve the problem and
 # should be set to False to save time and disc space in normal use. For
@@ -155,23 +160,27 @@ if debug:
     filename = os.path.join(
         helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
     logging.info('Store lp-file in {0}.'.format(filename))
-    om.write(filename, io_options={'symbolic_solver_labels': True})
+    model.write(filename, io_options={'symbolic_solver_labels': True})
 
 # if tee_switch is true solver messages will be displayed
 logging.info('Solve the optimization problem')
-om.solve(solver=solver, solve_kwargs={'tee': solver_verbose})
+model.solve(solver=solver, solve_kwargs={'tee': solver_verbose})
 
 logging.info('Store the energy system with the results.')
 
-# Add results to the energy system
-energysystem.results['main'] = processing.results(om)
-energysystem.results['meta'] = processing.meta_results(om)
+# The processing module of the outputlib can be used to extract the results from
+# the model transfer them into a homogeneous structured dictionary.
 
-# Store energy system with results
+# add results to the energy system to make it possible to store them.
+energysystem.results['main'] = outputlib.processing.results(model)
+energysystem.results['meta'] = outputlib.processing.meta_results(model)
+
 # The default path is the '.oemof' folder in your $HOME directory.
 # The default filename is 'es_dump.oemof'.
 # You can omit the attributes (as None is the default value) for testing cases.
 # You should use unique names/folders for valuable results to avoid overwriting.
+
+# store energy system with results
 energysystem.dump(dpath=None, filename=None)
 
 # ****************************************************************************
@@ -183,31 +192,33 @@ logging.info('Restore the energy system and the results.')
 energysystem = solph.EnergySystem()
 energysystem.restore(dpath=None, filename=None)
 
-# check if the new result object is working for custom components
+# define an alias for shorter calls below (optional)
 results = energysystem.results['main']
-meta_results = energysystem.results['meta']
-
 storage = energysystem.groups['storage']
+
+# print a time slice of the state of charge
 print('')
 print('********* State of Charge (slice) *********')
 print(results[(storage, None)]['sequences']['2012-02-25 08:00:00':
                                             '2012-02-26 15:00:00'])
 print('')
 
-custom_storage = views.node(results, 'storage')
-electricity_bus = views.node(results, 'electricity')
+# get all variables of a specific component/bus
+custom_storage = outputlib.views.node(results, 'storage')
+electricity_bus = outputlib.views.node(results, 'electricity')
 
+# plot the time series (sequences) of a specific component/bus
 if plt is not None:
     custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
     plt.show()
     electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
     plt.show()
 
-my_results = electricity_bus['sequences'].sum(axis=0).to_dict()
-
-
+# print the solver results
 print('********* Meta results *********')
-pp.pprint(meta_results)
+pp.pprint(energysystem.results['meta'])
 print('')
+
+# print the sums of the flows around the electricity bus
 print('********* Main results *********')
-pp.pprint(my_results)
+print(electricity_bus['sequences'].sum(axis=0))
