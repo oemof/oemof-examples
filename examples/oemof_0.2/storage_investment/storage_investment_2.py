@@ -127,12 +127,9 @@ pp_gas = solph.Transformer(
     outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=0)},
     conversion_factors={bel: 0.58})
 
-# my_list = [0.1] * number_timesteps
-
 # create storage object representing a battery
 storage = solph.components.GenericStorage(
     label='storage',
-    # min=my_list,
     inputs={bel: solph.Flow(variable_costs=0.0001)},
     outputs={bel: solph.Flow()},
     capacity_loss=0.00, initial_capacity=0,
