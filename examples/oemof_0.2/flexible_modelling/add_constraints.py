@@ -58,7 +58,7 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     es.add(sink, pp_oil, pp_lig)
 
     # create the model
-    om = Model(es=es)
+    om = Model(energysystem=es)
 
     # add specific emission values to flow objects if source is a commodity bus
     for s, t in om.flows.keys():

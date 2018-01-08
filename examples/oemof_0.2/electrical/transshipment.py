@@ -61,7 +61,7 @@ es.add(Sink(label="load_1", inputs={
                                           actual_value=[1, 0],
                                           fixed=True)}))
 
-m = Model(es=es)
+m = Model(energysystem=es)
 
 # m.write('transshipment.lp', io_options={'symbolic_solver_labels': True})
 
