@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-General description:
----------------------
+General description
+-------------------
 This example shows how to perform a capacity optimization for
 an energy system with storage. The following energy system is modeled:
 
@@ -40,8 +40,8 @@ the main setting for the optimization variation 2:
     Have a look at different parameter settings. There are four variations
     of this example in the same folder.
 
-Installation requirements:
----------------------------
+Installation requirements
+-------------------------
 This example requires oemof v0.2. Install by:
 
     pip install oemof

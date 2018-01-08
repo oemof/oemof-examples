@@ -7,6 +7,12 @@ This example shows a complex 6 tiles plot using the i/o-plot function of the
 oemof-visio package. This examples focuses on the plotting function and not on
 the general oemof functions.
 
+
+Data
+----
+variable_chp.csv
+
+
 Installation requirements
 -------------------------
 The example is made for oemof v0.2.x.
@@ -17,6 +23,7 @@ The oemof-visio provides the base for the created i/o plot.
 
     pip install git+https://github.com/oemof/oemof_visio.git
 
+5.1.2017 - uwe.krien@rl-institut.de
 """
 
 import logging

@@ -12,6 +12,12 @@ Moreover there are functions that can be used with normal pandas plots as well.
 Three examples show the pandas plot and how it can be easily manipulated using
 the oemof-visio plot functions.
 
+
+Data
+----
+storage_investment.csv
+
+
 Installation requirements
 -------------------------
 The example is made for oemof v0.2.x.
@@ -21,6 +27,8 @@ The example is made for oemof v0.2.x.
 The oemof-visio provides the base for the created i/o plot.
 
     pip install git+https://github.com/oemof/oemof_visio.git
+
+5.1.2017 - uwe.krien@rl-institut.de
 """
 
 __copyright__ = "oemof developer group"

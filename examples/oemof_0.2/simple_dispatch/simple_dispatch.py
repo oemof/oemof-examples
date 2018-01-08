@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-General description:
----------------------
+General description
+-------------------
 This example shows how to create an energysystem with oemof objects and
 solve it with the solph module. Results are plotted with outputlib.
 
@@ -17,8 +17,8 @@ Data
 ----
 input_data.csv
 
-Installation requirements:
----------------------------
+Installation requirements
+-------------------------
 This example requires the latest version of oemof and matplotlib. Install by:
     pip install oemof
     pip install matplotlib

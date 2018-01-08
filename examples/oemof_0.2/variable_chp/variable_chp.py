@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-General description:
----------------------
+General description
+-------------------
 This example is not a real use case of an energy system but an example to show
 how a combined heat and power plant (chp) with an extraction turbine works in
 contrast to a chp (eg. block device) with a fixed heat fraction. Both chp plants
@@ -10,17 +10,18 @@ demand. The i/o balance plot shows that the fixed chp plant produces heat and
 power excess and therefore needs more natural gas. The bar plot just shows the
 difference in the usage of natural gas.
 
-Requirements:
--------------
+Requirements
+------------
 pip install "oemof>=0.2,<0.3"
 pip install matplotlib (to see the bar plot)
 pip install git+https://github.com/oemof/oemof_visio.git (to see the i/o balance
  plot)
 
-Installation requirements:
----------------------------
-This example requires the latest version of oemof. Install by:
+Installation requirements
+-------------------------
+This example requires the latest version of oemof and matplotlib. Install by:
 
+    pip install oemof
     pip install oemof
 
 """

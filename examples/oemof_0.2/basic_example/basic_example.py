@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-General description:
----------------------
+General description
+-------------------
 
 A basic example to show how to model a simple energy system with oemof.solph.
 
@@ -26,8 +26,14 @@ The following energy system is modeled:
  storage(Storage)    |<------------------|       |
                      |------------------>|       |
 
-Installation requirements:
----------------------------
+
+Data
+----
+basic_example.csv
+
+
+Installation requirements
+-------------------------
 
 This example requires the version v0.2.x of oemof. Install by:
 

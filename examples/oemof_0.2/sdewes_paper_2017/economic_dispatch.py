@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-General description:
----------------------
+General description
+-------------------
 Example from the SDEWES conference paper:
 
 Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
@@ -9,11 +9,17 @@ Simon Hilpert, Cord Kaldemeyer, Uwe Krien, Stephan Günther (2017).
          Energy System Analysis'. Paper presented at SDEWES Conference,
          Dubrovnik.
 
-Installation requirements:
----------------------------
-This example requires the latest version of oemof. Install by:
 
-    pip install oemof
+Data
+----
+timeseries.csv
+
+
+Installation requirements
+-------------------------
+This example requires the latest version of oemof and others. Install by:
+
+    pip install oemof matplotlib networkx pygraphviz
 
 """
 import os
