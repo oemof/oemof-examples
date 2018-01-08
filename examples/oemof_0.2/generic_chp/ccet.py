@@ -67,7 +67,7 @@ ccet = solph.components.GenericCHP(
     heat_output={bth: solph.Flow(
         Q_CW_min=[30 for p in range(0, periods)])},
     Beta=[0.19 for p in range(0, periods)],
-    fixed_costs=0, back_pressure=False)
+    back_pressure=False)
 
 # create an optimization problem and solve it
 om = solph.Model(es)
