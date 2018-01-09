@@ -84,9 +84,6 @@ om.solve(solver='cbc', solve_kwargs={'tee': True})
 # create result object
 results = processing.results(om)
 
-# store as csv
-# data = results[(mchp,)]['sequences'].to_csv('results_ccet_' + file_name)
-
 # plot data
 if plt is not None:
     # plot PQ diagram from component results
