@@ -15,6 +15,7 @@ This example requires the latest version of oemof. Install by:
 
 import pandas as pd
 import oemof.solph as solph
+from oemof.network import Node
 from oemof.outputlib import processing, views
 try:
     import matplotlib.pyplot as plt
@@ -32,6 +33,7 @@ periods = len(data)-1
 # create an energy system
 idx = pd.date_range('1/1/2017', periods=periods, freq='H')
 es = solph.EnergySystem(timeindex=idx)
+Node.registry = es
 
 # resources
 bgas = solph.Bus(label='bgas')
@@ -88,7 +90,7 @@ results = processing.results(om)
 # plot data
 if plt is not None:
     # plot PQ diagram from component results
-    data = results[(mchp,)]['sequences']
+    data = results[(mchp, None)]['sequences']
     ax = data.plot(kind='scatter', x='Q', y='P', grid=True)
     ax.set_xlabel('Q (MW)')
     ax.set_ylabel('P (MW)')
