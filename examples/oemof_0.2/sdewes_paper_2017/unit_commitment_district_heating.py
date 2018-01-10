@@ -31,10 +31,7 @@ from oemof.network import Node
 from oemof.outputlib import processing, views
 from oemof.solph import (EnergySystem, Bus, Source, Sink, Flow, NonConvex,
                          Model, Transformer, components)
-try:
-    from oemof.outputlib.graph_tools import graph as create_graph
-except ImportError:
-    from oemof.tools.graph import create_graph
+from oemof.graph import create_nx_graph as create_graph
 
 
 def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',

@@ -23,10 +23,7 @@ from matplotlib import pyplot as plt
 from oemof.solph import (EnergySystem, Model, Bus, Flow, Source, Sink,
                          custom, Investment)
 from oemof.outputlib import processing, views
-try:
-    from oemof.outputlib.graph_tools import graph as create_graph
-except ImportError:
-    from oemof.tools.graph import create_graph
+from oemof.graph import create_nx_graph as create_graph
 
 
 def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
