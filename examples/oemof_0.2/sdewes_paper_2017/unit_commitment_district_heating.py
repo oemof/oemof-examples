@@ -127,7 +127,7 @@ Transformer(label='boiler',
             outputs={
                 bth: Flow(nominal_value=500,
                           variable_cost=50,
-                          binary=NonConvex())},
+                          nonconvex=NonConvex())},
             conversion_factors={bth: 0.9})
 
 Transformer(label='chp',
