@@ -45,23 +45,28 @@ bth = solph.Bus(label='bth')
 
 # dummy source at high costs that serves the residual load
 source_th = solph.Source(label='source_th',
-                         outputs={bth: solph.Flow(variable_costs=100)})
+                         outputs={bth: solph.Flow(variable_costs=10)})
 
 demand_th = solph.Sink(label='demand_th', inputs={bth: solph.Flow(fixed=True,
-                       actual_value=data['demand_th'], nominal_value=200)})
+                       actual_value=data['demand_th'], nominal_value=100)})
 
 # power
 bel = solph.Bus(label='bel')
 
-demand_el = solph.Sink(label='demand_el', inputs={bel: solph.Flow(
-                       variable_costs=data['price_el'])})
+demand_el = solph.Sink(label='demand_el', inputs={bel: solph.Flow()})
 
 powerplant = solph.Transformer(
     label='pp_gas',
     inputs={bgas: solph.Flow()},
-    outputs={bel: solph.Flow(nominal_value=100),
-             bth: solph.Flow(nominal_value=100)},
-    conversion_factors={bel: 0.3, bth: 0.5})
+    outputs={
+        bel: solph.Flow(nominal_value=50),
+        bth: solph.Flow(
+            nominal_value=50,
+            min=0, max=1.0,
+            startup_costs=1000, shutdown_costs=0,
+            nonconvex=solph.NonConvex()
+            )},
+    conversion_factors={bel: 0.5, bth: 0.5})
 
 # create an optimization problem and solve it
 om = solph.Model(es)
@@ -79,7 +84,8 @@ results = processing.results(om)
 if plt is not None:
     # plot thermal bus
     data = views.node(results, 'bth')['sequences']
-    ax = data.plot(kind='line', drawstyle='steps-post', grid=True)
-    ax.set_xlabel('Time (h)')
+    data.index = data.index.map(lambda t: t.strftime('%H'))
+    ax = data.plot(kind='bar', grid=True, rot=0)
+    ax.set_xlabel('Hour')
     ax.set_ylabel('Q (MW)')
     plt.show()
