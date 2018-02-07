@@ -47,16 +47,20 @@ dummy_el = solph.Sink(
     inputs={bel: solph.Flow(variable_costs=10)})
 
 pp1 = solph.Source(
-    label='cheap_plant_min_max_constraints',
+    label='cheap_plant_min_down_constraints',
     outputs={
         bel: solph.Flow(
             nominal_value=10, min=0.5, max=1.0, variable_costs=10,
             nonconvex=solph.NonConvex(
-                minimum_uptime=6, initial_status=0))})
+                minimum_downtime=4, initial_status=0))})
 
 pp2 = solph.Source(
-    label='expensive_peak_power_plant',
-    outputs={bel: solph.Flow(nominal_value=10, variable_costs=20)})
+    label='expensive_plant_min_up_constraints',
+    outputs={
+        bel: solph.Flow(
+            nominal_value=10, min=0.5, max=1.0, variable_costs=10,
+            nonconvex=solph.NonConvex(
+                minimum_uptime=2, initial_status=1))})
 
 # create an optimization problem and solve it
 om = solph.Model(es)
@@ -75,15 +79,11 @@ if plt is not None:
     # plot electrical bus
     data = views.node(results, 'bel')['sequences']
     data[[(('bel', 'demand_el'), 'flow'), (('bel', 'dummy_el'), 'flow')]] *= -1
+    exclude = ['dummy_el', 'status']
     columns = [c for c in data.columns
-               if not any(s in c[0] or s in c[1]
-               for s in ['status', 'dummy_el', 'expensive_peak_power_plant'])]
-    #data = data[columns]
-    print(data[columns])
-
-    # data.reset_index(drop=True, inplace=True)
-    # #ax = data.plot(kind='line', drawstyle='steps-post', grid=True, rot=0)
-    # ax = data.plot(kind='bar', grid=True, rot=0)
-    # ax.set_xlabel('Hour')
-    # ax.set_ylabel('P (MW)')
-    # plt.show()
+               if not any(s in c[0] or s in c[1] for s in exclude)]
+    data = data[columns]
+    ax = data.plot(kind='line', drawstyle='steps-post', grid=True, rot=0)
+    ax.set_xlabel('Hour')
+    ax.set_ylabel('P (MW)')
+    plt.show()
