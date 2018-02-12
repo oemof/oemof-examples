@@ -7,9 +7,9 @@ to a binary flow.
 
 Installation requirements
 -------------------------
-This example requires the latest version of oemof. Install by:
+This example requires the version 0.2.1 of oemof. Install by:
 
-    pip install oemof
+    pip install 'oemof>=0.2.1,<0.3'
 
 """
 
