@@ -1,0 +1,2 @@
+wind-1;volatile-generator;;;electricity-bus1;{ub: 12, wind-profiles: "wind-profile-1", type: ["electricity"]}
+solar-1;volatile-generator;;;electricity-bus2;{ub: 12, solar-profiles: "solar-profile-1", type: ["electricity"]}

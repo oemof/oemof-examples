@@ -1,0 +1,3 @@
+demand-el;demand;;electrictiy-bus1;;{sum: 2000, demand-profiles: "electricity-demand-profile", type: ["electricity"]}
+demand-th;demand;;heat-bus;;{sum: 3000, demand-profiles: "heat-demand-profile", type: ["heat"]}
+slack-el1;demand;;electrictiy-bus2;;{sum: null, demand-profiles: null, type: ["electricity"]}
