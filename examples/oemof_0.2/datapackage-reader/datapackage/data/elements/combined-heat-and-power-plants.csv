@@ -1,2 +1,2 @@
-BP-chp;backpressure-turbine;{eta_el: 0.4, eta_th: 0.5};global-coal;electrictiy-bus1, heat-bus;{ub: [null, 60, 90], cost: [12,null,null], type: ["coal", "electricity", "heat"]}
-EXT-chp;extraction-turbine;{eta_el: 0.4, eta_th: 0.5, eta_cond: 0.6};global-gas;electrictiy-bus2, heat-bus;{ub: [null, 60, 90], cost: [12,null,null], type: ["coal", "electricity", "heat"]}
+BP-chp;backpressure-turbine;{eta_el: 0.4, eta_th: 0.5};global-coal;electricity-bus1, heat-bus;{ub: [null, 60, 90], cost: [12,null,null], type: ["coal", "electricity", "heat"]}
+EXT-chp;extraction-turbine;{eta_el: 0.4, eta_th: 0.5, eta_cond: 0.6};global-gas;electricity-bus2, heat-bus;{ub: [null, 60, 90], cost: [12,null,null], type: ["coal", "electricity", "heat"]}
