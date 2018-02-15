@@ -35,10 +35,34 @@ by:
 
     pip install 'oemof<0.3,>=0.2'
 
-14.02.2018 - simon.hilpert@rl-institut.de
+14.02.2018 - simon.hilpert@uni-flensubrg.de
 """
+import os
+
+from matplotlib import pyplot as plt
+import networkx as nx
+import pandas as pd
 
 from oemof.energy_system import EnergySystem
+from oemof.graph import create_nx_graph as create_graph
 
 
 es = EnergySystem.from_datapackage('datapackage/datapackage.json')
+
+grph = create_graph(es)
+pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog='neato')
+
+nx.draw(grph, pos=pos, **options)
+
+# add edge labels for all edges
+if edge_labels is True and plt:
+    labels = nx.get_edge_attributes(grph, 'weight')
+    nx.draw_networkx_edge_labels(grph, pos=pos, edge_labels=labels)
+
+# show output
+if plot is True:
+    plt.show()
+
+ext = es.groups['EXT-chp']
+
+[(k,v) for (k,v) in ext.inputs.items()]
