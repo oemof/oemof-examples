@@ -1,1 +1,1 @@
-el1-el2;transshipment;{loss: 0.08};electricity-bus1;electricity-bus2;{ub: [1000, 1000], type: "electricity"}
+el1-el2;transshipment;{"loss": 0.08};electricity-bus1;electricity-bus2;{"ub": [1000, 1000], "type": "electricity"}
