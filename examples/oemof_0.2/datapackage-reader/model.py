@@ -44,25 +44,19 @@ import networkx as nx
 import pandas as pd
 
 from oemof.energy_system import EnergySystem
+from oemof.solph.models import BaseModel
 from oemof.graph import create_nx_graph as create_graph
 
-
+# read energy system
 es = EnergySystem.from_datapackage('datapackage/datapackage.json')
 
-grph = create_graph(es)
-pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog='neato')
+# create graph for energysystem nodes and flows
+graph = create_graph(es)
+pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='neato')
+nx.draw(graph, pos=pos, with_labels=True)
+plt.show()
 
-nx.draw(grph, pos=pos, **options)
-
-# add edge labels for all edges
-if edge_labels is True and plt:
-    labels = nx.get_edge_attributes(grph, 'weight')
-    nx.draw_networkx_edge_labels(grph, pos=pos, edge_labels=labels)
-
-# show output
-if plot is True:
-    plt.show()
+m = BaseModel(energysystem=es)
 
 ext = es.groups['EXT-chp']
-
-[(k,v) for (k,v) in ext.inputs.items()]
+[(k,v) for (k,v) in ext.outputs.items()]
