@@ -141,7 +141,7 @@ m.solve(solver='cbc',
 
 m.results()
 
-graph = create_nx_graph(es, m)
+graph = create_nx_graph(es)
 
 draw_graph(graph, plot=True, layout='neato', node_size=3000,
            node_color={
