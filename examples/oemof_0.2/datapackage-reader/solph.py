@@ -40,11 +40,6 @@ Install it via:
 import os
 import os.path
 
-from matplotlib import pyplot as plt
-import networkx as nx
-import pandas as pd
-
-from oemof.graph import create_nx_graph as create_graph
 from oemof.solph import Bus, EnergySystem, Flow, Model, Sink, Source, \
                         Transformer
 from oemof.solph.components import GenericStorage
@@ -53,17 +48,17 @@ from oemof.tools.datapackage import FLOW_TYPE
 
 
 es = EnergySystem.from_datapackage(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                     'datapackage/datapackage.json'),
-        typemap={
-            'volatile-generator': Source,
-            'hub': Bus,
-            'bus': Bus,
-            'storage': GenericStorage,
-            'dispatchable-generator': Source,
-            'transshipment': Link,
-            'backpressure-turbine': Transformer,
-            'demand': Sink,
-            FLOW_TYPE: Flow})
+    os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                 'datapackage/datapackage.json'),
+    typemap={
+        'volatile-generator': Source,
+        'hub': Bus,
+        'bus': Bus,
+        'storage': GenericStorage,
+        'dispatchable-generator': Source,
+        'transshipment': Link,
+        'backpressure-turbine': Transformer,
+        'demand': Sink,
+        FLOW_TYPE: Flow})
 
 m = Model(es)
