@@ -55,8 +55,3 @@ graph = create_graph(es)
 pos = nx.drawing.nx_agraph.graphviz_layout(graph, prog='neato')
 nx.draw(graph, pos=pos, with_labels=True)
 plt.show()
-
-m = BaseModel(energysystem=es)
-
-ext = es.groups['EXT-chp']
-[(k,v) for (k,v) in ext.outputs.items()]

@@ -35,7 +35,7 @@ by:
 
     pip install 'oemof<0.3,>=0.2'
 
-14.02.2018 - simon.hilpert@uni-flensubrg.de
+06.03.2018 - simon.hilpert@uni-flensubrg.de, stephan.guenther@uni-flensburg.de
 """
 import os
 
@@ -44,39 +44,24 @@ import networkx as nx
 import pandas as pd
 
 from oemof.graph import create_nx_graph as create_graph
-from oemof.solph import EnergySystem, Source, Bus, Transformer, Flow, Sink
+from oemof.solph import EnergySystem, Source, Bus, Transformer, Flow, Sink, Model
 from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
 
 
-es = EnergySystem.from_datapackage('datapackage/datapackage.json',
-        typemap={'volatile-generator': Source,
+es = EnergySystem.from_datapackage(
+        'examples/oemof_0.2/datapackage-reader/datapackage/datapackage.json',
+        typemap={
+            'volatile-generator': Source,
             'hub': Bus,
             'bus': Bus,
             'storage': GenericStorage,
             'dispatchable-generator': Source,
             'transshipment': Link,
-            'extraction-turbine': ExtractionTurbineCHP,
+            #'extraction-turbine': ExtractionTurbineCHP,
             'backpressure-turbine': Transformer,
             'demand': Sink,
             FLOW_TYPE: Flow})
 
-
-grph = create_graph(es)
-pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog='neato')
-
-nx.draw(grph, pos=pos, **options)
-
-# add edge labels for all edges
-if edge_labels is True and plt:
-    labels = nx.get_edge_attributes(grph, 'weight')
-    nx.draw_networkx_edge_labels(grph, pos=pos, edge_labels=labels)
-
-# show output
-if plot is True:
-    plt.show()
-
-ext = es.groups['EXT-chp']
-
-[(k,v) for (k,v) in ext.inputs.items()]
+m = Model(es)
