@@ -30,8 +30,8 @@ data/sequences/
 
 Installation requirements
 -------------------------
-This example requires the latest version of oemof. Install
-by:
+This example requires the latest version of oemof.
+Install it via:
 
     pip install 'oemof<0.3,>=0.2'
 
