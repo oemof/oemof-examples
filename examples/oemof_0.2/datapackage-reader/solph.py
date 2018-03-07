@@ -35,7 +35,7 @@ Install it via:
 
     pip install 'oemof<0.3,>=0.2'
 
-06.03.2018 - simon.hilpert@uni-flensubrg.de, stephan.guenther@uni-flensburg.de
+06.03.2018 - simon.hilpert@uni-flensburg.de, stephan.guenther@uni-flensburg.de
 """
 import os
 import os.path
