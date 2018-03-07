@@ -38,6 +38,7 @@ by:
 06.03.2018 - simon.hilpert@uni-flensubrg.de, stephan.guenther@uni-flensburg.de
 """
 import os
+import os.path
 
 from matplotlib import pyplot as plt
 import networkx as nx
@@ -52,7 +53,8 @@ from oemof.tools.datapackage import FLOW_TYPE
 
 
 es = EnergySystem.from_datapackage(
-        'examples/oemof_0.2/datapackage-reader/datapackage/datapackage.json',
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                     'datapackage/datapackage.json'),
         typemap={
             'volatile-generator': Source,
             'hub': Bus,
