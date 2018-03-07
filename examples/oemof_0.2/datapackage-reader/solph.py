@@ -45,7 +45,7 @@ import pandas as pd
 
 from oemof.graph import create_nx_graph as create_graph
 from oemof.solph import EnergySystem, Source, Bus, Transformer, Flow, Sink, Model
-from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
+from oemof.solph.components import GenericStorage
 from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
 
@@ -59,7 +59,6 @@ es = EnergySystem.from_datapackage(
             'storage': GenericStorage,
             'dispatchable-generator': Source,
             'transshipment': Link,
-            #'extraction-turbine': ExtractionTurbineCHP,
             'backpressure-turbine': Transformer,
             'demand': Sink,
             FLOW_TYPE: Flow})
