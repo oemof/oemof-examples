@@ -62,3 +62,4 @@ es = EnergySystem.from_datapackage(
         FLOW_TYPE: Flow})
 
 m = Model(es)
+
