@@ -50,6 +50,11 @@ from oemof.tools.datapackage import FLOW_TYPE
 es = EnergySystem.from_datapackage(
     os.path.join(os.path.dirname(os.path.realpath(__file__)),
                  'datapackage/datapackage.json'),
+    attributemap={
+        # Translations on `object` will be used every time, unless a more
+        # specific translation is found.
+        object: {"capacity": "nominal_capacity"},
+        Flow: {"ub": "nominal_value"}},
     typemap={
         'volatile-generator': Source,
         'hub': Bus,
