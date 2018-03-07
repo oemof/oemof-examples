@@ -66,7 +66,7 @@ pp2 = solph.Source(
 om = solph.Model(es)
 
 # debugging
-#om.write('problem.lp', io_options={'symbolic_solver_labels': True})
+# om.write('problem.lp', io_options={'symbolic_solver_labels': True})
 
 # solve model
 om.solve(solver='cbc', solve_kwargs={'tee': True})
