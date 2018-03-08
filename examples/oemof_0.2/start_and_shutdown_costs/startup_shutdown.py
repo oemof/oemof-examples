@@ -13,6 +13,7 @@ This example requires the version 0.2.1 of oemof. Install by:
 
 """
 
+import os
 import pandas as pd
 import oemof.solph as solph
 from oemof.network import Node
@@ -24,8 +25,9 @@ except ImportError:
 
 
 # read sequence data
-file_name = 'data'
-data = pd.read_csv(file_name + '.csv', sep=",")
+full_filename = os.path.join(os.path.dirname(__file__),
+                             'data.csv')
+data = pd.read_csv(full_filename, sep=",")
 
 # select periods
 periods = len(data)-1
