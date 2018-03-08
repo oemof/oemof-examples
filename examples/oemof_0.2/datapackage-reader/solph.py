@@ -42,7 +42,7 @@ import os.path
 
 from oemof.solph import Bus, EnergySystem, Flow, Model, Sink, Source, \
                         Transformer
-from oemof.solph.components import GenericStorage
+from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
 
@@ -54,12 +54,14 @@ es = EnergySystem.from_datapackage(
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
         object: {"capacity": "nominal_capacity"},
+        ExtractionTurbineCHP: {"eta_cond": "conversion_factor_full_condensation"},
         Flow: {"ub": "nominal_value"}},
     typemap={
         'volatile-generator': Source,
         'hub': Bus,
         'bus': Bus,
         'storage': GenericStorage,
+        'extraction-turbine': ExtractionTurbineCHP,
         'dispatchable-generator': Source,
         'transshipment': Link,
         'backpressure-turbine': Transformer,
@@ -67,4 +69,3 @@ es = EnergySystem.from_datapackage(
         FLOW_TYPE: Flow})
 
 m = Model(es)
-
