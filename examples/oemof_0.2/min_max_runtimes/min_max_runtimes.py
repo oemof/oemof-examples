@@ -12,6 +12,7 @@ This example requires the version 0.2.1 of oemof. Install by:
 
 """
 
+import os
 import pandas as pd
 import oemof.solph as solph
 from oemof.network import Node
@@ -23,8 +24,9 @@ except ImportError:
 
 
 # read sequence data
-file_name = 'data'
-data = pd.read_csv(file_name + '.csv', sep=",")
+full_filename = os.path.join(os.path.dirname(__file__),
+                             'data.csv')
+data = pd.read_csv(full_filename, sep=",")
 
 # select periods
 periods = len(data)-1
@@ -47,7 +49,7 @@ dummy_el = solph.Sink(
     inputs={bel: solph.Flow(variable_costs=10)})
 
 pp1 = solph.Source(
-    label='cheap_plant_min_down_constraints',
+    label='plant_min_down_constraints',
     outputs={
         bel: solph.Flow(
             nominal_value=10, min=0.5, max=1.0, variable_costs=10,
@@ -55,7 +57,7 @@ pp1 = solph.Source(
                 minimum_downtime=4, initial_status=0))})
 
 pp2 = solph.Source(
-    label='expensive_plant_min_up_constraints',
+    label='plant_min_up_constraints',
     outputs={
         bel: solph.Flow(
             nominal_value=10, min=0.5, max=1.0, variable_costs=10,
