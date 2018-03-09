@@ -9,12 +9,13 @@ __license__ = "GPLv3"
 
 from oemof import solph
 import pandas as pd
-import warnings
+import logging
 
 
 def check_oemof_installation(silent=False):
+    logging.disable(logging.CRITICAL)
+
     date_time_index = pd.date_range('1/1/2012', periods=5, freq='H')
-    warnings.filterwarnings("ignore")
     energysystem = solph.EnergySystem(timeindex=date_time_index)
 
     bgas = solph.Bus(label="natural_gas")
@@ -40,16 +41,16 @@ def check_oemof_installation(silent=False):
             solver[s] = "not working"
 
     if not silent:
-        print("*********")
+        print()
+        print("*****************************")
         print('Solver installed with oemof:')
+        print()
         for s, t in solver.items():
             print("{0}: {1}".format(s, t))
-        print("*********")
+        print()
+        print("*****************************")
         print("oemof successfully installed.")
-
-
-def test_oemof_installation():
-    check_oemof_installation(silent=True)
+        print("*****************************")
 
 
 if __name__ == "__main__":
