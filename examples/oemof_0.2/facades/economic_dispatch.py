@@ -13,17 +13,17 @@ b0 = Bus(label='b0')
 
 b1 = Bus(label='b1')
 
-connection  = Connector(label='connector', loss=0.05, capacity=1000,
+connection  = Connector(label='connector', loss=0.03, capacity=1000,
                         from_bus=b0, to_bus=b1)
 
-supply = Generator(label='generator', capacity=100, opex=10, bus=b0)
+supply = Generator(label='generator', capacity=200, opex=10, bus=b0)
 
 wind = Generator(label='wind', capacity=100, dispatchable=False,
-                 profile=[0.2] * 4, bus=b1)
+                 profile=[1] * 4, bus=b1)
 
-storage = Storage(label='storage', capacity=1000, power=100, bus=b0)
+storage = Storage(label='storage', capacity=0, power=100, bus=b0)
 
-demand = Demand(label='demand', amount=200, profile=[0.2] * 4, bus=b0)
+demand = Demand(label='demand', amount=200, profile=[1] * 4, bus=b0)
 
 # add components to energy system
 es.add(b0, b1, supply, wind, demand, storage, connection)
@@ -59,4 +59,5 @@ for n in es.nodes:
 
         flows.to_csv(path)
 
-m.write(os.path.join(directory, 'facades.lp'), io_options={'symbolic_solver_labels': True})
+m.write(os.path.join(directory, 'facades.lp'),
+                     io_options={'symbolic_solver_labels': True})
