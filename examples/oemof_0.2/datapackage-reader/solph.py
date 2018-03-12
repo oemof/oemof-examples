@@ -69,12 +69,16 @@ es = EnergySystem.from_datapackage(
         'demand': Sink,
         FLOW_TYPE: Flow})
 
+
 m = Model(es)
 
-#m.write('model.lp', io_options={'symbolic_solver_labels': True})
-
 m.solve()
+
+#m.write('model.lp', io_options={'symbolic_solver_labels': True})
 
 r = m.results()
 
 views.node(r, 'el-storage', multiindex=True)['sequences']
+
+import pandas as pd
+pd.Series(m.flow.get_values())
