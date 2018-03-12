@@ -45,6 +45,7 @@ from oemof.solph import Bus, EnergySystem, Flow, Model, Sink, Source, \
 from oemof.solph.components import GenericStorage, ExtractionTurbineCHP
 from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
+from oemof.outputlib import views
 
 
 es = EnergySystem.from_datapackage(
@@ -55,7 +56,7 @@ es = EnergySystem.from_datapackage(
         # specific translation is found.
         object: {"capacity": "nominal_capacity"},
         ExtractionTurbineCHP: {"eta_cond": "conversion_factor_full_condensation"},
-        Flow: {"ub": "nominal_value"}},
+        Flow: {"ub": "nominal_value", "cost": "variable_costs"}},
     typemap={
         'volatile-generator': Source,
         'hub': Bus,
@@ -69,3 +70,11 @@ es = EnergySystem.from_datapackage(
         FLOW_TYPE: Flow})
 
 m = Model(es)
+
+#m.write('model.lp', io_options={'symbolic_solver_labels': True})
+
+m.solve()
+
+r = m.results()
+
+views.node(r, 'el-storage', multiindex=True)['sequences']
