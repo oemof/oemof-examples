@@ -47,10 +47,7 @@ from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
 from oemof.outputlib import views
 
-
-es = EnergySystem.from_datapackage(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                 'datapackage/datapackage.json'),
+es = EnergySystem.from_datapackage("/home/simnh/projects/oemof_examples/examples/oemof_0.2/datapackage-reader/datapackage/datapackage.json",
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
@@ -79,6 +76,3 @@ m.solve()
 r = m.results()
 
 views.node(r, 'el-storage', multiindex=True)['sequences']
-
-import pandas as pd
-pd.Series(m.flow.get_values())

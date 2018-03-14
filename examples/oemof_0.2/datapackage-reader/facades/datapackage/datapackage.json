@@ -1,0 +1,90 @@
+{
+    "profile": "tabular-data-package",
+    "resources": [
+        {
+            "mediatype": "text/csv",
+            "encoding": "utf-8",
+            "name": "profiles",
+            "profile": "tabular-data-resource",
+            "format": "csv",
+            "schema": {
+                "fields": [
+                    {
+                        "name": "timeindex",
+                        "type": "string",
+                        "format": "default"
+                    },
+                    {
+                        "name": "wind-profile",
+                        "type": "number",
+                        "format": "default"
+                    },
+                    {
+                        "name": "demand-profile",
+                        "type": "number",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            },
+            "path": "data/sequences/profiles.csv"
+        },
+        {
+            "mediatype": "text/csv",
+            "format": "csv",
+            "profile": "tabular-data-resource",
+            "missingValues": [
+                ""
+            ],
+            "name": "elements",
+            "dialect": {
+                "doubleQuote": true,
+                "header": true,
+                "lineTerminator": "\r\n",
+                "quoteChar": "'",
+                "delimiter": ";",
+                "skipInitialSpace": true,
+                "caseSensitiveHeader": false
+            },
+            "encoding": "utf-8",
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "format": "default"
+                },
+                {
+                    "name": "type",
+                    "type": "string",
+                    "format": "default"
+                },
+                {
+                    "name": "node_parameters",
+                    "type": "object",
+                    "format": "default"
+                },
+                {
+                    "name": "predecessors",
+                    "type": "string",
+                    "format": "default"
+                },
+                {
+                    "name": "successors",
+                    "type": "string",
+                    "format": "default"
+                },
+                {
+                    "name": "edge_parameters",
+                    "type": "object",
+                    "format": "default"
+                }
+            ],
+            "path": [
+                "data/elements/header.csv",
+                "data/elements/demands.csv"
+            ]
+        }
+    ]
+}
