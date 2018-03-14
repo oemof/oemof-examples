@@ -11,7 +11,8 @@ from oemof.tools.datapackage import FLOW_TYPE
 
 es = EnergySystem.from_datapackage(
     os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                 'datapackage_facades/datapackage.json'),
+                 'datapackage',
+                 'datapackage.json'),
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
