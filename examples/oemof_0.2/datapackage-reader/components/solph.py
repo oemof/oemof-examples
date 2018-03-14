@@ -37,8 +37,8 @@ Install it via:
 
 06.03.2018 - simon.hilpert@uni-flensburg.de, stephan.guenther@uni-flensburg.de
 """
+from os.path import dirname, join, realpath
 import os
-import os.path
 
 from oemof.solph import Bus, EnergySystem, Flow, Model, Sink, Source, \
                         Transformer
@@ -48,8 +48,7 @@ from oemof.tools.datapackage import FLOW_TYPE
 from oemof.outputlib import views
 
 es = EnergySystem.from_datapackage(
-    os.path.dirname(os.path.realpath(__file__)),
-                 'datapackage_facades/datapackage.json',
+    join(dirname(realpath(__file__)), 'datapackage', 'datapackage.json'),
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
