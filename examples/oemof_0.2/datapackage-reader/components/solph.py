@@ -47,7 +47,9 @@ from oemof.solph.custom import Link
 from oemof.tools.datapackage import FLOW_TYPE
 from oemof.outputlib import views
 
-es = EnergySystem.from_datapackage("/home/simnh/projects/oemof_examples/examples/oemof_0.2/datapackage-reader/datapackage/datapackage.json",
+es = EnergySystem.from_datapackage(
+    os.path.dirname(os.path.realpath(__file__)),
+                 'datapackage_facades/datapackage.json',
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
