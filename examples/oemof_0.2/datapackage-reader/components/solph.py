@@ -54,7 +54,11 @@ es = EnergySystem.from_datapackage(
         # specific translation is found.
         object: {"capacity": "nominal_capacity"},
         ExtractionTurbineCHP: {"eta_cond": "conversion_factor_full_condensation"},
-        Flow: {"ub": "nominal_value", "cost": "variable_costs"}},
+        Flow: {"ub": "nominal_value",
+               "cost": "variable_costs",
+               "solar-profiles": "actual_value",
+               "wind-profiles": "actual_value",
+               "demand-profiles": "actual_value"}},
     typemap={
         'volatile-generator': Source,
         'hub': Bus,
