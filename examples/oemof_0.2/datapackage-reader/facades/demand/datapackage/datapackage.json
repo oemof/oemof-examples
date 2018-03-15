@@ -1,0 +1,115 @@
+{
+    "profile": "tabular-data-package",
+    "resources": [
+        {
+            "format": "csv",
+            "name": "generator",
+            "mediatype": "text/csv",
+            "path": "data/elements/generator.csv",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "name"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "type"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "capacity"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "default",
+                        "name": "investment_cost"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "bus"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "default",
+                        "name": "marginal_cost"
+                    }
+                ]
+            },
+            "encoding": "utf-8"
+        },
+        {
+            "format": "csv",
+            "name": "demand",
+            "mediatype": "text/csv",
+            "path": "data/elements/demand.csv",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "name"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "type"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "default",
+                        "name": "amount"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "profile"
+                    },
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "bus"
+                    }
+                ]
+            },
+            "encoding": "utf-8"
+        },
+        {
+            "format": "csv",
+            "name": "demand-profiles",
+            "mediatype": "text/csv",
+            "path": "data/sequences/demand-profiles.csv",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "type": "string",
+                        "format": "default",
+                        "name": "timeindex"
+                    },
+                    {
+                        "type": "number",
+                        "format": "default",
+                        "name": "demand-profile"
+                    }
+                ]
+            },
+            "encoding": "utf-8"
+        }
+    ]
+}

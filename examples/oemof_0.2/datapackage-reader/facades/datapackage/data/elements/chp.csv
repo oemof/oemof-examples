@@ -1,2 +1,0 @@
-name;type;capacity;efficiency_el;efficiency_th;bus_fuel;bus_el;bus_th;marginal_cost
-BP-chp;backpressure-turbine;20;0.4;0.5;global-coal;electricity-bus1;heat-bus;10

@@ -1,0 +1,2 @@
+name;type;capacity;investment_cost;bus;marginal_cost
+electricity-generator;generator;null;800;electricity-bus;75

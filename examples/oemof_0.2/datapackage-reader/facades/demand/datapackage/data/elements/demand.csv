@@ -1,0 +1,2 @@
+name;type;amount;profile;bus
+electricity-demand;demand;2000;demand-profile;electricity-bus
