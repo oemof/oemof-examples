@@ -2,89 +2,90 @@
     "profile": "tabular-data-package",
     "resources": [
         {
-            "mediatype": "text/csv",
-            "encoding": "utf-8",
-            "name": "profiles",
             "profile": "tabular-data-resource",
-            "format": "csv",
+            "mediatype": "text/csv",
             "schema": {
+                "missingValues": [
+                    ""
+                ],
                 "fields": [
                     {
                         "name": "timeindex",
-                        "type": "string",
-                        "format": "default"
+                        "format": "default",
+                        "type": "string"
                     },
                     {
                         "name": "wind-profile",
-                        "type": "number",
-                        "format": "default"
+                        "format": "default",
+                        "type": "number"
                     },
                     {
                         "name": "demand-profile",
-                        "type": "number",
-                        "format": "default"
+                        "format": "default",
+                        "type": "number"
                     }
-                ],
-                "missingValues": [
-                    ""
                 ]
             },
-            "path": "data/sequences/profiles.csv"
+            "name": "profiles",
+            "path": "data/sequences/profiles.csv",
+            "format": "csv",
+            "encoding": "utf-8"
         },
         {
-            "mediatype": "text/csv",
-            "format": "csv",
             "profile": "tabular-data-resource",
             "missingValues": [
                 ""
             ],
-            "name": "elements",
+            "mediatype": "text/csv",
             "dialect": {
-                "doubleQuote": true,
-                "header": true,
-                "lineTerminator": "\r\n",
                 "quoteChar": "'",
                 "delimiter": ";",
+                "header": true,
                 "skipInitialSpace": true,
-                "caseSensitiveHeader": false
+                "caseSensitiveHeader": false,
+                "lineTerminator": "\r\n",
+                "doubleQuote": true
             },
-            "encoding": "utf-8",
+            "name": "elements",
+            "path": [
+                "data/elements/header.csv",
+                "data/elements/demands.csv",
+                "data/elements/chp.csv"
+            ],
+            "format": "csv",
             "fields": [
                 {
                     "name": "name",
-                    "type": "string",
-                    "format": "default"
+                    "format": "default",
+                    "type": "string"
                 },
                 {
                     "name": "type",
-                    "type": "string",
-                    "format": "default"
+                    "format": "default",
+                    "type": "string"
                 },
                 {
                     "name": "node_parameters",
-                    "type": "object",
-                    "format": "default"
+                    "format": "default",
+                    "type": "object"
                 },
                 {
                     "name": "predecessors",
-                    "type": "string",
-                    "format": "default"
+                    "format": "default",
+                    "type": "string"
                 },
                 {
                     "name": "successors",
-                    "type": "string",
-                    "format": "default"
+                    "format": "default",
+                    "type": "string"
                 },
                 {
                     "name": "edge_parameters",
-                    "type": "object",
-                    "format": "default"
+                    "format": "default",
+                    "type": "object"
                 }
             ],
-            "path": [
-                "data/elements/header.csv",
-                "data/elements/demands.csv"
-            ]
+            "encoding": "utf-8"
         }
     ]
 }
