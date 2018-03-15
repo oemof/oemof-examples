@@ -48,7 +48,12 @@ from oemof.tools.datapackage import FLOW_TYPE
 from oemof.outputlib import views
 
 es = EnergySystem.from_datapackage(
+<<<<<<< 99a5d3ff4fd8f1dac30fd9852331469cdf159cbc
     join(dirname(realpath(__file__)), 'datapackage', 'datapackage.json'),
+=======
+    os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                 'datapackage/datapackage.json'),
+>>>>>>> Fix file pathn in compponents example
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
