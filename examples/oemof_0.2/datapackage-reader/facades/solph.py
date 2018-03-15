@@ -16,7 +16,7 @@ es = EnergySystem.from_datapackage(
     attributemap={
         # Translations on `object` will be used every time, unless a more
         # specific translation is found.
-        object: {"profiles": "profile"},
+        object: {"demand-profiles": "profile"},
         Flow: {}},
     typemap={
         'demand': Demand,
