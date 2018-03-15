@@ -5,7 +5,7 @@ import os
 import os.path
 
 from oemof.solph import Bus, EnergySystem, Flow, Model
-from oemof.solph.facades import Demand, CHP
+from oemof.solph.facades import Demand, CHP, Connection
 from oemof.tools.datapackage import FLOW_TYPE
 
 

@@ -1,91 +1,135 @@
 {
-    "profile": "tabular-data-package",
     "resources": [
         {
-            "profile": "tabular-data-resource",
-            "mediatype": "text/csv",
+            "format": "csv",
+            "encoding": "utf-8",
+            "name": "demands",
             "schema": {
-                "missingValues": [
-                    ""
-                ],
                 "fields": [
                     {
-                        "name": "timeindex",
                         "format": "default",
-                        "type": "string"
+                        "type": "string",
+                        "name": "name"
                     },
                     {
-                        "name": "wind-profile",
                         "format": "default",
-                        "type": "number"
+                        "type": "string",
+                        "name": "type"
                     },
                     {
-                        "name": "demand-profile",
                         "format": "default",
-                        "type": "number"
+                        "type": "integer",
+                        "name": "amount"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "profile"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "bus"
                     }
+                ],
+                "missingValues": [
+                    ""
                 ]
             },
-            "name": "profiles",
-            "path": "data/sequences/profiles.csv",
-            "format": "csv",
-            "encoding": "utf-8"
+            "profile": "tabular-data-resource",
+            "path": "data/elements/demands.csv",
+            "mediatype": "text/csv"
         },
         {
-            "profile": "tabular-data-resource",
-            "missingValues": [
-                ""
-            ],
-            "mediatype": "text/csv",
-            "dialect": {
-                "quoteChar": "'",
-                "delimiter": ";",
-                "header": true,
-                "skipInitialSpace": true,
-                "caseSensitiveHeader": false,
-                "lineTerminator": "\r\n",
-                "doubleQuote": true
-            },
-            "name": "elements",
-            "path": [
-                "data/elements/header.csv",
-                "data/elements/demands.csv",
-                "data/elements/chp.csv"
-            ],
             "format": "csv",
-            "fields": [
-                {
-                    "name": "name",
-                    "format": "default",
-                    "type": "string"
-                },
-                {
-                    "name": "type",
-                    "format": "default",
-                    "type": "string"
-                },
-                {
-                    "name": "node_parameters",
-                    "format": "default",
-                    "type": "object"
-                },
-                {
-                    "name": "predecessors",
-                    "format": "default",
-                    "type": "string"
-                },
-                {
-                    "name": "successors",
-                    "format": "default",
-                    "type": "string"
-                },
-                {
-                    "name": "edge_parameters",
-                    "format": "default",
-                    "type": "object"
-                }
-            ],
-            "encoding": "utf-8"
+            "encoding": "utf-8",
+            "name": "chp",
+            "schema": {
+                "fields": [
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "name"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "type"
+                    },
+                    {
+                        "format": "default",
+                        "type": "integer",
+                        "name": "capacity"
+                    },
+                    {
+                        "format": "default",
+                        "type": "number",
+                        "name": "efficiency_el"
+                    },
+                    {
+                        "format": "default",
+                        "type": "number",
+                        "name": "efficiency_th"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "bus_fuel"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "bus_el"
+                    },
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "bus_th"
+                    },
+                    {
+                        "format": "default",
+                        "type": "integer",
+                        "name": "marginal_cost"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            },
+            "profile": "tabular-data-resource",
+            "path": "data/elements/chp.csv",
+            "mediatype": "text/csv"
+        },
+        {
+            "format": "csv",
+            "encoding": "utf-8",
+            "name": "profiles",
+            "schema": {
+                "fields": [
+                    {
+                        "format": "default",
+                        "type": "string",
+                        "name": "timeindex"
+                    },
+                    {
+                        "format": "default",
+                        "type": "number",
+                        "name": "wind-profile"
+                    },
+                    {
+                        "format": "default",
+                        "type": "number",
+                        "name": "demand-profile"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            },
+            "profile": "tabular-data-resource",
+            "path": "data/sequences/profiles.csv",
+            "mediatype": "text/csv"
         }
-    ]
+    ],
+    "profile": "tabular-data-package"
 }

@@ -1,1 +1,2 @@
-BP-chp;backpressure-turbine;{"capacity":20, "efficiency_el": 0.4, "efficiency_th": 0.5, "bus_fuel":"global-coal", "bus_el":"electricity-bus1", "bus_th":"heat-bus"};global-coal;electricity-bus1, heat-bus;{"type": ["coal", "electricity", "heat"]}
+name;type;capacity;efficiency_el;efficiency_th;bus_fuel;bus_el;bus_th;marginal_cost
+BP-chp;backpressure-turbine;20;0.4;0.5;global-coal;electricity-bus1;heat-bus;10

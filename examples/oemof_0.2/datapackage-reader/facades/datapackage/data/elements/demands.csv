@@ -1,1 +1,2 @@
-demand-el;demand;{"amount": 2000, "profiles": "demand-profile", "bus": "electricity-bus1"};electricity-bus1;;{"edge_type":"electricity"}
+name;type;amount;profile;bus
+demand-el;demand; 2000; demand-profile; electricity-bus1
