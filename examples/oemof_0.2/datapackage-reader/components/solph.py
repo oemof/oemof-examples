@@ -59,7 +59,11 @@ es = EnergySystem.from_datapackage(
         # specific translation is found.
         object: {"capacity": "nominal_capacity"},
         ExtractionTurbineCHP: {"eta_cond": "conversion_factor_full_condensation"},
-        Flow: {"ub": "nominal_value", "cost": "variable_costs"}},
+        Flow: {"ub": "nominal_value",
+               "cost": "variable_costs",
+               "demand-profiles": "actual_value",
+               "solar-profiles": "actual_value",
+               "wind-profiles": "actual_value"}},
     typemap={
         'volatile-generator': Source,
         'hub': Bus,
@@ -77,7 +81,7 @@ m = Model(es)
 
 m.solve()
 
-#m.write('model.lp', io_options={'symbolic_solver_labels': True})
+m.write('model.lp', io_options={'symbolic_solver_labels': True})
 
 r = m.results()
 
