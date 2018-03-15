@@ -4,7 +4,7 @@
 import os
 import os.path
 
-from oemof.solph import Bus, EnergySystem, Flow, Model, Sink
+from oemof.solph import Bus, EnergySystem, Flow, Model
 from oemof.solph.facades import Demand
 from oemof.tools.datapackage import FLOW_TYPE
 
@@ -19,8 +19,8 @@ es = EnergySystem.from_datapackage(
         object: {"profiles": "profile"},
         Flow: {}},
     typemap={
-        'demand': Sink,
-        'bus': Bus, # DOES NOT WORK WITHOUT THIS, WHY!?
+        'demand': Demand,
+        'bus': Bus,
         FLOW_TYPE: Flow})
 
 
