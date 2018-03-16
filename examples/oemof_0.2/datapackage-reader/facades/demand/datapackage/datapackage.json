@@ -72,6 +72,15 @@
                         "name": "marginal_cost",
                         "type": "integer"
                     }
+                ],
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                                      }
+                    }
                 ]
             }
         },
@@ -111,6 +120,15 @@
                         "format": "default",
                         "name": "bus",
                         "type": "string"
+                    }
+                ],
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                                      }
                     }
                 ]
             }
