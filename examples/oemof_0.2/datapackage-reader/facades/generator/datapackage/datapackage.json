@@ -1,28 +1,68 @@
 {
+    "profile": "tabular-data-package",
     "resources": [
         {
-            "mediatype": "text/csv",
             "format": "csv",
+            "path": "data/elements/generator.csv",
+            "mediatype": "text/csv",
+            "name": "generator",
+            "encoding": "utf-8",
+            "profile": "tabular-data-resource",
             "schema": {
                 "fields": [
                     {
                         "type": "string",
-                        "name": "name;type;capacity;investment_cost;bus;marginal_cost;profile;dispatchable",
+                        "name": "name",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "format": "default"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "capacity",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "investment_cost",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "bus",
+                        "format": "default"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "marginal_cost",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "profile",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "dispatchable",
                         "format": "default"
                     }
                 ],
                 "missingValues": [
                     ""
                 ]
-            },
-            "path": "data/elements/generator.csv",
-            "encoding": "utf-8",
-            "name": "generator",
-            "profile": "tabular-data-resource"
+            }
         },
         {
-            "mediatype": "text/csv",
             "format": "csv",
+            "path": "data/sequences/profile.csv",
+            "mediatype": "text/csv",
+            "name": "profile",
+            "encoding": "utf-8",
+            "profile": "tabular-data-resource",
             "schema": {
                 "fields": [
                     {
@@ -39,12 +79,7 @@
                 "missingValues": [
                     ""
                 ]
-            },
-            "path": "data/sequences/profile.csv",
-            "encoding": "utf-8",
-            "name": "profile",
-            "profile": "tabular-data-resource"
+            }
         }
-    ],
-    "profile": "tabular-data-package"
+    ]
 }
