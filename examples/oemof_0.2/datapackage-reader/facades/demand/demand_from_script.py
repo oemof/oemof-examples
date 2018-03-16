@@ -8,6 +8,7 @@ from oemof.solph.facades import Demand, Generator
 es = EnergySystem(timeindex=pd.date_range(start='2016', periods=3, freq='H'))
 
 bus = Bus(label='electricity-bus')
+bus.commodity = 'electricity'
 
 generator = Generator(label='electricity-generator', capacity=None,
                       investment_cost=800, marginal_cost=75, bus=bus)
