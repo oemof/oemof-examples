@@ -1,11 +1,41 @@
 {
-    "profile": "tabular-data-package",
     "resources": [
         {
             "format": "csv",
-            "name": "generator",
+            "encoding": "utf-8",
+            "path": "data/elements/bus.csv",
             "mediatype": "text/csv",
+            "name": "bus",
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "format": "default",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "commodity",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        {
+            "format": "csv",
+            "encoding": "utf-8",
             "path": "data/elements/generator.csv",
+            "mediatype": "text/csv",
+            "name": "generator",
             "profile": "tabular-data-resource",
             "schema": {
                 "missingValues": [
@@ -13,44 +43,44 @@
                 ],
                 "fields": [
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "name"
+                        "name": "name",
+                        "type": "string"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "type"
+                        "name": "type",
+                        "type": "string"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "capacity"
+                        "name": "capacity",
+                        "type": "string"
                     },
                     {
-                        "type": "integer",
                         "format": "default",
-                        "name": "investment_cost"
+                        "name": "investment_cost",
+                        "type": "integer"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "bus"
+                        "name": "bus",
+                        "type": "string"
                     },
                     {
-                        "type": "integer",
                         "format": "default",
-                        "name": "marginal_cost"
+                        "name": "marginal_cost",
+                        "type": "integer"
                     }
                 ]
-            },
-            "encoding": "utf-8"
+            }
         },
         {
             "format": "csv",
-            "name": "demand",
-            "mediatype": "text/csv",
+            "encoding": "utf-8",
             "path": "data/elements/demand.csv",
+            "mediatype": "text/csv",
+            "name": "demand",
             "profile": "tabular-data-resource",
             "schema": {
                 "missingValues": [
@@ -58,39 +88,39 @@
                 ],
                 "fields": [
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "name"
+                        "name": "name",
+                        "type": "string"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "type"
+                        "name": "type",
+                        "type": "string"
                     },
                     {
-                        "type": "integer",
                         "format": "default",
-                        "name": "amount"
+                        "name": "amount",
+                        "type": "integer"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "profile"
+                        "name": "profile",
+                        "type": "string"
                     },
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "bus"
+                        "name": "bus",
+                        "type": "string"
                     }
                 ]
-            },
-            "encoding": "utf-8"
+            }
         },
         {
             "format": "csv",
-            "name": "demand-profiles",
-            "mediatype": "text/csv",
+            "encoding": "utf-8",
             "path": "data/sequences/demand-profiles.csv",
+            "mediatype": "text/csv",
+            "name": "demand-profiles",
             "profile": "tabular-data-resource",
             "schema": {
                 "missingValues": [
@@ -98,18 +128,18 @@
                 ],
                 "fields": [
                     {
-                        "type": "string",
                         "format": "default",
-                        "name": "timeindex"
+                        "name": "timeindex",
+                        "type": "string"
                     },
                     {
-                        "type": "number",
                         "format": "default",
-                        "name": "demand-profile"
+                        "name": "demand-profile",
+                        "type": "number"
                     }
                 ]
-            },
-            "encoding": "utf-8"
+            }
         }
-    ]
+    ],
+    "profile": "tabular-data-package"
 }
