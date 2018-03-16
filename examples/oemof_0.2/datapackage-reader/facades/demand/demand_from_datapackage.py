@@ -17,11 +17,9 @@ path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 p = Package(path)
 
 if p.valid:
-    try:
-        for r in p.resources:
-            [e for e in r.iter(relations=True)]
-    except:
-        raise ValueError('Your relations / foreign keys are messed up!')
+    for r in p.resources:
+        #[e for e in r.iter(relations=True)]
+        r.check_relations()
 
 es = EnergySystem.from_datapackage(
     path,
