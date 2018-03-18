@@ -88,6 +88,26 @@ c_e_Bus_balance(bg_3)_:
 +1 flow(bg_conversion_3)
 = 0
 
+c_e_Transformer_relation(conversion_bg_b0_0)_:
++1 flow(bg_conversion_0)
+-3.3333333333333335 flow(conversion_b0_0)
+= 0
+
+c_e_Transformer_relation(conversion_bg_b0_1)_:
++1 flow(bg_conversion_1)
+-3.3333333333333335 flow(conversion_b0_1)
+= 0
+
+c_e_Transformer_relation(conversion_bg_b0_2)_:
++1 flow(bg_conversion_2)
+-3.3333333333333335 flow(conversion_b0_2)
+= 0
+
+c_e_Transformer_relation(conversion_bg_b0_3)_:
++1 flow(bg_conversion_3)
+-3.3333333333333335 flow(conversion_b0_3)
+= 0
+
 c_u_InvestmentFlow_max(b0_storage_0)_:
 -1 InvestmentFlow_invest(b0_storage)
 +1 flow(b0_storage_0)
