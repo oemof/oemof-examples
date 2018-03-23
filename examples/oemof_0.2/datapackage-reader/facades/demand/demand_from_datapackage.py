@@ -29,3 +29,5 @@ es = EnergySystem.from_datapackage(
         'demand': Demand,
         'generator': Generator,
         'bus': Bus})
+
+print(es.nodes[1].profile)

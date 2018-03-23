@@ -1,13 +1,36 @@
 {
-    "profile": "tabular-data-package",
     "resources": [
         {
             "format": "csv",
-            "path": "data/elements/generator.csv",
-            "mediatype": "text/csv",
-            "name": "generator",
             "encoding": "utf-8",
-            "profile": "tabular-data-resource",
+            "mediatype": "text/csv",
+            "path": "data/elements/bus.csv",
+            "name": "bus",
+            "schema": {
+                "fields": [
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "format": "default"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "format": "default"
+                    }
+                ],
+                "missingValues": [
+                    ""
+                ]
+            },
+            "profile": "tabular-data-resource"
+        },
+        {
+            "format": "csv",
+            "encoding": "utf-8",
+            "mediatype": "text/csv",
+            "path": "data/elements/generator.csv",
+            "name": "generator",
             "schema": {
                 "fields": [
                     {
@@ -51,18 +74,27 @@
                         "format": "default"
                     }
                 ],
+                "foreignKeys": [
+                    {
+                        "fields": "bus",
+                        "reference": {
+                            "resource": "bus",
+                            "fields": "name"
+                                      }
+                    }
+                ],
                 "missingValues": [
                     ""
                 ]
-            }
+            },
+            "profile": "tabular-data-resource"
         },
         {
             "format": "csv",
-            "path": "data/sequences/profile.csv",
-            "mediatype": "text/csv",
-            "name": "profile",
             "encoding": "utf-8",
-            "profile": "tabular-data-resource",
+            "mediatype": "text/csv",
+            "path": "data/sequences/profile.csv",
+            "name": "profile",
             "schema": {
                 "fields": [
                     {
@@ -79,7 +111,9 @@
                 "missingValues": [
                     ""
                 ]
-            }
+            },
+            "profile": "tabular-data-resource"
         }
-    ]
+    ],
+    "profile": "tabular-data-package"
 }
