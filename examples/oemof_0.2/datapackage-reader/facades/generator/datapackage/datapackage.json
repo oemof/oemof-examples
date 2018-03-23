@@ -1,12 +1,13 @@
 {
     "resources": [
         {
-            "format": "csv",
-            "encoding": "utf-8",
-            "mediatype": "text/csv",
             "path": "data/elements/bus.csv",
             "name": "bus",
+            "format": "csv",
             "schema": {
+                "missingValues": [
+                    ""
+                ],
                 "fields": [
                     {
                         "type": "string",
@@ -18,20 +19,20 @@
                         "name": "type",
                         "format": "default"
                     }
-                ],
-                "missingValues": [
-                    ""
                 ]
             },
-            "profile": "tabular-data-resource"
+            "profile": "tabular-data-resource",
+            "mediatype": "text/csv",
+            "encoding": "utf-8"
         },
         {
-            "format": "csv",
-            "encoding": "utf-8",
-            "mediatype": "text/csv",
             "path": "data/elements/generator.csv",
             "name": "generator",
+            "format": "csv",
             "schema": {
+                "missingValues": [
+                    ""
+                ],
                 "fields": [
                     {
                         "type": "string",
@@ -72,47 +73,26 @@
                         "type": "string",
                         "name": "dispatchable",
                         "format": "default"
+                    },
+                    {
+                        "type": "object",
+                        "name": "edge_parameters",
+                        "format": "default"
                     }
                 ],
                 "foreignKeys": [
-                    {
-                        "fields": "bus",
-                        "reference": {
-                            "resource": "bus",
-                            "fields": "name"
-                                      }
-                    }
-                ],
-                "missingValues": [
-                    ""
-                ]
+                     {
+                         "fields": "bus",
+                         "reference": {
+                             "resource": "bus",
+                             "fields": "name"
+                                       }
+                     }
+                 ]
             },
-            "profile": "tabular-data-resource"
-        },
-        {
-            "format": "csv",
-            "encoding": "utf-8",
+            "profile": "tabular-data-resource",
             "mediatype": "text/csv",
-            "path": "data/sequences/profile.csv",
-            "name": "profile",
-            "schema": {
-                "fields": [
-                    {
-                        "type": "string",
-                        "name": "timeindex",
-                        "format": "default"
-                    },
-                    {
-                        "type": "number",
-                        "name": "wind-profile",
-                        "format": "default"
-                    }
-                ],
-                "missingValues": [
-                    ""
-                ]
-            },
-            "profile": "tabular-data-resource"
+            "encoding": "utf-8"
         }
     ],
     "profile": "tabular-data-package"

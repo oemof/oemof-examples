@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
+import os.path as path
 
 from oemof.solph import Bus, EnergySystem
 from oemof.solph.facades import Generator
