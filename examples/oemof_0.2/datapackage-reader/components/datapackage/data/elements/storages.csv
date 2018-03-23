@@ -1,2 +1,0 @@
-el-storage;storage;{"capacity": 2000};electricity-bus1;electricity-bus1;{"ub": [150, 140], "eta": [0.8, 0.9]}
-th-storage;storage;{"capacity": 100};heat-bus;heat-bus;{"ub": [10, 5], "eta": [1, 1]}
