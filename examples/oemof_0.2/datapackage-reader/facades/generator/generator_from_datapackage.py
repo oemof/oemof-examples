@@ -2,7 +2,6 @@
 """
 """
 import os
-import os.path
 
 from oemof.solph import Bus, EnergySystem
 from oemof.solph.facades import Generator
@@ -13,6 +12,8 @@ es = EnergySystem.from_datapackage(
               'datapackage',
               'datapackage.json'),
     typemap={
+        'Generator': Generator,
         'bus': Bus})
 
-print(es.groups['gen0'].__dict__)
+for n in es.nodes:
+    print(n.label)
