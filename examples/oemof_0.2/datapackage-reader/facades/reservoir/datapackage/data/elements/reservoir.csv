@@ -1,2 +1,3 @@
 name;type;capacity;investment_cost;bus;marginal_cost;inflow;spillage
 reservoir-storage;reservoir;1000;null;electricity-bus;0;reservoir-inflow;true
+reservoir-storage1;reservoir;2000;null;electricity-bus;0;reservoir-inflow;true

@@ -86,6 +86,12 @@
                               "resource": "bus",
                               "fields": "name"
                                         }
+                      },
+                      {
+                          "fields": "inflow",
+                          "reference": {
+                              "resource": "ror-inflows"
+                                        }
                       }
                   ]
             },
@@ -115,9 +121,9 @@
                 ]
             },
             "mediatype": "text/csv",
-            "path": "data/sequences/profile.csv",
+            "path": "data/sequences/ror-inflows.csv",
             "format": "csv",
-            "name": "profile",
+            "name": "ror-inflows",
             "encoding": "utf-8"
         }
     ]
