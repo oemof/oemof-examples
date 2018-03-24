@@ -13,8 +13,11 @@ bus.commodity = 'electricity'
 generator = Generator(label='electricity-generator', capacity=None,
                       investment_cost=800, marginal_cost=75, bus=bus)
 
-demand = Demand(label='electricity-demand', amount=2000,
+demand = Demand(label='electricity-demand1', amount=2000,
                 profile=[0.01, 0.02, 0.03], bus=bus)
+
+demand = Demand(label='electricity-demand2', amount=1000,
+                profile=[0.5, 0.6, 0.8], bus=bus)
 
 es.add(bus, generator, demand)
 

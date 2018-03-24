@@ -129,6 +129,12 @@
                             "resource": "bus",
                             "fields": "name"
                                       }
+                    },
+                    {
+                        "fields": "profile",
+                        "reference": {
+                            "resource": "demand-profiles"
+                                      }
                     }
                 ]
             }
@@ -152,7 +158,12 @@
                     },
                     {
                         "format": "default",
-                        "name": "demand-profile",
+                        "name": "demand-profile1",
+                        "type": "number"
+                    },
+                    {
+                        "format": "default",
+                        "name": "demand-profile2",
                         "type": "number"
                     }
                 ]
