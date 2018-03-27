@@ -6,7 +6,7 @@ import os.path
 
 from datapackage import Package
 
-from oemof.solph import Bus, EnergySystem
+from oemof.solph import Bus, EnergySystem, Model
 from oemof.solph.facades import Demand, Generator
 
 
@@ -31,3 +31,7 @@ es = EnergySystem.from_datapackage(
         'bus': Bus})
 
 print(es.nodes[1].profile)
+
+print(es.flows())
+
+m = Model(es)
