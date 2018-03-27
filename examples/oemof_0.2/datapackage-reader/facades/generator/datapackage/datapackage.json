@@ -95,5 +95,6 @@
             "encoding": "utf-8"
         }
     ],
-    "profile": "tabular-data-package"
+    "profile": "tabular-data-package",
+    "name": "Example datapackage for testing generators"
 }
