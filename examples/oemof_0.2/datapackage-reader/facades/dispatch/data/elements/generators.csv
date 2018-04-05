@@ -1,0 +1,5 @@
+name;type;capacity;investment_cost;bus;marginal_cost;profile;dispatchable;edge_parameters
+coal;generator;100;null;electricity-bus;40;;true; {}
+lignite;generator;10;null;electricity-bus;20;;true; {}
+wind;generator;100;null;electricity-bus;0;wind-profile;false; {}
+pv;generator;50;null;electricity-bus;0;pv-profile;false; {}
