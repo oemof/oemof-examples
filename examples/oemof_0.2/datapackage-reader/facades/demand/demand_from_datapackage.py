@@ -35,3 +35,4 @@ print(es.nodes[1].profile)
 print(es.flows())
 
 m = Model(es)
+m.solve()
