@@ -164,7 +164,7 @@ model = solph.Model(energysystem)
 # the lp-file.
 if debug:
     filename = os.path.join(
-        helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
+        helpers.extend_basic_path('lp_files'), 'basic_example.lp')
     logging.info('Store lp-file in {0}.'.format(filename))
     model.write(filename, io_options={'symbolic_solver_labels': True})
 
