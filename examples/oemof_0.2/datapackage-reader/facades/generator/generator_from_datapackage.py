@@ -4,7 +4,10 @@
 import os.path as path
 
 from oemof.solph import Bus, EnergySystem
-from oemof.solph.facades import Generator
+try:
+    from renpass.facades import Generator
+except ImportError:
+    raise ImportError("Could not import facades from renpass. Did you install it?")
 
 
 es = EnergySystem.from_datapackage(

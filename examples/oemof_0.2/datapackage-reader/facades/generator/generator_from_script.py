@@ -3,7 +3,10 @@
 """
 import pandas as pd
 from oemof.solph import Bus, EnergySystem, Model
-from oemof.solph.facades import Generator
+try:
+    from renpass.facades import Generator
+except ImportError:
+    raise ImportError("Could not import facades from renpass. Did you install it?")
 
 es = EnergySystem(timeindex=pd.date_range(start='2016', periods=3, freq='H'))
 

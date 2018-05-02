@@ -7,12 +7,16 @@ import os.path
 from datapackage import Package
 
 from oemof.solph import Bus, EnergySystem, Model
-from oemof.solph.facades import Demand, Generator
+try:
+    from renpass.facades import Demand, Generator
+except ImportError:
+    raise ImportError("Could not import facades from renpass. Did you install it?")
 
 
-path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-             'datapackage',
-             'datapackage.json')
+path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'datapackage',
+            'datapackage.json')
 
 p = Package(path)
 
