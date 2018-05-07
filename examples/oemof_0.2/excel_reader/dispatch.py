@@ -16,14 +16,17 @@ scenario.xlsx
 
 Installation requirements
 -------------------------
-This example requires the latest version of oemof, matplotlib and xlrd. Install
-by:
+This example requires the latest version of oemof and others.
+Install by:
 
-    pip install 'oemof<0.3,>=0.2'
-    pip install xlrd
-    pip install matplotlib
+    pip3 install 'oemof<0.3,>=0.2'
+    pip3 install xlrd
+    pip3 install matplotlib
+    pip3 install networkx
+    pip3 install pygraphviz
 
 5.1.2018 - uwe.krien@rl-institut.de
+7.5.2018 - jonathan.amme@rl-institut.de
 """
 
 import os
@@ -33,125 +36,303 @@ import pandas as pd
 from oemof.tools import logger
 from oemof import solph
 from oemof import outputlib
+from oemof.graph import create_nx_graph
 from matplotlib import pyplot as plt
+import networkx as nx
 
 
-def nodes_from_excel(filename):
+def nodes_from_excel(filename, header_lines=0):
+    """Read node data from Excel sheet
+
+    Parameters
+    ----------
+    filename : :obj:`str`
+        Path to excel file
+    header_lines : :obj:`int`
+        Number of header lines to be skipped (except column names)
+
+    Returns
+    -------
+    :obj:`dict`
+        Imported nodes data
+    """
+
+    # does Excel file exist?
+    if not filename or not os.path.isfile(filename):
+        raise FileNotFoundError('Excel data file {} not found.'
+                                .format(filename))
+
     xls = pd.ExcelFile(filename)
-    buses = xls.parse('buses')
-    commodity_sources = xls.parse('commodity_sources')
-    transformers = xls.parse('transformers')
-    renewables = xls.parse('renewables')
-    demand = xls.parse('demand')
-    storages = xls.parse('storages')
-    powerlines = xls.parse('powerlines')
-    timeseries = xls.parse('time_series')
+
+    nodes_data = {'buses': xls.parse('buses', header=header_lines),
+                  'commodity_sources': xls.parse('commodity_sources', header=header_lines),
+                  'transformers': xls.parse('transformers', header=header_lines),
+                  'renewables': xls.parse('renewables', header=header_lines),
+                  'demand': xls.parse('demand', header=header_lines),
+                  'storages': xls.parse('storages', header=header_lines),
+                  'powerlines': xls.parse('powerlines', header=header_lines),
+                  'timeseries': xls.parse('time_series', header=header_lines)
+                  }
+
+    # set datetime index
+    nodes_data['timeseries'].set_index('timestamp', inplace=True)
+    nodes_data['timeseries'].index = pd.to_datetime(nodes_data['timeseries'].index)
+
+    print('Data from Excel file {} imported.'
+          .format(filename))
+
+    return nodes_data
+
+
+def create_nodes(nd=None):
+    """Create nodes (oemof objects) from node dict
+
+    Parameters
+    ----------
+    nd : :obj:`dict`
+        Nodes data
+
+    Returns
+    -------
+    nodes : `obj`:dict of :class:`nodes <oemof.network.Node>`
+    """
+
+    if not nd:
+        raise ValueError('No nodes data provided.')
+
+    nodes = []
 
     # Create Bus objects from buses table
-    noded = {}
-    for i, b in buses.iterrows():
-        noded[b['label']] = solph.Bus(label=b['label'])
-        if b['excess']:
-            label = b['label'] + '_excess'
-            noded[label] = solph.Sink(label=label, inputs={
-                noded[b['label']]: solph.Flow()})
-        if b['shortage']:
-            label = b['label'] + '_shortage'
-            noded[label] = solph.Source(label=label, outputs={
-                noded[b['label']]: solph.Flow(
-                    variable_costs=b['shortage costs'])})
+    busd = {}
+
+    for i, b in nd['buses'].iterrows():
+        if b['active']:
+            bus = solph.Bus(label=b['label'])
+            nodes.append(bus)
+
+            busd[b['label']] = bus
+            if b['excess']:
+                nodes.append(
+                    solph.Sink(label=b['label'] + '_excess',
+                               inputs={busd[b['label']]: solph.Flow(
+                                   variable_costs=b['excess costs'])})
+                )
+            if b['shortage']:
+                nodes.append(
+                    solph.Source(label=b['label'] + '_shortage',
+                                 outputs={busd[b['label']]: solph.Flow(
+                                     variable_costs=b['shortage costs'])})
+                    )
 
     # Create Source objects from table 'commodity sources'
-    for i, cs in commodity_sources.iterrows():
-        noded[i] = solph.Source(label=i, outputs={noded[cs['to']]: solph.Flow(
-            variable_costs=cs['variable costs'])})
+    for i, cs in nd['commodity_sources'].iterrows():
+        if cs['active']:
+            nodes.append(
+                solph.Source(label=cs['label'],
+                             outputs={busd[cs['to']]: solph.Flow(
+                                 variable_costs=cs['variable costs'])})
+                        )
 
     # Create Source objects with fixed time series from 'renewables' table
-    for i, re in renewables.iterrows():
-        noded[i] = solph.Source(label=i, outputs={noded[re['to']]: solph.Flow(
-            actual_value=timeseries[i], nominal_value=re['capacity'],
-            fixed=True)})
+    for i, re in nd['renewables'].iterrows():
+        if re['active']:
+            # set static outflow values
+            outflow_args = {'nominal_value': re['capacity'],
+                            'fixed': True}
+            # get time series for node and parameter
+            for col in nd['timeseries'].columns.values:
+                if col.split('.')[0] == re['label']:
+                    outflow_args[col.split('.')[1]] = nd['timeseries'][col]
+
+            # create
+            nodes.append(
+                solph.Source(label=re['label'],
+                             outputs={busd[re['to']]: solph.Flow(**outflow_args)})
+            )
 
     # Create Sink objects with fixed time series from 'demand' table
-    for i, re in demand.iterrows():
-        noded[i] = solph.Sink(label=i, inputs={noded[re['from']]: solph.Flow(
-            actual_value=timeseries[i], nominal_value=re['maximum'],
-            fixed=True)})
+    for i, de in nd['demand'].iterrows():
+        if de['active']:
+            # set static inflow values
+            inflow_args = {'nominal_value': de['nominal value'],
+                           'fixed': de['fixed']}
+            # get time series for node and parameter
+            for col in nd['timeseries'].columns.values:
+                if col.split('.')[0] == de['label']:
+                    inflow_args[col.split('.')[1]] = nd['timeseries'][col]
+
+            # create
+            nodes.append(
+                solph.Sink(label=de['label'],
+                           inputs={busd[de['from']]: solph.Flow(**inflow_args)})
+            )
 
     # Create Transformer objects from 'transformers' table
-    for i, t in transformers.iterrows():
-        noded[i] = solph.Transformer(
-            label=i,
-            inputs={noded[t['from']]: solph.Flow()},
-            outputs={noded[t['to']]: solph.Flow(
-                nominal_value=t['capacity'],
-                variable_costs=t['variable costs'],
-                max=t['simultaneity'])},
-            conversion_factors={noded[t['to']]: t['efficiency']})
+    for i, t in nd['transformers'].iterrows():
+        if t['active']:
+            # set static inflow values
+            inflow_args = {'variable_costs': t['variable input costs']}
+            # get time series for inflow of transformer
+            for col in nd['timeseries'].columns.values:
+                if col.split('.')[0] == t['label']:
+                    inflow_args[col.split('.')[1]] = nd['timeseries'][col]
+            # create
+            nodes.append(
+                solph.Transformer(
+                    label=t['label'],
+                    inputs={busd[t['from']]: solph.Flow(**inflow_args)},
+                    outputs={busd[t['to']]: solph.Flow(
+                            nominal_value=t['capacity'])},
+                    conversion_factors={busd[t['to']]: t['efficiency']})
+            )
 
-    for i, s in storages.iterrows():
-        noded[i] = solph.components.GenericStorage(
-            label=i,
-            inputs={noded[s['bus']]: solph.Flow(
-                nominal_value=s['capacity pump'], max=s['max'])},
-            outputs={noded[s['bus']]: solph.Flow(
-                nominal_value=s['capacity turbine'], max=s['max'])},
-            nominal_capacity=s['capacity storage'],
-            capacity_loss=s['capacity loss'],
-            initial_capacity=s['initial capacity'],
-            capacity_max=s['cmax'], capacity_min=s['cmin'],
-            inflow_conversion_factor=s['efficiency pump'],
-            outflow_conversion_factor=s['efficiency turbine'])
+    for i, s in nd['storages'].iterrows():
+        if s['active']:
+            nodes.append(
+                solph.components.GenericStorage(
+                    label=s['label'],
+                    inputs={busd[s['bus']]: solph.Flow(
+                        nominal_value=s['capacity inflow'],
+                        variable_costs=s['variable input costs'])},
+                    outputs={busd[s['bus']]: solph.Flow(
+                        nominal_value=s['capacity outflow'],
+                        variable_costs=s['variable output costs'])},
+                    nominal_capacity=s['nominal capacity'],
+                    capacity_loss=s['capacity loss'],
+                    initial_capacity=s['initial capacity'],
+                    capacity_max=s['capacity max'],
+                    capacity_min=s['capacity min'],
+                    inflow_conversion_factor=s['efficiency inflow'],
+                    outflow_conversion_factor=s['efficiency outflow'])
+            )
 
-    for i, p in powerlines.iterrows():
-        label = 'powerline_' + p['bus_1'] + '_' + p['bus_2']
-        noded[label] = solph.Transformer(
-            label=label,
-            inputs={noded[p['bus_1']]: solph.Flow()},
-            outputs={noded[p['bus_2']]: solph.Flow(
-                nominal_value=p['capacity'])},
-            conversion_factors={noded[p['bus_2']]: p['efficiency']})
-        label = 'powerline_' + p['bus_2'] + '_' + p['bus_1']
-        noded[label] = solph.Transformer(
-            label=label,
-            inputs={noded[p['bus_2']]: solph.Flow()},
-            outputs={noded[p['bus_1']]: solph.Flow(
-                nominal_value=p['capacity'])},
-            conversion_factors={noded[p['bus_1']]: p['efficiency']})
-    return noded
+    for i, p in nd['powerlines'].iterrows():
+        if p['active']:
+            bus1 = busd[p['bus_1']]
+            bus2 = busd[p['bus_2']]
+            nodes.append(
+                solph.custom.Link(
+                    label='powerline'
+                          + '_' + p['bus_1']
+                          + '_' + p['bus_2'],
+                    inputs={bus1: solph.Flow(),
+                            bus2: solph.Flow()},
+                    outputs={bus1: solph.Flow(nominal_value=p['capacity']),
+                             bus2: solph.Flow(nominal_value=p['capacity'])
+                             },
+                    conversion_factors={(bus1, bus2): p['efficiency'],
+                                        (bus2, bus1): p['efficiency']})
+            )
+
+    return nodes
+
+
+def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
+               edge_color='#CFCFCF', plot=True, node_size=2000,
+               with_labels=True, arrows=True, layout='neato'):
+    """
+    Draw a graph (from oemof examples)
+
+    Parameters
+    ----------
+    grph : networkxGraph
+        A graph to draw.
+    edge_labels : boolean
+        Use nominal values of flow as edge label
+    node_color : dict or string
+        Hex color code oder matplotlib color for each node. If string, all
+        colors are the same.
+
+    edge_color : string
+        Hex color code oder matplotlib color for edge color.
+
+    plot : boolean
+        Show matplotlib plot.
+
+    node_size : integer
+        Size of nodes.
+
+    with_labels : boolean
+        Draw node labels.
+
+    arrows : boolean
+        Draw arrows on directed edges. Works only if an optimization_model has
+        been passed.
+    layout : string
+        networkx graph layout, one of: neato, dot, twopi, circo, fdp, sfdp.
+    """
+    if type(node_color) is dict:
+        node_color = [node_color.get(g, '#AFAFAF') for g in grph.nodes()]
+
+    # set drawing options
+    options = {
+        'prog': 'dot',
+        'with_labels': with_labels,
+        'node_color': node_color,
+        'edge_color': edge_color,
+        'node_size': node_size,
+        'arrows': arrows
+    }
+
+    # draw graph
+    pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog=layout)
+
+    nx.draw(grph, pos=pos, **options)
+
+    # add edge labels for all edges
+    if edge_labels is True and plt:
+        labels = nx.get_edge_attributes(grph, 'weight')
+        nx.draw_networkx_edge_labels(grph, pos=pos, edge_labels=labels)
+
+    # show output
+    if plot is True:
+        plt.show()
 
 
 logger.define_logging()
-datetime_index = pd.date_range(
-    '2030-01-01 00:00:00', '2030-01-14 23:00:00', freq='60min')
+datetime_index = pd.date_range('2016-01-01 00:00:00',
+                               '2016-01-07 23:00:00',
+                               freq='60min')
 
 # model creation and solving
 logging.info('Starting optimization')
 
 # initialisation of the energy system
-es = solph.EnergySystem(timeindex=datetime_index)
+esys = solph.EnergySystem(timeindex=datetime_index)
 
-# adding all nodes and flows to the energy system
-# (data taken from excel-file)
-nodes = nodes_from_excel(
-    os.path.join(os.path.dirname(__file__), 'scenarios.xlsx',))
+# read node data from Excel sheet
+nd = nodes_from_excel(
+    os.path.join(os.path.dirname(__file__), 'scenario.xlsx',))
 
-es.add(*nodes.values())
+# create nodes from Excel sheet data
+nodes = create_nodes(nd=nd)
 
-print("********************************************************")
-print("The following objects has been created from excel sheet:")
-for n in es.nodes:
+# add nodes and flows to energy system
+esys.add(*nodes)
+
+print("*********************************************************")
+print("The following objects have been created from excel sheet:")
+for n in esys.nodes:
     oobj = str(type(n)).replace("<class 'oemof.solph.", "").replace("'>", "")
     print(oobj + ':', n.label)
-print("********************************************************")
+print("*********************************************************")
 
 # creation of a least cost model from the energy system
-om = solph.Model(es)
+om = solph.Model(esys)
 om.receive_duals()
 
 # solving the linear problem using the given solver
 om.solve(solver='cbc')
 
+# plot esys graph
+graph = create_nx_graph(esys)
+draw_graph(grph=graph, plot=True, layout='neato', node_size=1000,
+           node_color={
+               'R1_bus_el': '#cd3333',
+               'R2_bus_el': '#cd3333'
+           })
+
+# print and plot some results
 results = outputlib.processing.results(om)
 
 region2 = outputlib.views.node(results, 'R2_bus_el')
