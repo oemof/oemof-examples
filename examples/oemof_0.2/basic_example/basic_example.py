@@ -160,11 +160,11 @@ model = solph.Model(energysystem)
 
 # This is for debugging only. It is not(!) necessary to solve the problem and
 # should be set to False to save time and disc space in normal use. For
-# debugging the timesteps should be set to 3, to increase the readability of the
-# lp-file.
+# debugging the timesteps should be set to 3, to increase the readability of
+# the lp-file.
 if debug:
     filename = os.path.join(
-        helpers.extend_basic_path('lp_files'), 'storage_invest.lp')
+        helpers.extend_basic_path('lp_files'), 'basic_example.lp')
     logging.info('Store lp-file in {0}.'.format(filename))
     model.write(filename, io_options={'symbolic_solver_labels': True})
 
@@ -174,8 +174,8 @@ model.solve(solver=solver, solve_kwargs={'tee': solver_verbose})
 
 logging.info('Store the energy system with the results.')
 
-# The processing module of the outputlib can be used to extract the results from
-# the model transfer them into a homogeneous structured dictionary.
+# The processing module of the outputlib can be used to extract the results
+# from the model transfer them into a homogeneous structured dictionary.
 
 # add results to the energy system to make it possible to store them.
 energysystem.results['main'] = outputlib.processing.results(model)
@@ -184,7 +184,8 @@ energysystem.results['meta'] = outputlib.processing.meta_results(model)
 # The default path is the '.oemof' folder in your $HOME directory.
 # The default filename is 'es_dump.oemof'.
 # You can omit the attributes (as None is the default value) for testing cases.
-# You should use unique names/folders for valuable results to avoid overwriting.
+# You should use unique names/folders for valuable results to avoid
+# overwriting.
 
 # store energy system with results
 energysystem.dump(dpath=None, filename=None)

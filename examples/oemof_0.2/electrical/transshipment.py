@@ -23,7 +23,7 @@ from matplotlib import pyplot as plt
 from oemof.solph import (EnergySystem, Model, Bus, Flow, Source, Sink,
                          custom, Investment)
 from oemof.outputlib import processing, views
-from oemof.graph import create_nx_graph as create_graph
+from oemof.graph import create_nx_graph
 
 
 def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
@@ -135,7 +135,7 @@ m.solve(solver='cbc',
 
 m.results()
 
-graph = create_graph(es, m)
+graph = create_nx_graph(es, m)
 
 draw_graph(graph, plot=True, layout='neato', node_size=3000,
            node_color={
