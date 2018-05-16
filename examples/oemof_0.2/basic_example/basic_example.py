@@ -216,9 +216,16 @@ electricity_bus = outputlib.views.node(results, 'electricity')
 
 # plot the time series (sequences) of a specific component/bus
 if plt is not None:
-    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
+    fig, ax = plt.subplots(figsize=(10,5))
+    custom_storage['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
+    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.25), ncol=2)
+    fig.subplots_adjust(top=0.8)
     plt.show()
-    electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+
+    fig, ax = plt.subplots(figsize=(10,5))
+    electricity_bus['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
+    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.3), ncol=2)
+    fig.subplots_adjust(top=0.8)
     plt.show()
 
 # print the solver results
