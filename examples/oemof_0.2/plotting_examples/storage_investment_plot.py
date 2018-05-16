@@ -148,13 +148,14 @@ electricity_bus = views.node(results, 'electricity')
 
 # ***** 1. example ***************************************************
 # Plot directly using pandas
-custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
+custom_storage['sequences'].plot(kind='line', drawstyle='steps-post',
+                                 title='Simple xticks')
 
 # Change the datetime ticks
 ax = custom_storage['sequences'].reset_index(drop=True).plot(
     kind='line', drawstyle='steps-post')
 ax.set_xlabel('2012')
-ax.set_title('Change the xticks.')
+ax.set_title('Formatted xticks')
 oev.plot.set_datetime_ticks(ax, custom_storage['sequences'].index,
                             date_format='%d-%m', number_autoticks=6)
 plt.show()
@@ -170,25 +171,27 @@ cdict = {
     (('wind', 'electricity'), 'flow'): '#5b5bae'}
 
 # Plot directly using pandas
-electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post',
+                                  title='Using defaults colors')
 
 # Change the colors using the dictionary above to define the colors
 colors = oev.plot.color_from_dict(cdict, electricity_bus['sequences'])
 ax = electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post',
                                        color=colors)
-ax.set_title('Change the colors.')
+ax.set_title('Using custom colors')
 plt.show()
 
 # ***** 3. example ***************************************************
 # Plot directly using pandas
-electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
+electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post',
+                                  title='Show all flows')
 
 # Plot only input flows
 in_cols = oev.plot.divide_bus_columns(
     'electricity', electricity_bus['sequences'].columns)['in_cols']
 ax = electricity_bus['sequences'][in_cols].plot(kind='line',
                                                 drawstyle='steps-post')
-ax.set_title('Show only input flows.')
+ax.set_title('Show only input flows')
 plt.show()
 
 # ***** 4. example ***************************************************
@@ -213,7 +216,7 @@ oev.plot.set_datetime_ticks(ax, plot_slice.index, tick_distance=48,
 
 ax.set_ylabel('Power in MW')
 ax.set_xlabel('2012')
-ax.set_title("Electricity bus")
+ax.set_title("Electricity bus, non-smoothed representation")
 
 # ***** 5. example ***************************************************
 # Create a plot to show the balance around a bus.
@@ -237,5 +240,5 @@ ax = oev.plot.set_datetime_ticks(ax, plot_slice.index, tick_distance=48,
 
 ax.set_ylabel('Power in MW')
 ax.set_xlabel('2012')
-ax.set_title("Electricity bus")
+ax.set_title("Electricity bus, smoothed representation")
 plt.show()
