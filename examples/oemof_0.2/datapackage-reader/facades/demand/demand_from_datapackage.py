@@ -10,7 +10,11 @@ from oemof.solph import Bus, EnergySystem, Model
 try:
     from renpass.facades import Demand, Generator
 except ImportError:
-    raise ImportError("Could not import facades from renpass. Did you install it?")
+    raise ImportError(
+        """Could not import facades from renpass. Did you install it?
+
+        Please use renpass version > 0.2 from: https://github.com/znes/renpass_gis
+        """)
 
 
 path = os.path.join(
