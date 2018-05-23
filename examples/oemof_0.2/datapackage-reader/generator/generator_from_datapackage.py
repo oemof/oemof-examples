@@ -5,7 +5,7 @@ import os
 
 from oemof.solph import Bus, EnergySystem
 try:
-    from renpass.facade import Generator
+    from renpass.facades import Generator
 except ImportError:
     raise ImportError(
         """Could not import facades from renpass. Did you install it?
