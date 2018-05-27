@@ -1,0 +1,130 @@
+{
+    "profile": "tabular-data-package",
+    "resources": [
+        {
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "format": "default",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "balanced",
+                        "type": "boolean"
+                    }
+                ]
+            },
+            "mediatype": "text/csv",
+            "path": "data/elements/bus.csv",
+            "format": "csv",
+            "name": "bus",
+            "encoding": "utf-8"
+        },
+        {
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "format": "default",
+                        "name": "name",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "type",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "capacity",
+                        "type": "integer"
+                    },
+                    {
+                        "format": "default",
+                        "name": "investment_cost",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "bus",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "marginal_cost",
+                        "type": "integer"
+                    },
+                    {
+                        "format": "default",
+                        "name": "inflow",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "spillage",
+                        "type": "boolean"
+                    }
+                ],
+                "foreignKeys": [
+                      {
+                          "fields": "bus",
+                          "reference": {
+                              "resource": "bus",
+                              "fields": "name"
+                                        }
+                      },
+                      {
+                          "fields": "inflow",
+                          "reference": {
+                              "resource": "ror-inflows"
+                                        }
+                      }
+                  ]
+            },
+            "mediatype": "text/csv",
+            "path": "data/elements/reservoir.csv",
+            "format": "csv",
+            "name": "reservoir",
+            "encoding": "utf-8"
+        },
+        {
+            "profile": "tabular-data-resource",
+            "schema": {
+                "missingValues": [
+                    ""
+                ],
+                "fields": [
+                    {
+                        "format": "default",
+                        "name": "timeindex",
+                        "type": "string"
+                    },
+                    {
+                        "format": "default",
+                        "name": "reservoir-inflow",
+                        "type": "number"
+                    }
+                ]
+            },
+            "mediatype": "text/csv",
+            "path": "data/sequences/ror-inflows.csv",
+            "format": "csv",
+            "name": "ror-inflows",
+            "encoding": "utf-8"
+        }
+    ]
+}
