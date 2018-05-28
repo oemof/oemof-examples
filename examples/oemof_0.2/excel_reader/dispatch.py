@@ -23,7 +23,13 @@ Install by:
     pip3 install xlrd
     pip3 install matplotlib
     pip3 install networkx
+
+If you want to plot the energy system's graph, you have to install pygraphviz by:
+
     pip3 install pygraphviz
+
+For pygraphviz under Windows, some hints are available in the oemof Wiki:
+https://github.com/oemof/oemof/wiki/Installation-help:-SolydXK,-Debian-(stable)#install-pygraphviz-under-windows
 
 5.1.2018 - uwe.krien@rl-institut.de
 7.5.2018 - jonathan.amme@rl-institut.de
@@ -41,15 +47,13 @@ from matplotlib import pyplot as plt
 import networkx as nx
 
 
-def nodes_from_excel(filename, header_lines=0):
+def nodes_from_excel(filename):
     """Read node data from Excel sheet
 
     Parameters
     ----------
     filename : :obj:`str`
         Path to excel file
-    header_lines : :obj:`int`
-        Number of header lines to be skipped (except column names)
 
     Returns
     -------
@@ -64,14 +68,14 @@ def nodes_from_excel(filename, header_lines=0):
 
     xls = pd.ExcelFile(filename)
 
-    nodes_data = {'buses': xls.parse('buses', header=header_lines),
-                  'commodity_sources': xls.parse('commodity_sources', header=header_lines),
-                  'transformers': xls.parse('transformers', header=header_lines),
-                  'renewables': xls.parse('renewables', header=header_lines),
-                  'demand': xls.parse('demand', header=header_lines),
-                  'storages': xls.parse('storages', header=header_lines),
-                  'powerlines': xls.parse('powerlines', header=header_lines),
-                  'timeseries': xls.parse('time_series', header=header_lines)
+    nodes_data = {'buses': xls.parse('buses'),
+                  'commodity_sources': xls.parse('commodity_sources'),
+                  'transformers': xls.parse('transformers'),
+                  'renewables': xls.parse('renewables'),
+                  'demand': xls.parse('demand'),
+                  'storages': xls.parse('storages'),
+                  'powerlines': xls.parse('powerlines'),
+                  'timeseries': xls.parse('time_series')
                   }
 
     # set datetime index
@@ -231,8 +235,6 @@ def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
                edge_color='#CFCFCF', plot=True, node_size=2000,
                with_labels=True, arrows=True, layout='neato'):
     """
-    Draw a graph (from oemof examples)
-
     Parameters
     ----------
     grph : networkxGraph
@@ -274,9 +276,15 @@ def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
         'arrows': arrows
     }
 
-    # draw graph
-    pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog=layout)
+    # try to use pygraphviz for graph layout
+    try:
+        import pygraphviz
+        pos = nx.drawing.nx_agraph.graphviz_layout(grph, prog=layout)
+    except ImportError:
+        logging.error('Module pygraphviz not found, I won\'t plot the graph.')
+        return
 
+    # draw graph
     nx.draw(grph, pos=pos, **options)
 
     # add edge labels for all edges
@@ -291,7 +299,7 @@ def draw_graph(grph, edge_labels=True, node_color='#AFAFAF',
 
 logger.define_logging()
 datetime_index = pd.date_range('2016-01-01 00:00:00',
-                               '2016-01-07 23:00:00',
+                               '2016-01-01 23:00:00',
                                freq='60min')
 
 # model creation and solving
