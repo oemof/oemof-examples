@@ -29,7 +29,7 @@ If you want to plot the energy system's graph, you have to install pygraphviz by
     pip3 install pygraphviz
 
 For pygraphviz under Windows, some hints are available in the oemof Wiki:
-https://github.com/oemof/oemof/wiki/Installation-help:-SolydXK,-Debian-(stable)#install-pygraphviz-under-windows
+https://github.com/oemof/oemof/wiki/Windows---general
 
 5.1.2018 - uwe.krien@rl-institut.de
 7.5.2018 - jonathan.amme@rl-institut.de
