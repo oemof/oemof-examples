@@ -332,8 +332,12 @@ om.receive_duals()
 # solving the linear problem using the given solver
 om.solve(solver='cbc')
 
-# plot esys graph
+# create graph of esys
+# You can use argument filename='/home/somebody/my_graph.graphml'
+# to dump your graph to disc. You can open it using e.g. yEd or gephi
 graph = create_nx_graph(esys)
+
+# plot esys graph
 draw_graph(grph=graph, plot=True, layout='neato', node_size=1000,
            node_color={
                'R1_bus_el': '#cd3333',
