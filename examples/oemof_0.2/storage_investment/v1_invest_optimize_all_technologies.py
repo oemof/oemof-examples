@@ -22,7 +22,9 @@ an energy system with storage. The following energy system is modeled:
  pp_gas(Transformer) |<---------|        |       |
                      |------------------>|       |
                      |          |        |       |
- storage(Storage)    |<------------------|       |
+ storage1(Storage)   |<------------------|       |
+                     |------------------>|       |
+ storage2(Storage)   |<------------------|       |
                      |------------------>|       |
 
 The example exists in four variations. The following parameters describe
@@ -82,13 +84,13 @@ full_filename = os.path.join(os.path.dirname(__file__),
     'storage_investment.csv')
 data = pd.read_csv(full_filename, sep=",")
 
-price_gas = 0.04
+price_gas = 0.06
 
 # If the period is one year the equivalent periodical costs (epc) of an
 # investment are equal to the annuity. Use oemof's economic tools.
 epc_wind = economics.annuity(capex=1000, n=20, wacc=0.05)
 epc_pv = economics.annuity(capex=1000, n=20, wacc=0.05)
-epc_storage = economics.annuity(capex=1000, n=20, wacc=0.05)
+epc_storage = economics.annuity(capex=75, n=20, wacc=0.05)
 
 ##########################################################################
 # Create oemof objects
@@ -132,18 +134,39 @@ pp_gas = solph.Transformer(
     conversion_factors={bel: 0.58})
 
 # create storage object representing a battery
-storage = solph.components.GenericStorage(
-    label='storage',
-    inputs={bel: solph.Flow(variable_costs=0.0001)},
-    outputs={bel: solph.Flow()},
+
+# create storage object representing a storage with flow coupled to the storage capacity
+# The flow investment can be specified with costs, but do not have to. Default value is '0'.
+# The 'maximum' investment for the input flow is 100 000. This sets the boundary for the capacity investment
+# and thus also for the output flow.
+
+storage1 = solph.components.GenericStorage(
+    label='storage1',
+    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage, maximum=100000))},
+    outputs={bel: solph.Flow(investment = solph.Investment(ep_costs=0))},
     capacity_loss=0.00, initial_capacity=0,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6,
+    invest_relation_input_capacity=1/6,
+    invest_relation_output_capacity=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
     investment=solph.Investment(ep_costs=epc_storage),
 )
 
-energysystem.add(excess, gas_resource, wind, pv, demand, pp_gas, storage)
+# create storage object representing a storage with the input flow coupled
+#to the output flow with a ratio of 4 : 6. The input flow is also coupled to
+#the capacity with a ratio of 1 : 6 - thus also coupling the outflow.
+
+storage2 = solph.components.GenericStorage(
+    label='storage2',
+    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage))},
+    outputs={bel: solph.Flow(variable_costs=0.0001, investment = solph.Investment(ep_costs=0))},
+    capacity_loss=0.00, initial_capacity=0,
+    invest_relation_input_capacity=1/6,
+    invest_relation_input_output = 4/6,
+    inflow_conversion_factor=1, outflow_conversion_factor=0.8,
+    investment=solph.Investment(ep_costs=epc_storage),
+)
+
+energysystem.add(excess, gas_resource, wind, pv, demand, pp_gas, storage1, storage2)
 
 ##########################################################################
 # Optimise the energy system
@@ -165,7 +188,9 @@ om.solve(solver='cbc', solve_kwargs={'tee': True})
 # check if the new result object is working for custom components
 results = processing.results(om)
 
-custom_storage = views.node(results, 'storage')
+custom_storage = views.node(results, 'storage1')
+custom_storage = views.node(results, 'storage2')
+
 electricity_bus = views.node(results, 'electricity')
 
 meta_results = processing.meta_results(om)
@@ -174,7 +199,10 @@ pp.pprint(meta_results)
 my_results = electricity_bus['scalars']
 
 # installed capacity of storage in GWh
-my_results['storage_invest_GWh'] = (results[(storage, None)]
+my_results['storage1_invest_GWh'] = (results[(storage1, None)]
+                            ['scalars']['invest']/1e6)
+
+my_results['storage2_invest_GWh'] = (results[(storage2, None)]
                             ['scalars']['invest']/1e6)
 
 # installed capacity of wind power plant in MW
