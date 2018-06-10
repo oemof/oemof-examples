@@ -91,6 +91,7 @@ price_gas = 0.06
 epc_wind = economics.annuity(capex=1000, n=20, wacc=0.05)
 epc_pv = economics.annuity(capex=1000, n=20, wacc=0.05)
 epc_storage = economics.annuity(capex=75, n=20, wacc=0.05)
+epc_storage_power = economics.annuity(capex=50, n=20, wacc=0.05)
 
 ##########################################################################
 # Create oemof objects
@@ -141,8 +142,8 @@ pp_gas = solph.Transformer(
 
 storage1 = solph.components.GenericStorage(
     label='storage1',
-    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage, maximum=100000))},
-    outputs={bel: solph.Flow(investment = solph.Investment(ep_costs=0))},
+    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage_power, maximum=100000))},
+    outputs={bel: solph.Flow(investment = solph.Investment())},
     capacity_loss=0.00, initial_capacity=0,
     invest_relation_input_capacity=1/6,
     invest_relation_output_capacity=1/6,
@@ -156,8 +157,8 @@ storage1 = solph.components.GenericStorage(
 
 storage2 = solph.components.GenericStorage(
     label='storage2',
-    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage))},
-    outputs={bel: solph.Flow(variable_costs=0.0001, investment = solph.Investment(ep_costs=0))},
+    inputs={bel: solph.Flow(investment = solph.Investment(ep_costs=epc_storage_power))},
+    outputs={bel: solph.Flow(variable_costs=0.0001, investment = solph.Investment())},
     capacity_loss=0.00, initial_capacity=0,
     invest_relation_input_capacity=1/6,
     invest_relation_input_output = 4/6,
