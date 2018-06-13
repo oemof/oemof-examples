@@ -46,7 +46,7 @@ storage_investment.csv
 
 Installation requirements
 -------------------------
-This example requires oemof v0.2. Install by:
+This example requires oemof v0.2.2 Install by:
 
     pip install oemof
 
