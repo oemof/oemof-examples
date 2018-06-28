@@ -52,6 +52,7 @@ Optional:
 ###############################################################################
 # imports
 ###############################################################################
+from collections import namedtuple
 
 # Default logger of oemof
 from oemof.tools import logger
@@ -100,37 +101,46 @@ logging.info('Create oemof objects')
 # The bus objects were assigned to variables which makes it easier to connect
 # components to these buses (see below).
 
+label = namedtuple('label', ['type', 'medium', 'subtype'])
+label.__str__ = lambda self: '_'.join(map(str, self._asdict().values()))
+
 # create natural gas bus
-bgas = solph.Bus(label="natural_gas")
+bgas = solph.Bus(label=label('bus', 'gas', None))
 
 # create electricity bus
-bel = solph.Bus(label="electricity")
+bel = solph.Bus(label=label('bus', 'electricity', None))
 
 # adding the buses to the energy system
 energysystem.add(bgas, bel)
 
 # create excess component for the electricity bus to allow overproduction
-energysystem.add(solph.Sink(label='excess_bel', inputs={bel: solph.Flow()}))
+energysystem.add(solph.Sink(label=label('sink', 'electricity', 'excess'),
+                            inputs={bel: solph.Flow()}))
 
 # create source object representing the natural gas commodity (annual limit)
-energysystem.add(solph.Source(label='rgas', outputs={bgas: solph.Flow(
-    nominal_value=29825293, summed_max=1)}))
+energysystem.add(solph.Source(label=label('source', 'gas', 'commodity'),
+                              outputs={bgas: solph.Flow(
+                                  nominal_value=29825293, summed_max=1)}))
 
-# create fixed source object representing wind power plants
-energysystem.add(solph.Source(label='wind', outputs={bel: solph.Flow(
-    actual_value=data['wind'], nominal_value=1000000, fixed=True)}))
+# create fixed source object representing wind pow er plants
+energysystem.add(solph.Source(
+    label=label('ee_source', 'electricity', 'wind'),
+    outputs={bel: solph.Flow(
+        actual_value=data['wind'], nominal_value=1000000, fixed=True)}))
 
 # create fixed source object representing pv power plants
-energysystem.add(solph.Source(label='pv', outputs={bel: solph.Flow(
+energysystem.add(solph.Source(label=label('source', 'electricity', 'pv'),
+                              outputs={bel: solph.Flow(
     actual_value=data['pv'], nominal_value=582000, fixed=True)}))
 
 # create simple sink object representing the electrical demand
-energysystem.add(solph.Sink(label='demand', inputs={bel: solph.Flow(
+energysystem.add(solph.Sink(label=label('sink', 'electricity', 'demand'),
+                            inputs={bel: solph.Flow(
     actual_value=data['demand_el'], fixed=True, nominal_value=1)}))
 
 # create simple transformer object representing a gas power plant
 energysystem.add(solph.Transformer(
-    label="pp_gas",
+    label=label('power plant', 'electricity', 'gas'),
     inputs={bgas: solph.Flow()},
     outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=50)},
     conversion_factors={bel: 0.58}))
@@ -138,7 +148,7 @@ energysystem.add(solph.Transformer(
 # create storage object representing a battery
 storage = solph.components.GenericStorage(
     nominal_capacity=10077997,
-    label='storage',
+    label=label('storage', 'electricity', 'battery'),
     inputs={bel: solph.Flow()},
     outputs={bel: solph.Flow(variable_costs=0.001)},
     capacity_loss=0.00, initial_capacity=None,
@@ -201,7 +211,8 @@ energysystem.restore(dpath=None, filename=None)
 
 # define an alias for shorter calls below (optional)
 results = energysystem.results['main']
-storage = energysystem.groups['storage']
+print(energysystem.groups.keys())
+storage = energysystem.groups["storage_electricity_battery"]
 
 # print a time slice of the state of charge
 print('')
@@ -209,15 +220,16 @@ print('********* State of Charge (slice) *********')
 print(results[(storage, None)]['sequences']['2012-02-25 08:00:00':
                                             '2012-02-26 15:00:00'])
 print('')
-
+print(str(storage.label))
+print(type(storage))
 # get all variables of a specific component/bus
-custom_storage = outputlib.views.node(results, 'storage')
-electricity_bus = outputlib.views.node(results, 'electricity')
+custom_storage = outputlib.views.node(results, storage)
+electricity_bus = outputlib.views.node(results, "bus_electricity_None")
 
 # plot the time series (sequences) of a specific component/bus
 if plt is not None:
-    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
-    plt.show()
+    # custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
+    # plt.show()
     electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
     plt.show()
 
