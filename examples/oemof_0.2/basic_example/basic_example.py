@@ -35,9 +35,9 @@ basic_example.csv
 Installation requirements
 -------------------------
 
-This example requires the version v0.2.x of oemof. Install by:
+This example requires the version v0.2.3 of oemof. Install by:
 
-    pip install 'oemof>=0.2,<0.3'
+    pip install 'oemof>=0.2.3,<0.3'
 
 Optional:
 
@@ -139,11 +139,9 @@ energysystem.add(solph.Transformer(
 storage = solph.components.GenericStorage(
     nominal_capacity=10077997,
     label='storage',
-    inputs={bel: solph.Flow()},
-    outputs={bel: solph.Flow(variable_costs=0.001)},
+    inputs={bel: solph.Flow(nominal_value=10077997/6)},
+    outputs={bel: solph.Flow(nominal_value=10077997/6, variable_costs=0.001)},
     capacity_loss=0.00, initial_capacity=None,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
 )
 
