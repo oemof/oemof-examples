@@ -6,8 +6,8 @@ As the csv-reader was removed with version 0.2 this example shows how to create
 an excel-reader. The example is equivalent to the old csv-reader example.
 Following the example one can customise the excel reader to ones own needs.
 
-The pandas package supports the '.xls' and the '.xlsx' format but one can create
-read and adept the files with open source software such as libreoffice,
+The pandas package supports the '.xls' and the '.xlsx' format but one can
+create read and adept the files with open source software such as libreoffice,
 openoffice, gnumeric,...
 
 Data
@@ -24,7 +24,8 @@ Install by:
     pip3 install matplotlib
     pip3 install networkx
 
-If you want to plot the energy system's graph, you have to install pygraphviz by:
+If you want to plot the energy system's graph, you have to install pygraphviz
+using:
 
     pip3 install pygraphviz
 
@@ -80,7 +81,8 @@ def nodes_from_excel(filename):
 
     # set datetime index
     nodes_data['timeseries'].set_index('timestamp', inplace=True)
-    nodes_data['timeseries'].index = pd.to_datetime(nodes_data['timeseries'].index)
+    nodes_data['timeseries'].index = pd.to_datetime(
+        nodes_data['timeseries'].index)
 
     print('Data from Excel file {} imported.'
           .format(filename))
@@ -151,7 +153,8 @@ def create_nodes(nd=None):
             # create
             nodes.append(
                 solph.Source(label=re['label'],
-                             outputs={busd[re['to']]: solph.Flow(**outflow_args)})
+                             outputs={
+                                 busd[re['to']]: solph.Flow(**outflow_args)})
             )
 
     # Create Sink objects with fixed time series from 'demand' table
@@ -168,7 +171,8 @@ def create_nodes(nd=None):
             # create
             nodes.append(
                 solph.Sink(label=de['label'],
-                           inputs={busd[de['from']]: solph.Flow(**inflow_args)})
+                           inputs={
+                               busd[de['from']]: solph.Flow(**inflow_args)})
             )
 
     # Create Transformer objects from 'transformers' table
@@ -309,14 +313,14 @@ logging.info('Starting optimization')
 esys = solph.EnergySystem(timeindex=datetime_index)
 
 # read node data from Excel sheet
-nd = nodes_from_excel(
+excel_nodes = nodes_from_excel(
     os.path.join(os.path.dirname(__file__), 'scenario.xlsx',))
 
 # create nodes from Excel sheet data
-nodes = create_nodes(nd=nd)
+my_nodes = create_nodes(nd=excel_nodes)
 
 # add nodes and flows to energy system
-esys.add(*nodes)
+esys.add(*my_nodes)
 
 print("*********************************************************")
 print("The following objects have been created from excel sheet:")
@@ -353,7 +357,8 @@ region1 = outputlib.views.node(results, 'R1_bus_el')
 print(region2['sequences'].sum())
 print(region1['sequences'].sum())
 
-ax = plt.figure().add_subplot(1,1,1)
-region1['sequences'].plot(ax=ax).legend(loc='center left', bbox_to_anchor=(1, 0.5))
+ax = plt.figure().add_subplot(1, 1, 1)
+region1['sequences'].plot(ax=ax).legend(
+    loc='center left', bbox_to_anchor=(1, 0.5))
 plt.show()
 logging.info("Done!")
