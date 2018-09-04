@@ -10,8 +10,8 @@ This is an example to show how the label attribute can be used with tuples to
 manage the results of large energy system. Even though, the feature is
 introduced in a small example it is made for large system.
 
-In small energy system you normally address the node you want your results
-from directly. In large systems you may want to group your results and collect
+In small energy system you normally address the node, you want your results
+from, directly. In large systems you may want to group your results and collect
 all power plants of a specific region or pv feed-in of all regions.
 
 Therefore you can use named tuples as label. In a named tuple you need to
@@ -41,22 +41,25 @@ elec demand region_2: 2467
 ...
 
 In the example below a subclass is created to define ones own string output.
-By default the output is:
+By default the output of a namedtuple is `field1=value1, field2=value2,...`:
 
 >>> str(pv_label)
 solph_label(region='region_1', tag1='renewable_source', tag2='pv')
 
-With the subclass below the output is:
+With the subclass we created below the output is different, because we defined
+our own string representation:
 
 >>> str(pv_label)
 "region_1_renewable_source_pv"
+
+You still will be able to get the original string using `repr`:
 
 >>> repr(pv_label)
 "solph_label(region='region_1', tag1='renewable_source', tag2='pv')"
 
 This a helpful adaption for automatic plots etc..
 
-You can also use format to define your own custom string afterwards:
+Afterwards you can use `format` to define your own custom string.:
 >>> '{0}+{1}-{2}'.format(pv_label.region, pv_label.tag2, pv_label.tag1)
 region_1+pv-renewable_source
 
@@ -68,11 +71,11 @@ basic_example.csv
 Installation requirements
 -------------------------
 
-This example requires the version v0.2.x of oemof. Install by:
+This example requires the version v0.2.2 of oemof. Install by:
 
-    pip install 'oemof>=0.2,<0.3'
+    pip install 'oemof>=0.2.2,<0.3'
 
-Optional:
+Optional to see the plots:
 
     pip install matplotlib
 
