@@ -1,3 +1,0 @@
-name;type;capacity;investment_cost;bus;marginal_cost;profile;dispatchable;edge_parameters
-electricity-generator1;Generator;1000;null;electricity-bus;75;null;null; {"summed_max": 1000}
-electricity-generator2;Generator;10;null;electricity-bus;0;"wind-profile";false; {}

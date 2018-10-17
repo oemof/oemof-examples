@@ -153,14 +153,12 @@ Sink(label='spot_el',
 components.GenericStorage(
     label='storage_th',
     inputs={
-        bth: Flow()},
+        bth: Flow(nominal_value=1500/6)},
     outputs={
-        bth: Flow()},
+        bth: Flow(nominal_value=1500/6)},
     nominal_capacity=1500,
     capacity_loss=0.00,
-    initial_capacity=0.5,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6)
+    initial_capacity=0.5)
 
 ##########################################################################
 # Create model and solve

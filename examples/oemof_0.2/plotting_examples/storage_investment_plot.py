@@ -20,9 +20,9 @@ storage_investment.csv
 
 Installation requirements
 -------------------------
-The example is made for oemof v0.2.x.
+The example is made for oemof v0.2.3.
 
-    pip install "oemof>=0.2,<0.3"
+    pip install "oemof>=0.2.3,<0.3"
 
 The oemof-visio provides the base for the created i/o plot.
 
@@ -124,8 +124,8 @@ storage = solph.components.GenericStorage(
     inputs={bel: solph.Flow(variable_costs=10e10)},
     outputs={bel: solph.Flow(variable_costs=10e10)},
     capacity_loss=0.00, initial_capacity=0,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6,
+    invest_relation_input_capacity=1/6,
+    invest_relation_output_capacity=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
     investment=solph.Investment(ep_costs=epc),
 )
