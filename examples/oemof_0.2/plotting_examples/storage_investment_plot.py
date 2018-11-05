@@ -48,10 +48,10 @@ from oemof.network import Node
 import oemof_visio as oev
 
 
-def shape_legend(node, reverse=False, **kwargs):
-    handels = kwargs['handles']
-    labels = kwargs['labels']
-    axes = kwargs['ax']
+def shape_legend(node, ax, handles, labels, reverse=False, **kwargs):
+    handels = handles
+    labels = labels
+    axes = ax
     parameter = {}
 
     new_labels = []
