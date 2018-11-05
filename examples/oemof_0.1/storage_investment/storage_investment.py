@@ -82,7 +82,8 @@ def optimise_storage_size(filename="storage_investment.csv", solver='cbc',
     # create excess component for the electricity bus to allow overproduction
     solph.Sink(label='excess_bel', inputs={bel: solph.Flow()})
 
-    # create source object representing the natural gas commodity (annual limit)
+    # create source object representing the natural gas commodity
+    # (annual limit)
     solph.Source(label='rgas', outputs={bgas: solph.Flow(
         nominal_value=194397000 * number_timesteps / 8760, summed_max=1)})
 
