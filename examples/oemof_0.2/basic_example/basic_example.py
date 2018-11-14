@@ -35,9 +35,9 @@ basic_example.csv
 Installation requirements
 -------------------------
 
-This example requires the version v0.2.3 of oemof. Install by:
+This example requires the version v0.2.2 of oemof. Install by:
 
-    pip install 'oemof>=0.2.3,<0.3'
+    pip install 'oemof>=0.2.2,<0.3'
 
 Optional:
 

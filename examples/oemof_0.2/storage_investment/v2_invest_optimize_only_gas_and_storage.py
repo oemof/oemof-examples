@@ -42,7 +42,7 @@ the main setting for the optimization variation 2:
 
 Installation requirements
 -------------------------
-This example requires oemof v0.2.3 Install by:
+This example requires oemof v0.2.2 Install by:
 
     pip install oemof
 
