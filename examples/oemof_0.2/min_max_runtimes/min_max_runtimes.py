@@ -85,7 +85,10 @@ if plt is not None:
     columns = [c for c in data.columns
                if not any(s in c[0] or s in c[1] for s in exclude)]
     data = data[columns]
-    ax = data.plot(kind='line', drawstyle='steps-post', grid=True, rot=0)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    data.plot(ax=ax, kind='line', drawstyle='steps-post', grid=True, rot=0)
     ax.set_xlabel('Hour')
-    ax.set_ylabel('P (MW)')
+    ax.set_ylabel('P [MW]')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3), ncol=1)
+    fig.subplots_adjust(top=0.8)
     plt.show()

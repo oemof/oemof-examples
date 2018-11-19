@@ -357,8 +357,10 @@ region1 = outputlib.views.node(results, 'R1_bus_el')
 print(region2['sequences'].sum())
 print(region1['sequences'].sum())
 
-ax = plt.figure().add_subplot(1, 1, 1)
-region1['sequences'].plot(ax=ax).legend(
-    loc='center left', bbox_to_anchor=(1, 0.5))
+
+fig, ax = plt.subplots(figsize=(10,5))
+region1['sequences'].plot(ax=ax)
+ax.legend(loc='upper center', prop={'size': 8}, bbox_to_anchor=(0.5, 1.4), ncol=3)
+fig.subplots_adjust(top=0.7)
 plt.show()
 logging.info("Done!")
