@@ -26,10 +26,8 @@ This example requires version 0.3 of oemof. Install by:
 
 import numpy as np
 import pandas as pd
-import pprint as pp
 import oemof.solph as solph
 from oemof.outputlib import processing, views
-from oemof.tools import economics
 
 try:
     import matplotlib.pyplot as plt
@@ -43,11 +41,11 @@ except ImportError:
 periods = 24
 time = pd.date_range('1/1/2018', periods=periods, freq='H')
 
-demand_heat = np.full(periods,5)
+demand_heat = np.full(periods, 5)
 demand_heat[:4] = 0
 demand_heat[4:18] = 4
 
-activity_costs = np.full(periods,5)
+activity_costs = np.full(periods, 5)
 activity_costs[18:] = 0
 
 es = solph.EnergySystem(timeindex=time)
@@ -100,4 +98,3 @@ if plt is not None:
     ax.set_xlabel('Time')
     ax.set_ylabel('Heat (arb. units)')
     plt.show()
-
