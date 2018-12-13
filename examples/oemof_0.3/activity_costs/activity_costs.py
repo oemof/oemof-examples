@@ -11,6 +11,10 @@ There are the following components:
     - fireplace: wood firing, burns "for free" if somebody is around
     - boiler: gas firing, consumes (paid) gas
 
+Notice that activity_costs is an attribute to NonConvex.
+This is because it relies on the activity status of a component
+which is only available for nonconvex flows.
+
 
 Installation requirements
 -------------------------
@@ -37,13 +41,14 @@ except ImportError:
 ##########################################################################
 
 periods = 24
-time = pd.date_range('1/1/2018', periods=periods, freq='D')
+time = pd.date_range('1/1/2018', periods=periods, freq='H')
 
-at_home = np.zeros(periods)
-at_home[10:16] = 1
+demand_heat = np.full(periods,5)
+demand_heat[:4] = 0
+demand_heat[4:18] = 4
 
-demand_heat = np.zeros(periods)
-demand_heat[6:22] = 5
+activity_costs = np.full(periods,5)
+activity_costs[18:] = 0
 
 es = solph.EnergySystem(timeindex=time)
 
@@ -60,11 +65,15 @@ sink_heat = solph.Sink(
 
 fireplace = solph.Source(
     label='fireplace',
-    outputs={b_heat: solph.Flow(nominal_value=10, activity_costs=1.0-at_home)})
+    outputs={b_heat: solph.Flow(nominal_value=3,
+                                variable_costs=0,
+                                nonconvex=solph.NonConvex(
+                                    activity_costs=activity_costs))})
 
 boiler = solph.Source(
     label='boiler',
-    outputs={b_heat: solph.Flow(nominal_value=10, variable_costs=0.2)})
+    outputs={b_heat: solph.Flow(nominal_value=10,
+                                variable_costs=1)})
 
 es.add(sink_heat, fireplace, boiler)
 
@@ -91,3 +100,4 @@ if plt is not None:
     ax.set_xlabel('Time')
     ax.set_ylabel('Heat (arb. units)')
     plt.show()
+
