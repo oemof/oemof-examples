@@ -27,14 +27,19 @@ You always have to address all fields but you can use empty strings or None as
 place holders.
 
 >>> elec_bus = label('region_4', 'electricity', '')
+>>> print(elec_bus)
+solph_label(region='region_4', tag1='electricity', tag2='')
+
 >>> elec_bus = label('region_4', 'electricity', None)
+>>> print(elec_bus)
+solph_label(region='region_4', tag1='electricity', tag2=None)
 
 Now you can filter the results using the label or the instance:
 
 >>> for key, value in results.items():  # Loop results (keys are tuples!)
-...     if isinstance(key[0], solph.Sink) and key[0].label.tag2 == 'demand'
+...     if isinstance(key[0], solph.Sink) & (key[0].label.tag2 == 'demand'):
 ...         print("elec demand {0}: {1}".format(key[0].label.region,
-...                                             value['sequences'].sum())
+...                                             value['sequences'].sum()))
 
 elec demand region_1: 3456
 elec demand region_2: 2467
@@ -43,24 +48,25 @@ elec demand region_2: 2467
 In the example below a subclass is created to define ones own string output.
 By default the output of a namedtuple is `field1=value1, field2=value2,...`:
 
->>> str(pv_label)
+>>> print(str(pv_label))
 solph_label(region='region_1', tag1='renewable_source', tag2='pv')
 
 With the subclass we created below the output is different, because we defined
 our own string representation:
 
->>> str(pv_label)
-"region_1_renewable_source_pv"
+>>> new_pv_label = Label('region_1', 'renewable_source', 'pv')
+>>> print(str(new_pv_label))
+region_1_renewable_source_pv
 
 You still will be able to get the original string using `repr`:
 
->>> repr(pv_label)
-"solph_label(region='region_1', tag1='renewable_source', tag2='pv')"
+>>> print(repr(new_pv_label))
+Label(tag1='region_1', tag2='renewable_source', tag3='pv')
 
 This a helpful adaption for automatic plots etc..
 
 Afterwards you can use `format` to define your own custom string.:
->>> '{0}+{1}-{2}'.format(pv_label.region, pv_label.tag2, pv_label.tag1)
+>>> print('{0}+{1}-{2}'.format(pv_label.region, pv_label.tag2, pv_label.tag1))
 region_1+pv-renewable_source
 
 Data
