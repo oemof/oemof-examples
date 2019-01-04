@@ -22,6 +22,7 @@ import pandas as pd
 from oemof.solph import (Sink, Transformer, Bus, Flow,
                          Model, EnergySystem)
 
+import oemof.outputlib as outputlib
 
 def run_add_constraints_example(solver='cbc', nologg=False):
     if not nologg:
@@ -65,7 +66,7 @@ def run_add_constraints_example(solver='cbc', nologg=False):
             om.flows[s, t].emission_factor = 0.27  # t/MWh
         if s is blig:
             om.flows[s, t].emission_factor = 0.39  # t/MWh
-    emission_limit = 60e3
+    emission_limit = 75
 
     # add the outflow share
     om.flows[(boil, pp_oil)].outflow_share = [1, 0.5, 0, 0.3]
@@ -102,7 +103,8 @@ def run_add_constraints_example(solver='cbc', nologg=False):
                                          rule=_inflow_share_rule)
     # add emission constraint
     myblock.emission_constr = po.Constraint(expr=(
-            sum(om.flow[i, o, t]
+            sum(om.flow[i, o, t] *
+                om.flows[i, o].emission_factor
                 for (i, o) in myblock.COMMODITYFLOWS
                 for t in om.TIMESTEPS) <= emission_limit))
 
@@ -111,6 +113,19 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     om.solve(solver=solver)
     logging.info("Successfully finished.")
 
+    # print the resulting emissions to verify
+    results = outputlib.processing.results(om)
+
+    emitted = {}
+    for k, v in results.items():
+        if k[0]==boil:
+            emitted['oil'] = v['sequences']['flow'].sum() * om.flows[k].emission_factor
+        if k[0]==blig:
+            emitted['lignite'] = v['sequences']['flow'].sum() * om.flows[k].emission_factor
+
+    print('emissions through oil consumption \n', emitted['oil'])
+    print('emissions through lignite consumption \n', emitted['lignite'])
+    print('total emissions \n', sum(emitted.values()))
 
 if __name__ == "__main__":
     run_add_constraints_example()
