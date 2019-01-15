@@ -13,7 +13,7 @@ There are mainly three steps. First you have to import your weather data, then
 you need to specify your wind turbine, and in the last step call the
 windpowerlib functions to calculate the feed-in time series.
 
-This example requires the version v0.2.2 of windpowerlib. Install by:
+This example requires the version v0.1.0 of windpowerlib. Install by:
 
     pip install 'windpowerlib>=0.1.0,<0.2.0'
 
