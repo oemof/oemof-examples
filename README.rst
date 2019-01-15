@@ -78,6 +78,13 @@ oemof 0.1.x
 * **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
 
+windpowerlib
+------------
+
+* v0.1.x
+    * **ModelChain example**: A simple way to calculate the power output of wind turbines.
+
+
 License
 =======
 
