@@ -3,7 +3,7 @@ This repository holds a collections of various examples on how to build an energ
 Examples are provided for each major oemof release specified by the directory they are in. 
 
 .. contents::
-    :depth: 1
+    :depth: 2
     :local:
     :backlinks: top
 
@@ -76,6 +76,11 @@ oemof 0.1.x
 * **storage_invest**: Jupyter notebook of storage capacity optimization.
 * **storage_investment**: Example of storage capacity optimization.
 * **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
+
+windpowerlib 0.1.x
+------------------
+
+* **ModelChain example**: A simple way to calculate the power output of wind turbines.
 
 
 License
