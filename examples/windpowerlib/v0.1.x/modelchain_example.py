@@ -110,10 +110,11 @@ my_turbine = WindTurbine(**my_turbine)
 # if you want to use the power coefficient curve change the value of
 # 'fetch_curve' to 'power_coefficient_curve'
 enercon_e126 = {
-    'name': 'ENERCON E 126 7500',  # turbine name as in register
+    'name': 'E-126/4200',  # turbine name as in register
     'hub_height': 135,  # in m
     'rotor_diameter': 127,  # in m
-    'fetch_curve': 'power_curve'  # fetch power curve
+    'fetch_curve': 'power_curve',  # fetch power curve #
+    'data_source': 'oedb'  # data source oedb or name of csv file
 }
 # initialize WindTurbine object
 e126 = WindTurbine(**enercon_e126)
