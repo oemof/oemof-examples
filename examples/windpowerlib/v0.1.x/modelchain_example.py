@@ -5,9 +5,11 @@ General description
 -------------------
 
 The ``modelchain_example`` module shows a simple usage of the windpowerlib by
-using the :class:`~.modelchain.ModelChain` class. This is the most typical way
-for beginners. If you have special needs you can use the functions of the
-windpowerlib directly to calculate the wind power output.
+using the :class:`~.modelchain.ModelChain` class. The modelchains are
+implemented to ensure an easy start into the Windpowerlib. They work like
+models that combine all functions provided in the library. Via parameteres
+desired functions of the windpowerlib can be selected. For parameters not being
+specified default parameters are used.
 
 There are mainly three steps. First you have to import your weather data, then
 you need to specify your wind turbine, and in the last step call the
@@ -83,10 +85,8 @@ weather.columns = [
 # power and/or power coefficient curve data from data files provided by the
 # windpowerlib, as done for the 'enerconE126'.
 
-# Execute ``windpowerlib.wind_turbine.get_turbine_types()`` or
-# ``windpowerlib.wind_turbine.get_turbine_types(
-# filename='power_coefficient_curves.csv')`` to get a list of all wind
-# turbines for which power and power coefficient curves respectively are
+# Execute ``windpowerlib.wind_turbine.get_turbine_types()`` to see a table
+# of all wind turbines for which power (coefficient) curve data is
 # provided.
 
 # specification of own wind turbine (Note: power coefficient values and
