@@ -25,6 +25,10 @@ If you want to add your own example please provide a short description and requi
 Examples
 =========
 
+oemof 0.3x 
+------------
+* **oemof-core**: Example for the usage of the oemof core
+
 oemof 0.2.x
 -------------
 
