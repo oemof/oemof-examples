@@ -153,12 +153,14 @@ print('Optimization successful. Printing some results:',
 node_results_bel = views.node(optimization_model.results(), 'bel')
 node_results_flows = node_results_bel['sequences']
 
-ax = node_results_flows.plot(kind='bar', stacked=True, linewidth=0, width=1)
+fig, ax = plt.subplots(figsize=(10, 5))
+node_results_flows.plot(ax=ax, kind='bar', stacked=True, linewidth=0, width=1)
 ax.set_title('Sums for optimization period')
 ax.legend(loc='upper right', bbox_to_anchor=(1, 1))
 ax.set_xlabel('Energy (MWh)')
 ax.set_ylabel('Flow')
-plt.tight_layout()
+plt.legend(loc='center left', prop={'size': 8}, bbox_to_anchor=(1, 0.5))
+fig.subplots_adjust(right=0.8)
 
 dates = node_results_flows.index
 tick_distance = int(len(dates) / 7) - 1
@@ -172,12 +174,14 @@ plt.show()
 node_results_bth = views.node(optimization_model.results(), 'bth')
 node_results_flows = node_results_bth['sequences']
 
-ax = node_results_flows.plot(kind='bar', stacked=True, linewidth=0, width=1)
+fig, ax = plt.subplots(figsize=(10, 5))
+node_results_flows.plot(ax=ax, kind='bar', stacked=True, linewidth=0, width=1)
 ax.set_title('Sums for optimization period')
 ax.legend(loc='upper right', bbox_to_anchor=(1, 1))
 ax.set_xlabel('Energy (MWh)')
 ax.set_ylabel('Flow')
-plt.tight_layout()
+plt.legend(loc='center left', prop={'size': 8}, bbox_to_anchor=(1, 0.5))
+fig.subplots_adjust(right=0.8)
 
 dates = node_results_flows.index
 tick_distance = int(len(dates) / 7) - 1

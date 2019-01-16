@@ -42,7 +42,7 @@ the main setting for the optimization variation 2:
 
 Installation requirements
 -------------------------
-This example requires oemof v0.2. Install by:
+This example requires oemof v0.2.2 Install by:
 
     pip install oemof
 
@@ -77,7 +77,7 @@ energysystem = solph.EnergySystem(timeindex=date_time_index)
 
 # Read data file
 full_filename = os.path.join(os.path.dirname(__file__),
-    'storage_investment.csv')
+                             'storage_investment.csv')
 data = pd.read_csv(full_filename, sep=",")
 
 price_gas = 0.04
@@ -133,8 +133,8 @@ storage = solph.components.GenericStorage(
     inputs={bel: solph.Flow(variable_costs=0.0001)},
     outputs={bel: solph.Flow()},
     capacity_loss=0.00, initial_capacity=0,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6,
+    invest_relation_input_capacity=1/6,
+    invest_relation_output_capacity=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
     investment=solph.Investment(ep_costs=epc_storage),
 )

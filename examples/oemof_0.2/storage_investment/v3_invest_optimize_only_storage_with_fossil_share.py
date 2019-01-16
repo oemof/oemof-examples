@@ -43,7 +43,7 @@ the main setting for the optimization variation 3:
 
 Installation requirements
 -------------------------
-This example requires oemof v0.2. Install by:
+This example requires oemof v0.2.2. Install by:
 
     pip install oemof
 
@@ -136,8 +136,8 @@ storage = solph.components.GenericStorage(
     inputs={bel: solph.Flow(variable_costs=0.0001)},
     outputs={bel: solph.Flow()},
     capacity_loss=0.00, initial_capacity=0,
-    nominal_input_capacity_ratio=1/6,
-    nominal_output_capacity_ratio=1/6,
+    invest_relation_input_capacity=1/6,
+    invest_relation_output_capacity=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
     investment=solph.Investment(ep_costs=epc_storage),
 )

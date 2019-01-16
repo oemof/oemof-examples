@@ -4,28 +4,70 @@
 General description
 -------------------
 
-A basic example to show how to model a simple energy system with oemof.solph.
+You should have understood the basic_example to understand this one.
 
-The following energy system is modeled:
+This is an example to show how the label attribute can be used with tuples to
+manage the results of large energy system. Even though, the feature is
+introduced in a small example it is made for large system.
 
-                input/output  bgas     bel
-                     |          |        |       |
-                     |          |        |       |
- wind(FixedSource)   |------------------>|       |
-                     |          |        |       |
- pv(FixedSource)     |------------------>|       |
-                     |          |        |       |
- rgas(Commodity)     |--------->|        |       |
-                     |          |        |       |
- demand(Sink)        |<------------------|       |
-                     |          |        |       |
-                     |          |        |       |
- pp_gas(Transformer) |<---------|        |       |
-                     |------------------>|       |
-                     |          |        |       |
- storage(Storage)    |<------------------|       |
-                     |------------------>|       |
+In small energy system you normally address the node, you want your results
+from, directly. In large systems you may want to group your results and collect
+all power plants of a specific region or pv feed-in of all regions.
 
+Therefore you can use named tuples as label. In a named tuple you need to
+specify the fields:
+
+>>> label = namedtuple('solph_label', ['region', 'tag1', 'tag2'])
+
+>>> pv_label = label('region_1', 'renewable_source', 'pv')
+>>> pp_gas_label = label('region_2', 'power_plant', 'natural_gas')
+>>> demand_label = label('region_3', 'electricity', 'demand')
+
+You always have to address all fields but you can use empty strings or None as
+place holders.
+
+>>> elec_bus = label('region_4', 'electricity', '')
+>>> print(elec_bus)
+solph_label(region='region_4', tag1='electricity', tag2='')
+
+>>> elec_bus = label('region_4', 'electricity', None)
+>>> print(elec_bus)
+solph_label(region='region_4', tag1='electricity', tag2=None)
+
+Now you can filter the results using the label or the instance:
+
+>>> for key, value in results.items():  # Loop results (keys are tuples!)
+...     if isinstance(key[0], solph.Sink) & (key[0].label.tag2 == 'demand'):
+...         print("elec demand {0}: {1}".format(key[0].label.region,
+...                                             value['sequences'].sum()))
+
+elec demand region_1: 3456
+elec demand region_2: 2467
+...
+
+In the example below a subclass is created to define ones own string output.
+By default the output of a namedtuple is `field1=value1, field2=value2,...`:
+
+>>> print(str(pv_label))
+solph_label(region='region_1', tag1='renewable_source', tag2='pv')
+
+With the subclass we created below the output is different, because we defined
+our own string representation:
+
+>>> new_pv_label = Label('region_1', 'renewable_source', 'pv')
+>>> print(str(new_pv_label))
+region_1_renewable_source_pv
+
+You still will be able to get the original string using `repr`:
+
+>>> print(repr(new_pv_label))
+Label(tag1='region_1', tag2='renewable_source', tag3='pv')
+
+This a helpful adaption for automatic plots etc..
+
+Afterwards you can use `format` to define your own custom string.:
+>>> print('{0}+{1}-{2}'.format(pv_label.region, pv_label.tag2, pv_label.tag1))
+region_1+pv-renewable_source
 
 Data
 ----
@@ -39,7 +81,7 @@ This example requires the version v0.2.2 of oemof. Install by:
 
     pip install 'oemof>=0.2.2,<0.3'
 
-Optional:
+Optional to see the plots:
 
     pip install matplotlib
 
@@ -52,6 +94,7 @@ Optional:
 ###############################################################################
 # imports
 ###############################################################################
+from collections import namedtuple
 
 # Default logger of oemof
 from oemof.tools import logger
@@ -69,6 +112,16 @@ try:
     import matplotlib.pyplot as plt
 except ImportError:
     plt = None
+    
+# Subclass of the named tuple with its own __str__ method.
+
+
+class Label(namedtuple('solph_label', ['tag1', 'tag2', 'tag3'])):
+    __slots__ = ()
+
+    def __str__(self):
+        """The string is used within solph as an ID, so it hast to be unique"""
+        return '_'.join(map(str, self._asdict().values()))
 
 
 solver = 'cbc'  # 'glpk', 'gurobi',....
@@ -101,36 +154,41 @@ logging.info('Create oemof objects')
 # components to these buses (see below).
 
 # create natural gas bus
-bgas = solph.Bus(label="natural_gas")
+bgas = solph.Bus(label=Label('bus', 'gas', None))
 
 # create electricity bus
-bel = solph.Bus(label="electricity")
+bel = solph.Bus(label=Label('bus', 'electricity', None))
 
 # adding the buses to the energy system
 energysystem.add(bgas, bel)
 
 # create excess component for the electricity bus to allow overproduction
-energysystem.add(solph.Sink(label='excess_bel', inputs={bel: solph.Flow()}))
+energysystem.add(solph.Sink(label=Label('sink', 'electricity', 'excess'),
+                            inputs={bel: solph.Flow()}))
 
 # create source object representing the natural gas commodity (annual limit)
-energysystem.add(solph.Source(label='rgas', outputs={bgas: solph.Flow(
-    nominal_value=29825293, summed_max=1)}))
+energysystem.add(solph.Source(
+    label=Label('source', 'gas', 'commodity'), outputs={bgas: solph.Flow(
+        nominal_value=29825293, summed_max=1)}))
 
-# create fixed source object representing wind power plants
-energysystem.add(solph.Source(label='wind', outputs={bel: solph.Flow(
-    actual_value=data['wind'], nominal_value=1000000, fixed=True)}))
+# create fixed source object representing wind pow er plants
+energysystem.add(solph.Source(
+    label=Label('ee_source', 'electricity', 'wind'), outputs={bel: solph.Flow(
+        actual_value=data['wind'], nominal_value=1000000, fixed=True)}))
 
 # create fixed source object representing pv power plants
-energysystem.add(solph.Source(label='pv', outputs={bel: solph.Flow(
-    actual_value=data['pv'], nominal_value=582000, fixed=True)}))
+energysystem.add(solph.Source(
+    label=Label('source', 'electricity', 'pv'), outputs={bel: solph.Flow(
+        actual_value=data['pv'], nominal_value=582000, fixed=True)}))
 
 # create simple sink object representing the electrical demand
-energysystem.add(solph.Sink(label='demand', inputs={bel: solph.Flow(
-    actual_value=data['demand_el'], fixed=True, nominal_value=1)}))
+energysystem.add(solph.Sink(
+    label=Label('sink', 'electricity', 'demand'), inputs={bel: solph.Flow(
+        actual_value=data['demand_el'], fixed=True, nominal_value=1)}))
 
 # create simple transformer object representing a gas power plant
 energysystem.add(solph.Transformer(
-    label="pp_gas",
+    label=Label('power plant', 'electricity', 'gas'),
     inputs={bgas: solph.Flow()},
     outputs={bel: solph.Flow(nominal_value=10e10, variable_costs=50)},
     conversion_factors={bel: 0.58}))
@@ -138,9 +196,10 @@ energysystem.add(solph.Transformer(
 # create storage object representing a battery
 storage = solph.components.GenericStorage(
     nominal_capacity=10077997,
-    label='storage',
+    label=Label('storage', '', 'battery'),
     inputs={bel: solph.Flow(nominal_value=10077997/6)},
-    outputs={bel: solph.Flow(nominal_value=10077997/6, variable_costs=0.001)},
+    outputs={bel: solph.Flow(nominal_value=10077997/6,
+                             variable_costs=0.001)},
     capacity_loss=0.00, initial_capacity=None,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
 )
@@ -199,7 +258,12 @@ energysystem.restore(dpath=None, filename=None)
 
 # define an alias for shorter calls below (optional)
 results = energysystem.results['main']
-storage = energysystem.groups['storage']
+print(energysystem.groups.keys())
+storage = energysystem.groups["storage__battery"]
+
+print('********* LABEL *********')
+print(repr(storage.label))
+print(str(storage.label))
 
 # print a time slice of the state of charge
 print('')
@@ -207,23 +271,20 @@ print('********* State of Charge (slice) *********')
 print(results[(storage, None)]['sequences']['2012-02-25 08:00:00':
                                             '2012-02-26 15:00:00'])
 print('')
-
+print(str(storage.label))
+print(type(storage))
 # get all variables of a specific component/bus
-custom_storage = outputlib.views.node(results, 'storage')
-electricity_bus = outputlib.views.node(results, 'electricity')
+# If you use the class the columns/index will be classes.
+custom_storage = outputlib.views.node(results, storage)
+
+# If you use a string the columns/index will be strings.
+electricity_bus = outputlib.views.node(results, "bus_electricity_None")
 
 # plot the time series (sequences) of a specific component/bus
 if plt is not None:
-    fig, ax = plt.subplots(figsize=(10,5))
-    custom_storage['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
-    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.25), ncol=2)
-    fig.subplots_adjust(top=0.8)
+    custom_storage['sequences'].plot(kind='line', drawstyle='steps-post')
     plt.show()
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    electricity_bus['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
-    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.3), ncol=2)
-    fig.subplots_adjust(top=0.8)
+    electricity_bus['sequences'].plot(kind='line', drawstyle='steps-post')
     plt.show()
 
 # print the solver results
