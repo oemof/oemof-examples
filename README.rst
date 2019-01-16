@@ -28,8 +28,8 @@ Examples
 oemof.solph (oemof)
 -------------------
 
-v0.3.x
-++++++
+0.3.x 
++++++
 
 * **oemof-core**: Example for the usage of the oemof core
 
