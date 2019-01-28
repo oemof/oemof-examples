@@ -3,7 +3,7 @@ This repository holds a collections of various examples on how to build an energ
 Examples are provided for each major oemof release specified by the directory they are in. 
 
 .. contents::
-    :depth: 2
+    :depth: 3
     :local:
     :backlinks: top
 
@@ -25,8 +25,11 @@ If you want to add your own example please provide a short description and requi
 Examples
 =========
 
-oemof 0.2.x
--------------
+oemof.solph (oemof)
+-------------------
+
+v0.2.x
+++++++
 
 * **basic_example**: Introduction to the basic usage of oemof.solph
 
@@ -61,8 +64,8 @@ oemof 0.2.x
 * **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
 
-oemof 0.1.x
--------------
+v0.1.x
+++++++
 
 * **csv_reader**:
 
@@ -77,8 +80,24 @@ oemof 0.1.x
 * **storage_investment**: Example of storage capacity optimization.
 * **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
-windpowerlib 0.1.x
-------------------
+
+oemof.tabular
+-------------
+
+Coming soon
+
+
+tespy
+-----
+
+Coming soon
+
+
+windpowerlib
+------------
+
+v0.1.x
+++++++
 
 * **ModelChain example**: A simple way to calculate the power output of wind turbines.
 
