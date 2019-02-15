@@ -109,7 +109,8 @@ nw.add_conns(cp1_he, he_cp2, sp_ic, ic_out, cp2_c_out)
 
 # condenser system
 
-cd.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, design=['pr2', 'ttd_u'], offdesign=['zeta2', 'kA'])
+cd.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, design=['pr2', 'ttd_u'],
+            offdesign=['zeta2', 'kA'])
 dhp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 cons.set_attr(pr=0.99, design=['pr'], offdesign=['zeta'])
 
@@ -122,14 +123,16 @@ fan.set_attr(eta_s=0.5, pr=1.005, design=['eta_s'], offdesign=['eta_s_char'])
 ev.set_attr(pr1=0.999, pr2=0.99, ttd_l=5,
             kA_char1='EVA_HOT', kA_char2='EVA_COLD',
             design=['pr1', 'ttd_l'], offdesign=['zeta1', 'kA'])
-su.set_attr(pr1=0.999, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'], offdesign=['zeta1', 'zeta2', 'kA'])
+su.set_attr(pr1=0.999, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'],
+            offdesign=['zeta1', 'zeta2', 'kA'])
 erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 
 # compressor system
 
 cp1.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 cp2.set_attr(eta_s=0.8, pr=5, design=['eta_s'], offdesign=['eta_s_char'])
-ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'], offdesign=['zeta1', 'zeta2', 'kA'])
+ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'],
+            offdesign=['zeta1', 'zeta2', 'kA'])
 
 # %% connection parametrization
 
@@ -182,7 +185,7 @@ for T in T_range:
             nw.solve('offdesign',
                      init_path='OD_air_' + str(Q/1e3),
                      design_path='heat_pump_air')
-        except:
+        except FileNotFoundError:
             nw.solve('offdesign', init_path='heat_pump_air',
                      design_path='heat_pump_air')
 
