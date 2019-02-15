@@ -6,7 +6,7 @@ Created on Mon Jul 16 08:44:36 2018
 @author: witte
 """
 
-from tespy import cmp, con, nwk
+from tespy import cmp, con, nwk, hlp
 
 import numpy as np
 import pandas as pd
@@ -127,8 +127,11 @@ erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 
 # compressor system
 
-cp1.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
-cp2.set_attr(eta_s=0.8, pr=5, design=['eta_s'], offdesign=['eta_s_char'])
+x = np.array([0.000, 0.400, 1.000, 1.500])
+y = np.array([0.500, 0.900, 1.000, 1.025])
+cp_char = hlp.dc_cc(x=x, y=y, param='m')
+cp1.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'], eta_s_char=cp_char)
+cp2.set_attr(eta_s=0.8, pr=5, design=['eta_s'], offdesign=['eta_s_char'], eta_s_char=cp_char)
 ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'], offdesign=['zeta1', 'zeta2', 'kA'])
 
 # %% connection parametrization
