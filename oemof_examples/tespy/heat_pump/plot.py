@@ -23,7 +23,8 @@ fig, ax = plt.subplots()
 i = 0
 for T in T_range:
     plt.plot(Q_range / 200e3, df.loc[T], '-x', Color=colors[i],
-             label='$T_{amb}$ = ' + str(T) + ' °C', markersize=7, linewidth=2)
+             label='$T_{resvr}$ = ' + str(T) + ' °C', markersize=7,
+             linewidth=2)
     i += 1
 
 ax.set_ylabel('COP')
@@ -32,7 +33,6 @@ plt.title('heat pump COP')
 plt.legend(loc='lower left')
 plt.ylim([0, 3.2])
 plt.xlim([0, 1.2])
-
 plt.show()
 
 fig.savefig('COP.svg')
