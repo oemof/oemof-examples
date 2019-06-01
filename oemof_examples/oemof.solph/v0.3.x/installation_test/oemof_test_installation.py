@@ -2,6 +2,10 @@
 
 """This module can be used to check the installation.
 This is not an illustrated example.
+
+This example requires the version v0.3.x of oemof. Install by:
+
+    pip install 'oemof>=0.3,<0.4'
 """
 
 __copyright__ = "oemof developer group"

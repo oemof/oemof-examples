@@ -11,7 +11,7 @@ Installation requirements
 -------------------------
 This example requires the latest version of oemof. Install by:
 
-    pip install oemof
+    pip install 'oemof>=0.3,<0.4'
 
 31.10.2016 - simon.hilpert@uni-flensburg.de
 """

@@ -35,9 +35,9 @@ basic_example.csv
 Installation requirements
 -------------------------
 
-This example requires the version v0.2.2 of oemof. Install by:
+This example requires the version v0.3.x of oemof. Install by:
 
-    pip install 'oemof>=0.2.2,<0.3'
+    pip install 'oemof>=0.3,<0.4'
 
 Optional:
 
@@ -214,15 +214,19 @@ electricity_bus = outputlib.views.node(results, 'electricity')
 
 # plot the time series (sequences) of a specific component/bus
 if plt is not None:
-    fig, ax = plt.subplots(figsize=(10,5))
-    custom_storage['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
-    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.25), ncol=2)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    custom_storage['sequences'].plot(ax=ax, kind='line',
+                                     drawstyle='steps-post')
+    plt.legend(loc='upper center', prop={'size': 8},
+               bbox_to_anchor=(0.5, 1.25), ncol=2)
     fig.subplots_adjust(top=0.8)
     plt.show()
 
-    fig, ax = plt.subplots(figsize=(10,5))
-    electricity_bus['sequences'].plot(ax=ax, kind='line', drawstyle='steps-post')
-    plt.legend(loc='upper center', prop={'size':8}, bbox_to_anchor=(0.5, 1.3), ncol=2)
+    fig, ax = plt.subplots(figsize=(10, 5))
+    electricity_bus['sequences'].plot(ax=ax, kind='line',
+                                      drawstyle='steps-post')
+    plt.legend(loc='upper center', prop={'size': 8}, bbox_to_anchor=(0.5, 1.3),
+               ncol=2)
     fig.subplots_adjust(top=0.8)
     plt.show()
 

@@ -7,9 +7,9 @@ In this case it is used to model a motoric chp.
 
 Installation requirements:
 ---------------------------
-This example requires the latest version of oemof. Install by:
+This example requires the version v0.3.x of oemof. Install by:
 
-    pip install oemof
+    pip install 'oemof>=0.3,<0.4'
 
 """
 

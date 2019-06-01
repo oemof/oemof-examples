@@ -15,9 +15,9 @@ variable_chp.csv
 
 Installation requirements
 -------------------------
-The example is made for oemof v0.2.x.
+This example requires the version v0.3.x of oemof. Install by:
 
-    pip install "oemof>=0.2,<0.3"
+    pip install 'oemof>=0.3,<0.4'
 
 The oemof-visio provides the base for the created i/o plot.
 

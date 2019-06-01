@@ -6,9 +6,9 @@ Example that illustrates how to model min and max runtimes.
 
 Installation requirements
 -------------------------
-This example requires the version 0.2.1 of oemof. Install by:
+This example requires the version v0.3.x of oemof. Install by:
 
-    pip install 'oemof>=0.2.1,<0.3'
+    pip install 'oemof>=0.3,<0.4'
 
 """
 
