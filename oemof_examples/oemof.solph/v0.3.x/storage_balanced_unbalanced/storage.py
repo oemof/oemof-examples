@@ -8,6 +8,15 @@ available from its original location oemof/tests/test_scripts/test_solph/
 test_generic_offsettransformer/test_generic_offsettransformer.py
 
 SPDX-License-Identifier: GPL-3.0-or-later
+
+This example requires the version v0.3.x of oemof. Install by:
+
+    pip install 'oemof>=0.3,<0.4'
+
+Optional to see the plots:
+
+    pip install matplotlib
+
 """
 
 import os

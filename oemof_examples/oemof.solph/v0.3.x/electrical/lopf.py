@@ -11,9 +11,9 @@ there are two.
 
 Installation requirements
 -------------------------
-This example requires the latest version of oemof and matplotlib. Install by:
+This example requires the version v0.3.x of oemof and matplotlib. Install by:
 
-    pip install oemof
+    pip install 'oemof>=0.3,<0.4'
     pip install matplotlib
 
 12.12.2017 - simon.hilpert@uni-flensburg.de

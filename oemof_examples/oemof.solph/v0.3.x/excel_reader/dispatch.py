@@ -205,11 +205,11 @@ def create_nodes(nd=None):
                     outputs={busd[s['bus']]: solph.Flow(
                         nominal_value=s['capacity outflow'],
                         variable_costs=s['variable output costs'])},
-                    nominal_capacity=s['nominal capacity'],
-                    capacity_loss=s['capacity loss'],
-                    initial_capacity=s['initial capacity'],
-                    capacity_max=s['capacity max'],
-                    capacity_min=s['capacity min'],
+                    nominal_storage_capacity=s['nominal capacity'],
+                    loss_rate=s['capacity loss'],
+                    initial_storage_level=s['initial capacity'],
+                    max_storage_level=s['capacity max'],
+                    min_storage_level=s['capacity min'],
                     inflow_conversion_factor=s['efficiency inflow'],
                     outflow_conversion_factor=s['efficiency outflow'])
             )
