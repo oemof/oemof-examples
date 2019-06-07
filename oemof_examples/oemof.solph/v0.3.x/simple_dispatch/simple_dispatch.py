@@ -146,9 +146,8 @@ optimization_model.results()
 # in this case the entry data['scalars'] does not exist since no investment
 # variables are used
 data = views.node(optimization_model.results(), 'bel')
-
-print('Optimization successful. Printing some results:',
-      data['sequences'].info())
+data['sequences'].info()
+print('Optimization successful. Showing some results:')
 
 # see: https://pandas.pydata.org/pandas-docs/stable/visualization.html
 node_results_bel = views.node(optimization_model.results(), 'bel')
