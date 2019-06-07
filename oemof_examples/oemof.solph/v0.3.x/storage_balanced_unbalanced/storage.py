@@ -128,8 +128,10 @@ def storage_example():
     if plt is not None:
         storage_cap.plot(drawstyle="steps-mid", subplots=False, sharey=True)
         storage_cap.plot(drawstyle="steps-mid", subplots=True, sharey=True)
-        costs.plot(kind='bar', ax=plt.subplots()[1])
-        balance.plot(kind='bar', linewidth=1, edgecolor='#000000',
+        costs.plot(kind='bar', ax=plt.subplots()[1], rot=0)
+        balance.index = ['balanced', 'balanced_None',
+                         'unbalanced', 'unbalanced_None']
+        balance.plot(kind='bar', linewidth=1, edgecolor='#000000', rot=0,
                      ax=plt.subplots()[1])
         plt.show()
 
