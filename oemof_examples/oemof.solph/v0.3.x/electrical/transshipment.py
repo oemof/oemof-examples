@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 General description:
 ---------------------
@@ -15,6 +16,10 @@ This example requires the version v0.3.x of oemof and matplotlib. Install by:
 
 12.12.2017 - simon.hilpert@uni-flensburg.de
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
+
 import pandas as pd
 import networkx as nx
 from matplotlib import pyplot as plt

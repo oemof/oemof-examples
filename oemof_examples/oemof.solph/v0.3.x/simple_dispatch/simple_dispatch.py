@@ -22,8 +22,14 @@ Installation requirements
 This example requires the version v0.3.x of oemof and matplotlib. Install by:
 
     pip install 'oemof>=0.3,<0.4'
+
+Optional to see the plots:
+
     pip install matplotlib
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
 
 import os
 import pandas as pd

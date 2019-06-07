@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 General description
 -------------------
@@ -35,6 +36,9 @@ https://github.com/oemof/oemof/wiki/Windows---general
 5.1.2018 - uwe.krien@rl-institut.de
 7.5.2018 - jonathan.amme@rl-institut.de
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
 
 import os
 import logging

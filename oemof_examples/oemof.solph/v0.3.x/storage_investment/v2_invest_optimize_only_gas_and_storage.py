@@ -48,6 +48,9 @@ This example requires the version v0.3.x of oemof. Install by:
 
 """
 
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
+
 ###############################################################################
 # Imports
 ###############################################################################

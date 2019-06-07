@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 General description
 -------------------
@@ -15,6 +16,10 @@ This example requires the latest version of oemof. Install by:
 
 31.10.2016 - simon.hilpert@uni-flensburg.de
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
+
 import logging
 import pyomo.environ as po
 import pandas as pd
