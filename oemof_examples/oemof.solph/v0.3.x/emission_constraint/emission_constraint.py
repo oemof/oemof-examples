@@ -6,6 +6,11 @@ import pandas as pd
 
 import oemof.solph as solph
 from oemof.solph import constraints
+from oemof.outputlib import processing, views
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    plt = None
 
 energysystem = solph.EnergySystem(
                     timeindex=pd.date_range('1/1/2012', periods=3, freq='H'))
@@ -44,8 +49,17 @@ model = solph.Model(energysystem)
 # add the emission constraint
 constraints.emission_limit(model, limit=100)
 
-model.total_emissions.pprint()
+model.integral_limit_emission_factor.pprint()
 
 model.solve()
 
-print(model.total_emissions())
+print(model.integral_limit_emission_factor())
+
+results = processing.results(model)
+
+if plt is not None:
+    data = views.node(results, 'electricity')['sequences']
+    ax = data.plot(kind='line', grid=True)
+    ax.set_xlabel('Time (h)')
+    ax.set_ylabel('P (MW)')
+    plt.show()
