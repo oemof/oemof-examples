@@ -26,6 +26,9 @@ The oemof-visio provides the base for the created i/o plot.
 5.1.2017 - uwe.krien@rl-institut.de
 """
 
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
+
 import logging
 import os
 import pandas as pd

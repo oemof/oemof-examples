@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
+
 """
+General description
+-------------------
 Example that shows the parameter `balanced` of `GenericStorage`.
 
-This file is part of project oemof (github.com/oemof/oemof). It's copyrighted
-by the contributors recorded in the version control history of the file,
-available from its original location oemof/tests/test_scripts/test_solph/
-test_generic_offsettransformer/test_generic_offsettransformer.py
-
-SPDX-License-Identifier: GPL-3.0-or-later
-
+Installation requirements
+-------------------------
 This example requires the version v0.3.x of oemof. Install by:
 
     pip install 'oemof>=0.3,<0.4'
@@ -17,7 +15,18 @@ Optional to see the plots:
 
     pip install matplotlib
 
+Copyright / Licence Info
+------------------------
+This file is part of project oemof (github.com/oemof/oemof). It's copyrighted
+by the contributors recorded in the version control history of the file,
+available from its original location oemof/tests/test_scripts/test_solph/
+test_generic_offsettransformer/test_generic_offsettransformer.py
+
+SPDX-License-Identifier: GPL-3.0-or-later
 """
+
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
 
 import os
 import pandas as pd
@@ -128,8 +137,10 @@ def storage_example():
     if plt is not None:
         storage_cap.plot(drawstyle="steps-mid", subplots=False, sharey=True)
         storage_cap.plot(drawstyle="steps-mid", subplots=True, sharey=True)
-        costs.plot(kind='bar', ax=plt.subplots()[1])
-        balance.plot(kind='bar', linewidth=1, edgecolor='#000000',
+        costs.plot(kind='bar', ax=plt.subplots()[1], rot=0)
+        balance.index = ['balanced', 'balanced_None',
+                         'unbalanced', 'unbalanced_None']
+        balance.plot(kind='bar', linewidth=1, edgecolor='#000000', rot=0,
                      ax=plt.subplots()[1])
         plt.show()
 

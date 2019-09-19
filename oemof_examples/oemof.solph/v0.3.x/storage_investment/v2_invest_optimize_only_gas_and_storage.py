@@ -48,6 +48,9 @@ This example requires the version v0.3.x of oemof. Install by:
 
 """
 
+__copyright__ = "oemof developer group"
+__license__ = "GPLv3"
+
 ###############################################################################
 # Imports
 ###############################################################################
@@ -132,7 +135,7 @@ storage = solph.components.GenericStorage(
     label='storage',
     inputs={bel: solph.Flow(variable_costs=0.0001)},
     outputs={bel: solph.Flow()},
-    capacity_loss=0.00, initial_storage_level=0,
+    loss_rate=0.00, initial_storage_level=0,
     invest_relation_input_capacity=1/6,
     invest_relation_output_capacity=1/6,
     inflow_conversion_factor=1, outflow_conversion_factor=0.8,
