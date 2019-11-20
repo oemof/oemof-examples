@@ -52,9 +52,10 @@ sys.add(solph.Transformer(
     outputs={elbus: solph.Flow(
                    investment=solph.Investment(offset=10000,
                                                ep_costs=355,
-                                               nonconvex=True),
-                   invmax=59000000,  # invmax=60000000,
-                   # invmin=64,
+                                               nonconvex=True,
+                                               maximum=59000000,
+                                               # maximum=60000000,
+                                               ),
                    ),
              wbus: solph.Flow()},
     conversion_factors={elbus: 0.5, wbus: 0.35}))
