@@ -16,6 +16,7 @@ This example requires the version v0.3.x of oemof and matplotlib. Install by:
 
     pip install 'oemof>=0.3,<0.4'
     pip install matplotlib
+    pip install pygraphviz
 
 12.12.2017 - simon.hilpert@uni-flensburg.de
 """

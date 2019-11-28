@@ -28,25 +28,33 @@ energysystem = solph.EnergySystem(
 bgas = solph.Bus(label="gas")
 
 # create electricity bus
-bel = solph.Bus(label="electricity", balanced=False)
+bel = solph.Bus(label="electricity")
 
 # adding the buses to the energy system
 energysystem.add(bel, bgas)
 
 # create fixed source object representing biomass plants
 energysystem.add(solph.Source(label='biomass',
-                              outputs={
-                                bel: solph.Flow(nominal_value=100,
-                                                variable_costs=10,
-                                                emission_factor=0.01,
-                                                actual_value=[0.1, 0.2, 0.3],
-                                                fixed=True)}))
+                              outputs={bel: solph.Flow(
+                                  nominal_value=100,
+                                  variable_costs=10,
+                                  emission_factor=0.01,
+                                  actual_value=[0.1, 0.2, 0.3],
+                                  fixed=True)}))
 
 # create source object representing the gas commodity
 energysystem.add(solph.Source(label='gas-source',
                               outputs={
-                                bel: solph.Flow(variable_costs=10,
-                                                emission_factor=0.2)}))
+                                bgas: solph.Flow(
+                                    variable_costs=10,
+                                    emission_factor=0.2)}))
+
+energysystem.add(solph.Sink(label='demand',
+                            inputs={bel: solph.Flow(
+                                nominal_value=200,
+                                variable_costs=10,
+                                actual_value=[0.1, 0.2, 0.3],
+                                fixed=True)}))
 
 # create simple transformer object representing a gas power plant
 energysystem.add(solph.Transformer(
@@ -65,10 +73,10 @@ model = solph.Model(energysystem)
 constraints.emission_limit(model, limit=100)
 
 # print out the emission constraint
-model.total_emissions.pprint()
+model.integral_limit_emission_factor_constraint.pprint()
 
 # solve the model
 model.solve()
 
 # print out the amount of emissions from the emission constraint
-print(model.total_emissions())
+print(model.integral_limit_emission_factor())
