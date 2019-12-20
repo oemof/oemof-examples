@@ -26,33 +26,34 @@ required packages to run the example.
 
 Examples
 ========
-	
+    
 * clausius_rankine: Basic example of the clausius rankine process.
 * clausius_rankine_chp: A simple backpressure turbine.
 
-	* backpressure-line at different loads and
-	* varying feed flow temperature levels.
-	
-* combined_cycle_chp: Combined cycle power plant with backpressure steam turbine.	
+    * backpressure-line at different loads and
+    * varying feed flow temperature levels.
+    
+* combined_cycle_chp: Combined cycle power plant with backpressure steam turbine.    
 * combustion: Examples on how to work with combustion in TESPy.
 
-	* combustion_champer: using all fluid components individually
-	* combustion_chamber_stoich: using fluid aliases (flue gas is mixture of
+    * combustion_champer: using all fluid components individually
+    * combustion_chamber_stoich: using fluid aliases (flue gas is mixture of
       fresh air and stoichiometric flue gas)
+      
     * combustion_engine: Motoric CHP.
-	
+    
 * custom_variables: Example on how to use the custom variables feature for TESPy.
 
 * district_heating: A small district heating systems with about 150 components.
-	
-	* modeling of pressure drop and
-	* energy loss at different ambient temperature levels.
+    
+    * modeling of pressure drop and
+    * energy loss at different ambient temperature levels.
 
 * heat_pump: A air/water to water heat pump for power-to-heat applications.
 
-	* COP for varying loads,
-	* varying ambient temperature levels and
-	* air vs. water as heat source.
+    * COP for varying loads,
+    * varying ambient temperature levels and
+    * air vs. water as heat source.
 
 * solar_collector: An example to show, how the solar collector component can be
   implemented.
