@@ -7,7 +7,7 @@ Created on Fri Dec 20 08:52:01 2019
 
 from tespy.networks import network
 from tespy.components import (sink, source, turbine, condenser,
-                              pump, heat_exchanger_simple)
+                              pump, heat_exchanger_simple, cycle_closer)
 from tespy.connections import connection, bus, ref
 from tespy.tools.characteristics import char_line
 from matplotlib import pyplot as plt
@@ -81,8 +81,7 @@ turb = turbine('turbine')
 con = condenser('condenser')
 pu = pump('pump')
 steam_generator = heat_exchanger_simple('steam generator')
-start = source('cycle opener')
-end = sink('cycle closer')
+closer = cycle_closer('cycle closer')
 
 # cooling water
 so_cw = source('cooling water inlet')
@@ -91,11 +90,11 @@ si_cw = sink('cooling water outlet')
 # %% connections
 
 # main cycle
-fs_in = connection(start, 'out1', turb, 'in1')
+fs_in = connection(closer, 'out1', turb, 'in1')
 ws = connection(turb, 'out1', con, 'in1')
 cond = connection(con, 'out1', pu, 'in1')
 fw = connection(pu, 'out1', steam_generator, 'in1')
-fs_out = connection(steam_generator, 'out1', end, 'in1')
+fs_out = connection(steam_generator, 'out1', closer, 'in1')
 nw.add_conns(fs_in, ws, cond, fw, fs_out)
 
 # cooling water
@@ -131,10 +130,6 @@ steam_generator.set_attr(pr=0.95)
 # turbine inlet pressure is deriven by stodolas law, outlet pressure by
 # characteristic of condenser
 fs_in.set_attr(p=100, T=500, fluid={'water': 1}, design=['p'])
-
-# closing the cycle: fluid properties at sink must be identical to fluid
-# properties at the source
-fs_out.set_attr(p=ref(fs_in, 1, 0), h=ref(fs_in, 1, 0))
 
 cw_in.set_attr(T=20, p=5, fluid={'water': 1})
 cw_out.set_attr(T=30)
