@@ -7,7 +7,8 @@ Created on Mon Jan  6 09:22:17 2020
 
 from tespy.networks import network
 from tespy.components import (sink, source, valve, turbine, splitter, merge,
-                              condenser, pump, heat_exchanger_simple)
+                              condenser, pump, heat_exchanger_simple,
+                              cycle_closer)
 from tespy.connections import connection, bus, ref
 
 import matplotlib.pyplot as plt
@@ -23,53 +24,49 @@ nw = network(fluids=fluids, p_unit='bar', T_unit='C', h_unit='kJ / kg')
 # %% components
 
 # turbine part
-valve_turb = valve(label='valve_turb')
-turbine_hp = turbine(label='turbine_hp')
-split = splitter(label='splitter1')
-turbine_lp = turbine(label='turbine_lp')
+valve_turb = valve('turbine inlet valve')
+turbine_hp = turbine('high pressure turbine')
+split = splitter('extraction splitter')
+turbine_lp = turbine('low pressure turbine')
 
 # condenser and preheater
-cond = condenser(label='condenser')
-preheater = condenser(label='preheater')
-valve_pre = valve(label='valve_pre')
-valve = valve(label='valve1')
-merge = merge(label='merge1')
+cond = condenser('condenser')
+preheater = condenser('preheater')
+merge_ws = merge('waste steam merge')
+valve_pre = valve('preheater valve')
 
 # feed water
-pump = pump(label='pump')
-steam_generator = heat_exchanger_simple(label='steam generator')
+pump = pump('pump')
+steam_generator = heat_exchanger_simple('steam generator')
 
-# sources and sinks
-so = source(label='source')
-si = sink(label='sink')
+closer = cycle_closer('cycle closer')
 
-# for cooling water
-source_cw = source(label='source_cw')
-sink_cw = sink(label='sink_cw')
+# source and sink for cooling water
+source_cw = source('source_cw')
+sink_cw = sink('sink_cw')
 
 # %% connections
 
 # turbine part
-fs_in = connection(so, 'out1', valve_turb, 'in1')
+fs_in = connection(closer, 'out1', valve_turb, 'in1')
 fs = connection(valve_turb, 'out1', turbine_hp, 'in1')
 ext = connection(turbine_hp, 'out1', split, 'in1')
-ext_v = connection(split, 'out1', valve_pre, 'in1')
-v_pre = connection(valve_pre, 'out1', preheater, 'in1')
+ext_v = connection(split, 'out1', preheater, 'in1')
 ext_turb = connection(split, 'out2', turbine_lp, 'in1')
-nw.add_conns(fs_in, fs, ext, ext_v, v_pre, ext_turb)
+nw.add_conns(fs_in, fs, ext, ext_v, ext_turb)
 
 # preheater and condenser
-ext_cond = connection(preheater, 'out1', valve, 'in1')
-cond_ws = connection(valve, 'out1', merge, 'in2')
-turb_ws = connection(turbine_lp, 'out1', merge, 'in1')
-ws = connection(merge, 'out1', cond, 'in1')
+ext_cond = connection(preheater, 'out1', valve_pre, 'in1')
+cond_ws = connection(valve_pre, 'out1', merge_ws, 'in2')
+turb_ws = connection(turbine_lp, 'out1', merge_ws, 'in1')
+ws = connection(merge_ws, 'out1', cond, 'in1')
 nw.add_conns(ext_cond, cond_ws, turb_ws, ws)
 
 # feed water
 con = connection(cond, 'out1', pump, 'in1')
 fw_c = connection(pump, 'out1', preheater, 'in2')
 fw_w = connection(preheater, 'out2', steam_generator, 'in1')
-fs_out = connection(steam_generator, 'out1', si, 'in1')
+fs_out = connection(steam_generator, 'out1', closer, 'in1')
 nw.add_conns(con, fw_c, fw_w, fs_out)
 
 # cooling water
@@ -93,16 +90,15 @@ nw.add_busses(power_bus, heat_bus)
 
 # %% parametrization of components
 
-valve_pre.set_attr(pr=1)
-turbine_hp.set_attr(eta_s=0.9, design=['eta_s'], 
+turbine_hp.set_attr(eta_s=0.9, design=['eta_s'],
                     offdesign=['eta_s_char', 'cone'])
-turbine_lp.set_attr(eta_s=0.9, design=['eta_s'], 
+turbine_lp.set_attr(eta_s=0.9, design=['eta_s'],
                     offdesign=['eta_s_char', 'cone'])
 
-cond.set_attr(pr1=0.99, pr2=0.99, ttd_u=12, design=['pr2', 'ttd_u'], 
+cond.set_attr(pr1=0.99, pr2=0.99, ttd_u=12, design=['pr2', 'ttd_u'],
               offdesign=['zeta2', 'kA'])
-preheater.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, 
-                   design=['pr2', 'ttd_u', 'ttd_l'], 
+preheater.set_attr(pr1=0.99, pr2=0.99, ttd_u=5,
+                   design=['pr2', 'ttd_u', 'ttd_l'],
                    offdesign=['zeta2', 'kA'])
 
 pump.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
@@ -111,7 +107,7 @@ steam_generator.set_attr(pr=0.95)
 # %% parametrization of connections
 
 # fresh steam properties
-fs_in.set_attr(p=100, T=550, fluid={'water': 1})
+fs_in.set_attr(p=110, T=550, fluid={'water': 1})
 
 # pressure after turbine inlet valve
 fs.set_attr(p=100, design=['p'])
@@ -121,10 +117,6 @@ ext.set_attr(p=10, design=['p'])
 
 # staring value for warm feed water
 fw_w.set_attr(h0=310)
-
-# closing the cycle: fluid properties at sink must be identical to fluid
-# properties at the source
-fs_out.set_attr(p=ref(fs_in, 1, 0), h=ref(fs_in, 1, 0))
 
 # cooling water inlet
 cw_in.set_attr(T=60, p=10, fluid={'water': 1})
@@ -139,10 +131,10 @@ cw_out.set_attr(T=110)
 # %% solving
 
 mode = 'design'
-# nw.printoptions(print_level='none')
 
 nw.solve(mode=mode)
 nw.save('chp')
+nw.print_results()
 
 path = 'chp'
 mode = 'offdesign'
