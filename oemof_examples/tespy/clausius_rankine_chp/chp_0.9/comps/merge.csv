@@ -1,0 +1,2 @@
+label;cp;busses;bus_param;bus_P_ref;bus_char;design;offdesign;design_path;local_design;local_offdesign;num_in;num_in_set;zero_flag;zero_flag_set
+merge1;merge;[];[];[];[];[];[];nan;False;False;2;True;nan;False

@@ -1,0 +1,2 @@
+label;cp;busses;bus_param;bus_P_ref;bus_char;design;offdesign;design_path;local_design;local_offdesign;P;P_set;P_var;eta_s;eta_s_set;eta_s_var;pr;pr_set;pr_var;eta_s_char;eta_s_char_set;eta_s_char_param;flow_char;flow_char_set;flow_char_param;Sirr;Sirr_set
+pump;pump;['total output power'];[None];[114106.51389829839];['0x0000020EAEA6A8C8'];['eta_s'];['eta_s_char'];nan;False;False;114106.51389829839;False;False;0.7999999999937505;True;False;3740.0197796250072;False;False;0x0000020EB1C33B48;False;nan;0x0000020EB1C33508;False;nan;76.92478598900831;False

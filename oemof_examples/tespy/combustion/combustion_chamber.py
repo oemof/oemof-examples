@@ -5,11 +5,11 @@ Created on Thu Dec 19 12:38:43 2019
 @author: Malte Fritz
 """
 
-# %% network
-
 from tespy.networks import network
 from tespy.components import sink, source, combustion_chamber
 from tespy.connections import connection
+
+# %% network
 
 # define full fluid list for the network's variable space
 fluid_list = ['Ar', 'N2', 'O2', 'CO2', 'CH4', 'H2O']
