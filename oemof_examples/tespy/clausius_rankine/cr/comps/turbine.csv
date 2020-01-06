@@ -1,2 +1,0 @@
-label;cp;busses;bus_param;bus_P_ref;bus_char;design;offdesign;design_path;local_design;local_offdesign;P;P_set;P_var;eta_s;eta_s_set;eta_s_var;pr;pr_set;pr_var;eta_s_char;eta_s_char_set;eta_s_char_param;cone;cone_set;cone_param;Sirr;Sirr_set
-turbine;turbine;['total output power'];['P'];[-10541783.458221821];['0x0000020EB2E3AC08'];['eta_s'];['eta_s_char', 'cone'];nan;False;False;-10541783.458221821;False;False;0.9000000000000115;True;False;0.0005629016106716476;False;False;0x0000020EB1C33C08;False;m;0x0000020EB1C33FC8;False;nan;3801.1009999533408;False
