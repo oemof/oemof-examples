@@ -77,7 +77,7 @@ h2 = lc('housing area 2', 5)
 h3 = lc('housing area 3', 3)
 h4 = lc('housing area 4', 4)
 
-# consumer
+# consumers of subsystems
 
 h1.comps['consumer_0'].set_attr(Q=-5e4, pr=0.99)
 h1.comps['consumer_1'].set_attr(Q=-5e4, pr=0.99)
@@ -103,6 +103,49 @@ h4.comps['consumer_0'].set_attr(Q=-5e4, pr=0.99)
 h4.comps['consumer_1'].set_attr(Q=-5e4, pr=0.99)
 h4.comps['consumer_2'].set_attr(Q=-5e4, pr=0.99)
 h4.comps['consumer_3'].set_attr(Q=-5e4, pr=0.99)
+
+# pipes of subsystems
+# feed flow
+
+h1.comps['feed_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
+
+ia.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+ia.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+
+sc.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+
+h2.comps['feed_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['feed_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['feed_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['feed_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+
+h3.comps['feed_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
+h3.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
+
+h4.comps['feed_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
+h4.comps['feed_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
+h4.comps['feed_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
+
+# return flow
+
+h1.comps['return_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
+
+ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+ia.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+
+sc.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+
+h2.comps['return_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['return_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['return_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['return_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+
+h3.comps['return_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
+h3.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
+
+h4.comps['return_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
+h4.comps['return_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
+h4.comps['return_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
 
 
 # return temperatures of consumers
@@ -140,49 +183,6 @@ for sub in [h1, ia, sc, h2, h3, h4]:
 
             sub.conns['fesp_' + str(i + 1)].set_attr(T=dT_feed, design=['T'])
             sub.conns['reme_' + str(i)].set_attr(T=dT_return, design=['T'])
-
-# %% pipes of subsystems
-# pipe_feed
-
-h1.comps['feed_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
-
-ia.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-ia.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-
-sc.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-
-h2.comps['feed_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-
-h3.comps['feed_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
-h3.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
-
-h4.comps['feed_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
-h4.comps['feed_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
-h4.comps['feed_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
-
-# pipe_back
-
-h1.comps['return_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
-
-ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-ia.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-
-sc.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-
-h2.comps['return_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-
-h3.comps['return_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
-h3.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
-
-h4.comps['return_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
-h4.comps['return_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
-h4.comps['return_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
 
 
 # %% connections
@@ -267,7 +267,7 @@ pif17_h3 = connection(pif17, 'out1', h3.comps['splitter_0'], 'in1', T=ref(k4_pif
 # back
 h3_pib17 = connection(h3.comps['merge_0'], 'out1', pib17, 'in1')
 pib17_k4 = connection(pib17, 'out1', k4.comps['valve_0'], 'in1',T=ref(h3_pib17, 1, -1*pib17.L.val/200), design=['T'])
-k4_pib16 = connection(k4.comps['merge'], 'out1', pib16, 'in1', p=13)
+k4_pib16 = connection(k4.comps['merge'], 'out1', pib16, 'in1', p=12.75)
 pib16_k3 = connection(pib16, 'out1', k3.comps['valve_1'], 'in1', T=ref(k4_pib16, 1, -1*pib16.L.val/200), design=['T'])
 
 nw.add_conns(k3_pif16, pif16_k4, k4_pif17, pif17_h3)
