@@ -168,7 +168,7 @@ h4.comps['feed_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
 h1.comps['return_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
 
 ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+ia.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
 
 sc.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
 
