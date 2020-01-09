@@ -1,107 +1,111 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 16 08:44:36 2018
+Created on Thu Jan  9 10:07:02 2020
 
-@author: witte
+@author: Malte Fritz
 """
 
-from tespy import cmp, con, nwk, hlp
+from tespy.networks import network
+from tespy.components import (sink, source, splitter, compressor, condenser,
+                              pump, heat_exchanger_simple, valve, drum, 
+                              heat_exchanger, cycle_closer)
+from tespy.connections import connection, ref
+from tespy.tools.characteristics import char_line
+from tespy.tools.characteristics import load_default_char as ldc
 
 import numpy as np
 import pandas as pd
 
 # %% network
 
-nw = nwk.network(fluids=['water', 'NH3', 'air'],
+nw = network(fluids=['water', 'NH3', 'air'],
                  T_unit='C', p_unit='bar', h_unit='kJ / kg', m_unit='kg / s')
 
 # %% components
 
 # sources & sinks
-c_in = cmp.source('coolant in')
-cb = cmp.source('consumer back flow')
-cf = cmp.sink('consumer feed flow')
-amb = cmp.source('ambient air')
-amb_out1 = cmp.sink('sink ambient 1')
-amb_out2 = cmp.sink('sink ambient 2')
-c_out = cmp.sink('coolant out')
+cc = cycle_closer('coolant cycle closer')
+cb = source('consumer back flow')
+cf = sink('consumer feed flow')
+amb = source('ambient air')
+amb_out1 = sink('sink ambient 1')
+amb_out2 = sink('sink ambient 2')
 
 # ambient air system
-sp = cmp.splitter('splitter')
-fan = cmp.compressor('fan')
+sp = splitter('splitter')
+fan = compressor('fan')
 
 # consumer system
 
-cd = cmp.condenser('condenser')
-dhp = cmp.pump('district heating pump')
-cons = cmp.heat_exchanger_simple('consumer')
+cd = condenser('condenser')
+dhp = pump('district heating pump')
+cons = heat_exchanger_simple('consumer')
 
 # evaporator system
 
-ves = cmp.valve('valve')
-dr = cmp.drum('drum')
-ev = cmp.heat_exchanger('evaporator')
-su = cmp.heat_exchanger('superheater')
-erp = cmp.pump('evaporator reciculation pump')
+ves = valve('valve')
+dr = drum('drum')
+ev = heat_exchanger('evaporator')
+su = heat_exchanger('superheater')
+erp = pump('evaporator reciculation pump')
 
 # compressor-system
 
-cp1 = cmp.compressor('compressor 1')
-cp2 = cmp.compressor('compressor 2')
-ic = cmp.heat_exchanger('intercooler')
+cp1 = compressor('compressor 1')
+cp2 = compressor('compressor 2')
+ic = heat_exchanger('intercooler')
 
 # %% connections
 
 # consumer system
 
-c_in_cd = con.connection(c_in, 'out1', cd, 'in1')
+c_in_cd = connection(cc, 'out1', cd, 'in1')
 
-cb_dhp = con.connection(cb, 'out1', dhp, 'in1')
-dhp_cd = con.connection(dhp, 'out1', cd, 'in2')
-cd_cons = con.connection(cd, 'out2', cons, 'in1')
-cons_cf = con.connection(cons, 'out1', cf, 'in1')
+cb_dhp = connection(cb, 'out1', dhp, 'in1')
+dhp_cd = connection(dhp, 'out1', cd, 'in2')
+cd_cons = connection(cd, 'out2', cons, 'in1')
+cons_cf = connection(cons, 'out1', cf, 'in1')
 
 nw.add_conns(c_in_cd, cb_dhp, dhp_cd, cd_cons, cons_cf)
 
 # connection condenser - evaporator system
 
-cd_ves = con.connection(cd, 'out1', ves, 'in1')
+cd_ves = connection(cd, 'out1', ves, 'in1')
 
 nw.add_conns(cd_ves)
 
 # evaporator system
 
-ves_dr = con.connection(ves, 'out1', dr, 'in1')
-dr_erp = con.connection(dr, 'out1', erp, 'in1')
-erp_ev = con.connection(erp, 'out1', ev, 'in2')
-ev_dr = con.connection(ev, 'out2', dr, 'in2')
-dr_su = con.connection(dr, 'out2', su, 'in2')
+ves_dr = connection(ves, 'out1', dr, 'in1')
+dr_erp = connection(dr, 'out1', erp, 'in1')
+erp_ev = connection(erp, 'out1', ev, 'in2')
+ev_dr = connection(ev, 'out2', dr, 'in2')
+dr_su = connection(dr, 'out2', su, 'in2')
 
 nw.add_conns(ves_dr, dr_erp, erp_ev, ev_dr, dr_su)
 
-amb_fan = con.connection(amb, 'out1', fan, 'in1')
-fan_sp = con.connection(fan, 'out1', sp, 'in1')
-sp_su = con.connection(sp, 'out1', su, 'in1')
-su_ev = con.connection(su, 'out1', ev, 'in1')
-ev_amb_out = con.connection(ev, 'out1', amb_out1, 'in1')
+amb_fan = connection(amb, 'out1', fan, 'in1')
+fan_sp = connection(fan, 'out1', sp, 'in1')
+sp_su = connection(sp, 'out1', su, 'in1')
+su_ev = connection(su, 'out1', ev, 'in1')
+ev_amb_out = connection(ev, 'out1', amb_out1, 'in1')
 
 nw.add_conns(amb_fan, fan_sp, sp_su, su_ev, ev_amb_out)
 
 # connection evaporator system - compressor system
 
-su_cp1 = con.connection(su, 'out2', cp1, 'in1')
+su_cp1 = connection(su, 'out2', cp1, 'in1')
 
 nw.add_conns(su_cp1)
 
 # compressor-system
 
-cp1_he = con.connection(cp1, 'out1', ic, 'in1')
-he_cp2 = con.connection(ic, 'out1', cp2, 'in1')
-cp2_c_out = con.connection(cp2, 'out1', c_out, 'in1')
+cp1_he = connection(cp1, 'out1', ic, 'in1')
+he_cp2 = connection(ic, 'out1', cp2, 'in1')
+cp2_c_out = connection(cp2, 'out1', cc, 'in1')
 
-sp_ic = con.connection(sp, 'out2', ic, 'in2')
-ic_out = con.connection(ic, 'out2', amb_out2, 'in1')
+sp_ic = connection(sp, 'out2', ic, 'in2')
+ic_out = connection(ic, 'out2', amb_out2, 'in1')
 
 nw.add_conns(cp1_he, he_cp2, sp_ic, ic_out, cp2_c_out)
 
@@ -120,8 +124,11 @@ fan.set_attr(eta_s=0.5, pr=1.005, design=['eta_s'], offdesign=['eta_s_char'])
 
 # evaporator system
 
+kA_char1 = ldc('heat exchanger', 'kA_char1', 'EVAPORATING FLUID', char_line)
+kA_char2 = ldc('heat exchanger', 'kA_char2', 'EVAPORATING FLUID', char_line)
+
 ev.set_attr(pr1=0.999, pr2=0.99, ttd_l=5,
-            kA_char1='EVA_HOT', kA_char2='EVA_COLD',
+            kA_char1=kA_char1, kA_char2=kA_char2,
             design=['pr1', 'ttd_l'], offdesign=['zeta1', 'kA'])
 su.set_attr(pr1=0.999, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'],
             offdesign=['zeta1', 'zeta2', 'kA'])
@@ -131,11 +138,11 @@ erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 
 x = np.array([0.000, 0.400, 1.000, 1.500])
 y = np.array([0.500, 0.900, 1.000, 1.025])
-cp_char = hlp.dc_cc(x=x, y=y, param='m')
+gen = char_line(x=x, y=y)
 cp1.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'],
-             eta_s_char=cp_char)
+             eta_s_char=gen)
 cp2.set_attr(eta_s=0.8, pr=5, design=['eta_s'], offdesign=['eta_s_char'],
-             eta_s_char=cp_char)
+             eta_s_char=gen)
 ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'],
             offdesign=['zeta1', 'zeta2', 'kA'])
 
@@ -146,11 +153,11 @@ ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'],
 c_in_cd.set_attr(fluid={'air': 0, 'NH3': 1, 'water': 0})
 cb_dhp.set_attr(T=60, p=10, fluid={'air': 0, 'NH3': 0, 'water': 1})
 cd_cons.set_attr(T=90)
-cons_cf.set_attr(h=con.ref(cb_dhp, 1, 0), p=con.ref(cb_dhp, 1, 0))
+cons_cf.set_attr(h=ref(cb_dhp, 1, 0), p=ref(cb_dhp, 1, 0))
 
 # evaporator system cold side
 
-erp_ev.set_attr(m=con.ref(ves_dr, 4, 0), p0=5)
+erp_ev.set_attr(m=ref(ves_dr, 4, 0), p0=5)
 su_cp1.set_attr(p0=5, h0=1700)
 
 # evaporator system hot side
@@ -164,7 +171,6 @@ ev_amb_out.set_attr(T=9, design=['T'])
 
 he_cp2.set_attr(T=40, p0=10, design=['T'])
 ic_out.set_attr(T=30, design=['T'])
-cp2_c_out.set_attr(p=con.ref(c_in_cd, 1, 0), h=con.ref(c_in_cd, 1, 0))
 
 # %% key paramter
 
