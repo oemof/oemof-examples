@@ -179,7 +179,7 @@ nw.print_results()
 nw.save('heat_pump_air')
 
 T_range = [6, 12, 18, 24]
-Q_range = np.array([100e3, 100e3 ,140e3, 180e3, 200e3, 220e3])
+Q_range = np.array([100e3, 140e3, 180e3, 200e3, 220e3])
 df = pd.DataFrame(columns=Q_range / -cons.Q.val)
 
 for T in T_range:
