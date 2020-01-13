@@ -7,7 +7,7 @@ Created on Thu Jan  9 10:32:24 2020
 
 from tespy.networks import network
 from tespy.components import (sink, source, splitter, compressor, condenser,
-                              pump, heat_exchanger_simple, valve, drum, 
+                              pump, heat_exchanger_simple, valve, drum,
                               heat_exchanger, cycle_closer)
 from tespy.connections import connection, ref
 from tespy.tools.characteristics import char_line
@@ -113,36 +113,32 @@ nw.add_conns(cp1_he, he_cp2, sp_ic, ic_out, cp2_c_out)
 
 # condenser system
 
-cd.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, design=['pr2', 'ttd_u'], offdesign=['zeta2', 'kA'])
+cd.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, design=['pr2', 'ttd_u'],
+            offdesign=['zeta2', 'kA'])
 dhp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 cons.set_attr(pr=0.99, design=['pr'], offdesign=['zeta'])
 
-# ambient air
+# water pump
 
-pu.set_attr(eta_s=0.5, pr=1.005, design=['eta_s'], offdesign=['eta_s_char'])
+pu.set_attr(eta_s=0.75, design=['eta_s'], offdesign=['eta_s_char'])
 
 # evaporator system
 
 kA_char1 = ldc('heat exchanger', 'kA_char1', 'EVAPORATING FLUID', char_line)
 kA_char2 = ldc('heat exchanger', 'kA_char2', 'EVAPORATING FLUID', char_line)
 
-ev.set_attr(pr1=0.999, pr2=0.99, ttd_l=5,
+ev.set_attr(pr1=0.98, pr2=0.99, ttd_l=5,
             kA_char1=kA_char1, kA_char2=kA_char2,
             design=['pr1', 'ttd_l'], offdesign=['zeta1', 'kA'])
-su.set_attr(pr1=0.999, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'], 
+su.set_attr(pr1=0.98, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'],
             offdesign=['zeta1', 'zeta2', 'kA'])
 erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 
 # compressor system
 
-x = np.array([0.000, 0.400, 1.000, 1.500])
-y = np.array([0.500, 0.900, 1.000, 1.025])
-gen = char_line(x=x, y=y)
-cp1.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'],
-             eta_s_char=gen)
-cp2.set_attr(eta_s=0.8, pr=5, design=['eta_s'], offdesign=['eta_s_char'],
-             eta_s_char=gen)
-ic.set_attr(pr1=0.98, pr2=0.999, design=['pr1', 'pr2'],
+cp1.set_attr(eta_s=0.85, design=['eta_s'], offdesign=['eta_s_char'])
+cp2.set_attr(eta_s=0.9, pr=3, design=['eta_s'], offdesign=['eta_s_char'])
+ic.set_attr(pr1=0.99, pr2=0.98, design=['pr1', 'pr2'],
             offdesign=['zeta1', 'zeta2', 'kA'])
 
 # %% connection parametrization
@@ -156,19 +152,20 @@ cons_cf.set_attr(h=ref(cb_dhp, 1, 0), p=ref(cb_dhp, 1, 0))
 
 # evaporator system cold side
 
-erp_ev.set_attr(m=ref(ves_dr, 4, 0), p0=5)
+erp_ev.set_attr(m=ref(ves_dr, 1.25, 0), p0=5)
 su_cp1.set_attr(p0=5, h0=1700)
 
 # evaporator system hot side
 
-amb_p.set_attr(T=12, p=4, fluid={'air': 0, 'NH3': 0, 'water': 1},
-                 offdesign=['v'])
+# pumping at constant rate in partload
+amb_p.set_attr(T=12, p=2, fluid={'air': 0, 'NH3': 0, 'water': 1},
+               offdesign=['v'])
 sp_su.set_attr(offdesign=['v'])
-ev_amb_out.set_attr(T=9, design=['T'])
+ev_amb_out.set_attr(p=2, T=9, design=['T'])
 
 # compressor-system
 
-he_cp2.set_attr(T=40, p0=10, design=['T'])
+he_cp2.set_attr(Td_bp=5, p0=20, design=['Td_bp'])
 ic_out.set_attr(T=30, design=['T'])
 
 # %% key paramter
@@ -181,8 +178,8 @@ nw.solve('design')
 nw.print_results()
 nw.save('heat_pump_water')
 
-T_range = [6, 9, 12, 15, 18, 21, 24]
-Q_range = np.array([120e3, 140e3, 160e3, 180e3, 200e3, 220e3])
+T_range = [6, 12, 18, 24]
+Q_range = np.array([100e3, 100e3 ,140e3, 180e3, 200e3, 220e3])
 df = pd.DataFrame(columns=Q_range / -cons.Q.val)
 
 for T in T_range:
@@ -191,19 +188,11 @@ for T in T_range:
 
     for Q in Q_range:
         cons.set_attr(Q=-Q)
-        try:
-            nw.solve('offdesign',
-                     init_path='OD_water_' + str(Q/1e3),
-                     design_path='heat_pump_water/results.csv')
-        except:
-            nw.solve('offdesign', init_path='heat_pump_water',
-                     design_path='heat_pump_water')
+        nw.solve('offdesign', design_path='heat_pump_water')
 
         if nw.lin_dep:
             eps += [np.nan]
-
         else:
-            nw.save('OD_water_' + str(Q/1e3))
             eps += [abs(cd.Q.val) / (cp1.P.val + cp2.P.val + erp.P.val +
                     pu.P.val)]
 
