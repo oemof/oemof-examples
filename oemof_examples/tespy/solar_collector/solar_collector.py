@@ -1,33 +1,37 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug  4 10:37:36 2017
+Created on Thu Jan  9 10:48:43 2020
 
-@author: witte
+@author: Malte Fritz
 """
 
-from tespy import con, cmp, nwk
+from tespy.networks import network
+from tespy.components import sink, source, solar_collector
+from tespy.connections import connection
+
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
+from mpl_toolkits.mplot3d import Axes3D
 
 # %% network
 
 fluid_list = ['H2O']
-nw = nwk.network(fluids=fluid_list, p_unit='bar', T_unit='C')
+nw = network(fluids=fluid_list, p_unit='bar', T_unit='C')
 
 # %% components
 
 # sinks & sources
-back = cmp.source('to collector')
-feed = cmp.sink('from collector')
+back = source('to collector')
+feed = sink('from collector')
 
 # collector
-coll = cmp.solar_collector(label='solar thermal collector')
+coll = solar_collector(label='solar thermal collector')
 
 # %% connections
 
-b_c = con.connection(back, 'out1', coll, 'in1')
-c_f = con.connection(coll, 'out1', feed, 'in1')
+b_c = connection(back, 'out1', coll, 'in1')
+c_f = connection(coll, 'out1', feed, 'in1')
 
 nw.add_conns(b_c, c_f)
 
@@ -36,7 +40,7 @@ nw.add_conns(b_c, c_f)
 # set pressure ratio and heat flow, as well as dimensional parameters of
 # the collector. E is missing, thus energy balance for radiation is not
 # performed at this point
-coll.set_attr(pr=0.99, Q=8e3, lkf_lin=1, lkf_quad=0.005, A=10, Tamb=10)
+coll.set_attr(pr=0.99, Q=8e3)
 
 # %% connection parameters
 
@@ -46,21 +50,28 @@ c_f.set_attr(p0=2, T=120)
 # %% solving
 
 # going through several parametrisation possibilities
+print('###############')
+print('Erste Simu')
 mode = 'design'
 nw.solve(mode=mode)
 nw.print_results()
 
 # set absorption instead of outlet temperature
-coll.set_attr(E=9e2)
+coll.set_attr(E=9e2, eta_opt=0.9, lkf_lin=1, lkf_quad=0.005, A=10, Tamb=10)
 c_f.set_attr(T=np.nan)
+print('###############')
+print('Zweite Simu')
 
 nw.solve(mode=mode)
 nw.print_results()
+
 
 # set outlet temperature and mass flow instead of heat flow and radiation
 coll.set_attr(Q=np.nan, E=np.nan)
 c_f.set_attr(T=100, m=1e-1)
 
+print('###############')
+print('Dritte Simu')
 nw.solve(mode=mode)
 nw.print_results()
 nw.save('SC')
@@ -69,7 +80,6 @@ nw.save('SC')
 # (of the inclined surface) assuming constant mass flow
 
 # set print_level to none
-nw.set_printoptions(print_level='none')
 mode = 'offdesign'
 c_f.set_attr(T=np.nan)
 
