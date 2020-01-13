@@ -1,4 +1,0 @@
-label;cp;busses;bus_param;bus_P_ref;bus_char;design;offdesign;design_path;local_design;local_offdesign
-ambient air;source;[];[];[];[];[];[];nan;False;False
-fuel source;source;[];[];[];[];[];[];nan;False;False
-district heating backflow;source;[];[];[];[];[];[];nan;False;False

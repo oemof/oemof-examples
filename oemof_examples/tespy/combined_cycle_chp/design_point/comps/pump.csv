@@ -1,2 +1,0 @@
-label;cp;busses;bus_param;bus_P_ref;bus_char;design;offdesign;design_path;local_design;local_offdesign;P;P_set;P_var;eta_s;eta_s_set;eta_s_var;pr;pr_set;pr_var;eta_s_char;eta_s_char_set;eta_s_char_param;flow_char;flow_char_set;flow_char_param;Sirr;Sirr_set
-feed water pump;pump;['power output'];[None];[483593.69463742065];['0x000002990B6E53C8'];['eta_s'];['eta_s_char'];nan;False;False;483593.69463742065;False;False;0.7499999999999991;True;False;151.39403628612263;False;False;0x000002990735A548;False;nan;0x000002990B6DFFC8;False;nan;328.8686572885261;False
