@@ -44,14 +44,14 @@ coll.set_attr(pr=0.99, Q=8e3)
 
 # %% connection parameters
 
-b_c.set_attr(p=5, T=20, fluid={'H2O': 1})
+b_c.set_attr(p=5, T=35, fluid={'H2O': 1})
 c_f.set_attr(p0=2, T=120)
 
 # %% solving
 
 # going through several parametrisation possibilities
 print('###############')
-print('Erste Simu')
+print('simulation 1')
 mode = 'design'
 nw.solve(mode=mode)
 nw.print_results()
@@ -60,7 +60,7 @@ nw.print_results()
 coll.set_attr(E=9e2, eta_opt=0.9, lkf_lin=1, lkf_quad=0.005, A=10, Tamb=10)
 c_f.set_attr(T=np.nan)
 print('###############')
-print('Zweite Simu')
+print('simulation 2')
 
 nw.solve(mode=mode)
 nw.print_results()
@@ -71,16 +71,17 @@ coll.set_attr(Q=np.nan, E=np.nan)
 c_f.set_attr(T=100, m=1e-1)
 
 print('###############')
-print('Dritte Simu')
+print('design simulation')
 nw.solve(mode=mode)
 nw.print_results()
-nw.save('SC')
+nw.save('design')
 
 # looping over different ambient temperatures and levels of absorption
 # (of the inclined surface) assuming constant mass flow
 
 # set print_level to none
 mode = 'offdesign'
+nw.set_attr(iterinfo=False)
 c_f.set_attr(T=np.nan)
 
 gridnum = 10
@@ -94,7 +95,7 @@ for E in E_glob:
     coll.set_attr(E=E)
     for T in T_amb:
         coll.set_attr(Tamb=T)
-        nw.solve(mode=mode, design_path='SC')
+        nw.solve(mode=mode, design_path='design')
         eta += [coll.Q.val / (coll.E.val * coll.A.val)]
         # cut out efficiencies smaller than zero
         if eta[-1] < 0:
@@ -102,11 +103,13 @@ for E in E_glob:
 
     df.loc[E] = eta
 
+print('###############')
+print('offdesign performance map')
 E, T = np.meshgrid(T_amb, E_glob)
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot_wireframe(E, T, df.as_matrix())
+ax.plot_wireframe(E, T, df.values)
 # temperature difference -> mean collector temperature to ambient temperature
 ax.set_xlabel('ambient temperature t_a in °C')
 # absorption on the inclined surface
