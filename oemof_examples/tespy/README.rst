@@ -38,18 +38,17 @@ Examples
 
     * combustion_champer: using all fluid components individually
     * combustion_chamber_stoich: using fluid aliases (flue gas is mixture of
-      fresh air and stoichiometric flue gas)
-      
+      fresh air and stoichiometric flue gas)      
     * combustion_engine: Motoric CHP.
     
-* custom_variables: Example on how to use the custom variables feature for TESPy.
+* custom_variables: Example on how to calculate the diameter of a pipe at a given pressure ratio.
 
 * district_heating: A small district heating systems with about 150 components.
     
     * modeling of pressure drop and
     * energy loss at different ambient temperature levels.
 
-* heat_pump: A air/water to water heat pump for power-to-heat applications.
+* heat_pump: An air to water and a water to water heat pump for power-to-heat applications.
 
     * COP for varying loads,
     * varying ambient temperature levels and

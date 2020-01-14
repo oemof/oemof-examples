@@ -137,9 +137,15 @@ Coming soon
 
 tespy
 -----
-
-Coming soon
-
+    
+* **clausius_rankine**: Basic example of the clausius rankine process.
+* **clausius_rankine_chp**: Backpressure turbine in district heating.    
+* **combined_cycle_chp**: Combined cycle power plant with backpressure steam turbine.    
+* **combustion**: Examples on how to work with combustion in TESPy.
+* **custom_variables**: Example on how to calculate the diameter of a pipe at a given pressure ratio.
+* **district_heating**: A small district heating systems with about 150 components.
+* **heat_pump**: An air to water and a water to water heat pump for power-to-heat applications.
+* **solar_collector**: An example to show, how the solar collector component can be implemented.
 
 windpowerlib
 ------------
