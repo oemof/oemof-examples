@@ -38,8 +38,7 @@ Examples
 
     * combustion_champer: using all fluid components individually
     * combustion_chamber_stoich: using fluid aliases (flue gas is mixture of
-      fresh air and stoichiometric flue gas)
-      
+      fresh air and stoichiometric flue gas)      
     * combustion_engine: Motoric CHP.
     
 * custom_variables: Example on how to calculate the diameter of a pipe at a given pressure ratio.
