@@ -14,7 +14,7 @@ except ImportError:
     plt = None
 
 energy_system = solph.EnergySystem(
-                timeindex=pd.date_range('1/1/2012', periods=3, freq='H'))
+                timeindex=pd.date_range('1/1/2012', periods=4, freq='H'))
 Node.registry = energy_system
 
 bel = solph.Bus(label='bel')
@@ -31,26 +31,29 @@ bel = solph.Bus(label='bel')
 solph.Source(label='source1', outputs={bel: solph.Flow(
     nonconvex=solph.NonConvex(),
     nominal_value=210,
-    variable_costs=[-1, -5, -1],
+    variable_costs=[-1, -5, -1, -1],
+    max=[1, 1, 1, 0],
     my_keyword=True)})
 
 # Note: The keyword is also defined when set to False.
 solph.Sink(label='sink1', inputs={bel: solph.Flow(
     nonconvex=solph.NonConvex(),
-    variable_costs=[-2, -1, -2],
+    variable_costs=[-2, -1, -2, -2],
     nominal_value=250,
+    max=[1, 1, 1, 0],
     my_keyword=False)})
 
 # Should be ignored because my_keyword is not defined.
 solph.Source(label='source2', outputs={bel: solph.Flow(
     variable_costs=1,
     nonconvex=solph.NonConvex(),
+    max=[1, 1, 1, 0],
     nominal_value=145)})
 
 # Should be ignored because it is not NonConvex.
 solph.Sink(label='sink2', inputs={bel: solph.Flow(
     my_keyword=True,
-    actual_value=[0, 1, 1],
+    actual_value=[0, 1, 1, 0],
     fixed=True,
     min=0.3,
     nominal_value=130)})
@@ -72,4 +75,13 @@ if plt is not None:
     ax = data.plot(kind='line', grid=True)
     ax.set_xlabel('Time (h)')
     ax.set_ylabel('P (MW)')
+
+    plt.figure()
+    ax = plt.gca()
+    plt.plot(results[('my_keyword_count', 'my_keyword_count')]['sequences'],
+             label="my_keyword_count")
+    ax.set_xlabel('Time (h)')
+    ax.set_ylabel('Count (1)')
+    plt.grid()
+    plt.legend()
     plt.show()
