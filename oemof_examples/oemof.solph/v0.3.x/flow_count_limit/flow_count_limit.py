@@ -78,7 +78,7 @@ if plt is not None:
 
     plt.figure()
     ax = plt.gca()
-    plt.plot(results[('my_keyword_count', 'my_keyword_count')]['sequences'],
+    plt.plot(results[('my_keyword', 'my_keyword')]['sequences'],
              label="my_keyword_count")
     ax.set_xlabel('Time (h)')
     ax.set_ylabel('Count (1)')
