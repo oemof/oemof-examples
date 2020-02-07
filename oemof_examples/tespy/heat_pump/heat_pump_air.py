@@ -124,7 +124,7 @@ fan.set_attr(eta_s=0.65, design=['eta_s'], offdesign=['eta_s_char'])
 
 # evaporator system
 
-kA_char1 = ldc('heat exchanger', 'kA_char1', 'EVAPORATING FLUID', char_line)
+kA_char1 = ldc('heat exchanger', 'kA_char1', 'DEFAULT', char_line)
 kA_char2 = ldc('heat exchanger', 'kA_char2', 'EVAPORATING FLUID', char_line)
 
 ev.set_attr(pr1=0.999, pr2=0.99, ttd_l=5,
@@ -178,8 +178,8 @@ nw.solve('design')
 nw.print_results()
 nw.save('heat_pump_air')
 
-T_range = [6, 12, 18, 24]
-Q_range = np.array([100e3, 140e3, 180e3, 200e3, 220e3])
+T_range = [6, 12, 18, 24, 30]
+Q_range = np.array([100e3, 120e3, 140e3, 160e3, 180e3, 200e3, 220e3])
 df = pd.DataFrame(columns=Q_range / -cons.Q.val)
 
 for T in T_range:
