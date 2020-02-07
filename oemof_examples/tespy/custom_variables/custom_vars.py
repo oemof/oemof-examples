@@ -26,14 +26,16 @@ a.set_attr(h=40, fluid={'water': 1}, p=1, m=10)
 
 # %% component parameters
 
-pi.set_attr(ks=1e-4, L=100, D='var', Q=0)
+pi.set_attr(ks=1e-5, L=100, D='var', Q=0)
 
 # %% solve
 nw.set_attr(iterinfo=False)
 
-# specify different pressure ratios for the pipe, calculate the diameter required
+# specify different pressure ratios for the pipe,
+# calculate the diameter required
 
-for pr in np.linspace(0.95, 0.999, 10):
+for pr in np.linspace(0.9, 0.999, 10):
     pi.set_attr(pr=pr)
     nw.solve(mode='design')
-    print('Pressure ratio: ' + str(round(pr, 3)) + ', diameter: ' + str(round(pi.D.val * 1000, 0)))
+    print('Pressure ratio: ' + str(round(pr, 3)) +
+          ', diameter: ' + str(round(pi.D.val * 1000, 0)) + ' mm.')
