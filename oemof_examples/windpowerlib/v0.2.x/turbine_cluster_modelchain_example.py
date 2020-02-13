@@ -12,14 +12,129 @@ SPDX-License-Identifier: MIT
 """
 import pandas as pd
 import logging
-from example import modelchain_example as mc_e
-from windpowerlib import WindFarm
-from windpowerlib import WindTurbineCluster
-from windpowerlib import TurbineClusterModelChain
+import os
+import requests
+from windpowerlib import (WindFarm, WindTurbine, WindTurbineCluster,
+                          TurbineClusterModelChain)
+
 try:
     from matplotlib import pyplot as plt
 except ImportError:
     plt = None
+
+
+def get_weather_data(filename='weather.csv', **kwargs):
+    r"""
+    Imports weather data from a file.
+
+    The data include wind speed at two different heights in m/s, air
+    temperature in two different heights in K, surface roughness length in m
+    and air pressure in Pa. The file is located in the example folder of the
+    windpowerlib. The height in m for which the data applies is specified in
+    the second row.
+
+    Parameters
+    ----------
+    filename : str
+        Filename of the weather data file. Default: 'weather.csv'.
+
+    Other Parameters
+    ----------------
+    datapath : str, optional
+        Path where the weather data file is stored.
+        Default: 'windpowerlib/example'.
+
+    Returns
+    -------
+    :pandas:`pandas.DataFrame<frame>`
+            DataFrame with time series for wind speed `wind_speed` in m/s,
+            temperature `temperature` in K, roughness length `roughness_length`
+            in m, and pressure `pressure` in Pa.
+            The columns of the DataFrame are a MultiIndex where the first level
+            contains the variable name as string (e.g. 'wind_speed') and the
+            second level contains the height as integer at which it applies
+            (e.g. 10, if it was measured at a height of 10 m).
+
+    """
+
+    if "datapath" not in kwargs:
+        kwargs["datapath"] = os.path.dirname(__file__)
+
+    file = os.path.join(kwargs["datapath"], filename)
+
+    if not os.path.isfile(file):
+        logging.debug("Download weather data for example.")
+        req = requests.get("https://osf.io/59bqn/download")
+        with open(file, "wb") as fout:
+            fout.write(req.content)
+
+    # read csv file
+    weather_df = pd.read_csv(
+        file,
+        index_col=0,
+        header=[0, 1],
+        date_parser=lambda idx: pd.to_datetime(idx, utc=True),
+    )
+
+    # change type of index to datetime and set time zone
+    weather_df.index = pd.to_datetime(weather_df.index).tz_convert(
+        "Europe/Berlin"
+    )
+
+    return weather_df
+
+
+def initialize_wind_turbines():
+    r"""
+    Initializes three :class:`~.wind_turbine.WindTurbine` objects.
+
+    This function shows three ways to initialize a WindTurbine object. You can
+    either use turbine data from the OpenEnergy Database (oedb) turbine library
+    that is provided along with the windpowerlib, as done for the
+    'enercon_e126', or specify your own turbine by directly providing a power
+    (coefficient) curve, as done below for 'my_turbine', or provide your own
+    turbine data in csv files, as done for 'dummy_turbine'.
+
+    To get a list of all wind turbines for which power and/or power coefficient
+    curves are provided execute `
+    `windpowerlib.wind_turbine.get_turbine_types()``.
+
+    Returns
+    -------
+    Tuple (:class:`~.wind_turbine.WindTurbine`,
+           :class:`~.wind_turbine.WindTurbine`,
+           :class:`~.wind_turbine.WindTurbine`)
+
+    """
+
+    # specification of wind turbine where data is provided in the oedb
+    # turbine library
+    enercon_e126 = {
+        "turbine_type": "E-126/4200",  # turbine type as in register
+        "hub_height": 135,  # in m
+    }
+    # initialize WindTurbine object
+    e126 = WindTurbine(**enercon_e126)
+
+    # specification of own wind turbine (Note: power values and nominal power
+    # have to be in Watt)
+    my_turbine = {
+        "nominal_power": 3e6,  # in W
+        "hub_height": 105,  # in m
+        "power_curve": pd.DataFrame(
+            data={
+                "value": [
+                    p * 1000
+                    for p in [0.0, 26.0, 180.0, 1500.0, 3000.0, 3000.0]
+                ],  # in W
+                "wind_speed": [0.0, 3.0, 5.0, 10.0, 15.0, 25.0],
+            }
+        ),  # in m/s
+    }
+    # initialize WindTurbine object
+    my_turbine = WindTurbine(**my_turbine)
+
+    return my_turbine, e126
 
 
 def initialize_wind_farms(my_turbine, e126):
@@ -218,8 +333,8 @@ def run_example():
     # logging.INFO -> few messages
     logging.getLogger().setLevel(logging.DEBUG)
 
-    weather = mc_e.get_weather_data("weather.csv")
-    my_turbine, e126 = mc_e.initialize_wind_turbines()
+    weather = get_weather_data("weather.csv")
+    my_turbine, e126 = initialize_wind_turbines()
     example_farm, example_farm_2 = initialize_wind_farms(my_turbine, e126)
     example_cluster = initialize_wind_turbine_cluster(
         example_farm, example_farm_2

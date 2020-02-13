@@ -17,8 +17,7 @@ import os
 import pandas as pd
 import logging
 import requests
-from windpowerlib import ModelChain
-from windpowerlib import WindTurbine
+from windpowerlib import ModelChain, WindTurbine
 
 try:
     from matplotlib import pyplot as plt
