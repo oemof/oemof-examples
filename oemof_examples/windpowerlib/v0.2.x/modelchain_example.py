@@ -10,6 +10,11 @@ There are mainly three steps. First you have to import your weather data, then
 you need to specify your wind turbine, and in the last step call the
 windpowerlib functions to calculate the feed-in time series.
 
+Install the windpowerlib and optionally matplotlib to see the plots:
+
+   pip install windpowerlib
+   pip install matplotlib
+
 SPDX-FileCopyrightText: 2019 oemof developer group <contact@oemof.org>
 SPDX-License-Identifier: MIT
 """
