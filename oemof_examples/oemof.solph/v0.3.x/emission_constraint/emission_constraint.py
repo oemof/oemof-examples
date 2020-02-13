@@ -86,7 +86,6 @@ model.solve()
 
 # print out the amount of emissions from the emission constraint
 print(model.integral_limit_emission_factor())
-print(model.total_emissions())
 
 results = processing.results(model)
 
