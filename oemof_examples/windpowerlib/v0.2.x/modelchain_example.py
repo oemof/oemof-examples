@@ -15,6 +15,8 @@ Install the windpowerlib and optionally matplotlib to see the plots:
    pip install windpowerlib
    pip install matplotlib
 
+Go down to the "run_example()" function to start the example.
+
 SPDX-FileCopyrightText: 2019 oemof developer group <contact@oemof.org>
 SPDX-License-Identifier: MIT
 """
@@ -113,18 +115,18 @@ def initialize_wind_turbines():
            :class:`~.wind_turbine.WindTurbine`)
 
     """
+    # ************************************************************************
+    # **** Data is provided in the oedb turbine library **********************
 
-    # specification of wind turbine where data is provided in the oedb
-    # turbine library
     enercon_e126 = {
         "turbine_type": "E-126/4200",  # turbine type as in register
         "hub_height": 135,  # in m
     }
-    # initialize WindTurbine object
     e126 = WindTurbine(**enercon_e126)
 
-    # specification of own wind turbine (Note: power values and nominal power
-    # have to be in Watt)
+    # ************************************************************************
+    # **** Specification of wind turbine with your own data ******************
+    # **** NOTE: power values and nominal power have to be in Watt
     my_turbine = {
         "nominal_power": 3e6,  # in W
         "hub_height": 105,  # in m
@@ -138,7 +140,6 @@ def initialize_wind_turbines():
             }
         ),  # in m/s
     }
-    # initialize WindTurbine object
     my_turbine = WindTurbine(**my_turbine)
 
     return my_turbine, e126
@@ -167,16 +168,9 @@ def calculate_power_output(weather, my_turbine, e126):
         turbine library.
 
     """
-
-    # power output calculation for my_turbine
-    # initialize ModelChain with default parameters and use run_model method
-    # to calculate power output
-    mc_my_turbine = ModelChain(my_turbine).run_model(weather)
-    # write power output time series to WindTurbine object
-    my_turbine.power_output = mc_my_turbine.power_output
-
-    # power output calculation for e126
-    # own specifications for ModelChain setup
+    # ************************************************************************
+    # **** Data is provided in the oedb turbine library **********************
+    # **** ModelChain with non-default specifications
     modelchain_data = {
         "wind_speed_model": "logarithmic",  # 'logarithmic' (default),
         # 'hellman' or
@@ -196,6 +190,13 @@ def calculate_power_output(weather, my_turbine, e126):
     mc_e126 = ModelChain(e126, **modelchain_data).run_model(weather)
     # write power output time series to WindTurbine object
     e126.power_output = mc_e126.power_output
+
+    # ************************************************************************
+    # **** Specification of wind turbine with your own data ******************
+    # **** ModelChain with default parameter
+    mc_my_turbine = ModelChain(my_turbine).run_model(weather)
+    # write power output time series to WindTurbine object
+    my_turbine.power_output = mc_my_turbine.power_output
 
     return
 
@@ -254,7 +255,7 @@ def run_example():
     # windpowerlib. Change the logging level if you want more or less messages:
     # logging.DEBUG -> many messages
     # logging.INFO -> few messages
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
 
     weather = get_weather_data("weather.csv")
     my_turbine, e126 = initialize_wind_turbines()
