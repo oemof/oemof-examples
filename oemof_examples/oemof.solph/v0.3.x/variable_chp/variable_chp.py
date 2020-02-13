@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """
 General description
 -------------------
@@ -11,11 +12,16 @@ heat and power excess and therefore needs more natural gas. The bar plot just
 shows the difference in the usage of natural gas.
 
 Installation requirements
-------------
-pip install "oemof>=0.3,<0.4"
-pip install matplotlib (to see the bar plot)
-pip install git+https://github.com/oemof/oemof_visio.git
-  (to see the i/o balance plot)
+-------------------------
+This example requires the version v0.3.x of oemof. Install by:
+
+    pip install "oemof>=0.3,<0.4"
+
+Optional to see the plots:
+
+    pip install matplotlib (to see the bar plot)
+    pip install git+https://github.com/oemof/oemof_visio.git
+        (to see the i/o balance plot)
 
 """
 

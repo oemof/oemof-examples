@@ -64,16 +64,16 @@ logging.info("1. Get weather data")
 
 # read csv file
 filename = os.path.join(os.path.dirname(__file__), 'weather.csv')
-weather = pd.read_csv(filename, index_col=0, header=[0, 1])
+weather = pd.read_csv(filename, index_col=0, header=[0, 1],
+                      date_parser=lambda idx: pd.to_datetime(idx, utc=True))
 
 # change type of index to datetime and set time zone
-weather.index = pd.to_datetime(weather.index).tz_localize(
-    'UTC').tz_convert('Europe/Berlin')
+weather.index = pd.to_datetime(weather.index).tz_convert('Europe/Berlin')
 
 # change type of height from str to int by resetting columns
-weather.columns = [
-    weather.axes[1].levels[0][weather.axes[1].labels[0]],
-    weather.axes[1].levels[1][weather.axes[1].labels[1]].astype(int)]
+l0 = [_[0] for _ in weather.columns]
+l1 = [int(_[1]) for _ in weather.columns]
+weather.columns = [l0, l1]
 
 
 ##########################################################################
@@ -99,7 +99,7 @@ my_turbine = {
     'hub_height': 105,  # in m
     'rotor_diameter': 90,  # in m
     'power_curve': pd.DataFrame(
-        data={'power': [p * 1000 for p in [
+        data={'value': [p * 1000 for p in [
                   0.0, 26.0, 180.0, 1500.0, 3000.0, 3000.0]],  # in W
               'wind_speed': [0.0, 3.0, 5.0, 10.0, 15.0, 25.0]})  # in m/s
 }
@@ -184,7 +184,7 @@ if plt:
             title='Enercon E126 power coefficient curve')
         plt.show()
     if e126.power_curve is not None:
-        e126.power_curve.plot(x='wind_speed', y='power', style='*',
+        e126.power_curve.plot(x='wind_speed', y='value', style='*',
                               title='Enercon E126 power curve')
         plt.show()
     if my_turbine.power_coefficient_curve is not None:
@@ -193,7 +193,7 @@ if plt:
             title='myTurbine power coefficient curve')
         plt.show()
     if my_turbine.power_curve is not None:
-        my_turbine.power_curve.plot(x='wind_speed', y='power', style='*',
+        my_turbine.power_curve.plot(x='wind_speed', y='value', style='*',
                                     title='myTurbine power curve')
         plt.show()
 else:
