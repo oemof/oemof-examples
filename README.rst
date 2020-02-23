@@ -155,6 +155,13 @@ v0.1.x
 
 * **ModelChain example**: A simple way to calculate the power output of wind turbines.
 
+v0.2.x
+++++++
+
+* `ModelChain example <https://github.com/oemof/oemof-examples/blob/master/oemof_examples/windpowerlib/v0.2.x/modelchain_example.py>`_: A simple way to calculate the power output of wind turbines.
+* `Turbine cluster ModelChain example <https://github.com/oemof/oemof-examples/blob/master/oemof_examples/windpowerlib/v0.2.x/turbine_cluster_modelchain_example.py>`_: A simple and fast way to calculate
+  windturbine cluster and farms.
+
 
 License
 =======
