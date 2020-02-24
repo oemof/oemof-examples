@@ -6,6 +6,13 @@ This script shows how to add an individual constraint to the oemof solph
 OperationalModel.
 The constraint we add forces a flow to be greater or equal a certain share
 of all inflows of its target bus. Moreover we will set an emission constraint.
+If you want to model an emission constraint and do not want to get into
+the details of creating constraints, there is another example 
+
+https://github.com/oemof/oemof-examples/blob/master/oemof_examples/
+oemof.solph/v0.3.x/emission_constraint/emission_constraint.py
+
+that shows how to use the built-in oemof function.
 
 Installation requirements
 -------------------------
