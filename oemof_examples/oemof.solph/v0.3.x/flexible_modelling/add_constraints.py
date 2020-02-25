@@ -21,7 +21,7 @@ This example requires the latest version of oemof. Install by:
     pip install oemof
 
 31.10.2016 - simon.hilpert@uni-flensburg.de
-25.02.2010 - jann.launer@rl-institut.de
+25.02.2020 - jann.launer@rl-institut.de
 """
 import logging
 import pyomo.environ as po
