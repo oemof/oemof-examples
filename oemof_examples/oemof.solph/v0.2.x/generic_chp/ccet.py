@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-General description
--------------------
+General description:
+---------------------
 Example that illustrates how to use custom component `GenericCHP` can be used.
-In this case it is used to model a back pressure turbine.
+In this case it is used to model a combined cycle extraction turbine.
 
-Installation requirements
--------------------------
+Installation requirements:
+---------------------------
 This example requires the latest version of oemof. Install by:
 
     pip install oemof
@@ -25,8 +25,7 @@ except ImportError:
 
 
 # read sequence data
-full_filename = os.path.join(os.path.dirname(__file__),
-                                    'generic_chp.csv')
+full_filename = os.path.join(os.path.dirname(__file__), 'generic_chp.csv')
 data = pd.read_csv(full_filename, sep=",")
 
 # select periods
@@ -58,10 +57,9 @@ bel = solph.Bus(label='bel')
 demand_el = solph.Sink(label='demand_el', inputs={bel: solph.Flow(
                        variable_costs=data['price_el'])})
 
-# back pressure turbine with same parameters as btp
-# (for back pressure characteristics Q_CW_min=0 and back_pressure=True)
-bpt = solph.components.GenericCHP(
-    label='back_pressure_turbine',
+# combined cycle extraction turbine
+ccet = solph.components.GenericCHP(
+    label='combined_cycle_extraction_turbine',
     fuel_input={bgas: solph.Flow(
         H_L_FG_share_max=[0.19 for p in range(0, periods)])},
     electrical_output={bel: solph.Flow(
@@ -70,9 +68,10 @@ bpt = solph.components.GenericCHP(
         Eta_el_max_woDH=[0.53 for p in range(0, periods)],
         Eta_el_min_woDH=[0.43 for p in range(0, periods)])},
     heat_output={bth: solph.Flow(
-        Q_CW_min=[0 for p in range(0, periods)])},
-    Beta=[0. for p in range(0, periods)],
-    back_pressure=True)
+        Q_CW_min=[30 for p in range(0, periods)])},
+    Beta=[0.19 for p in range(0, periods)],
+    back_pressure=False)
+
 # create an optimization problem and solve it
 om = solph.Model(es)
 
@@ -88,7 +87,7 @@ results = processing.results(om)
 # plot data
 if plt is not None:
     # plot PQ diagram from component results
-    data = results[(bpt, None)]['sequences']
+    data = results[(ccet, None)]['sequences']
     ax = data.plot(kind='scatter', x='Q', y='P', grid=True)
     ax.set_xlabel('Q (MW)')
     ax.set_ylabel('P (MW)')
