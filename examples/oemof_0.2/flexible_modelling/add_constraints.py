@@ -77,6 +77,9 @@ def run_add_constraints_example(solver='cbc', nologg=False):
             om.flows[s, t].emission_factor = 0.27  # t/MWh
         if s is blig:
             om.flows[s, t].emission_factor = 0.39  # t/MWh
+
+    # Increase the emission limit will increase the share of lignite, because
+    # lignite is cheaper in this example but has higher specific emissions.
     emission_limit = 75
 
     # add the outflow share
