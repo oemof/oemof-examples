@@ -26,8 +26,8 @@ import logging
 import pyomo.environ as po
 import pandas as pd
 
-from oemof.solph import (Sink, Transformer, Bus, Flow,
-                         Model, EnergySystem)
+from oemof.solph import (Sink, Source, Transformer, Bus, Flow, Model,
+                         EnergySystem)
 
 import oemof.outputlib as outputlib
 
@@ -40,11 +40,14 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     es = EnergySystem(timeindex=pd.date_range('1/1/2017', periods=4, freq='H'))
     # add some nodes
 
-    boil = Bus(label="oil", balanced=False)
-    blig = Bus(label="lignite", balanced=False)
+    boil = Bus(label="oil")
+    blig = Bus(label="lignite")
     b_el = Bus(label="b_el")
 
     es.add(boil, blig, b_el)
+
+    oil_source = Source(label="oil source", outputs={boil: Flow()})
+    lignite_source = Source(label="lignite source", outputs={blig: Flow()})
 
     sink = Sink(label="Sink", inputs={
                                 b_el: Flow(nominal_value=40,
@@ -63,7 +66,7 @@ def run_add_constraints_example(solver='cbc', nologg=False):
                                         variable_costs=10)},
                          conversion_factors={b_el: 0.41})
 
-    es.add(sink, pp_oil, pp_lig)
+    es.add(sink, pp_oil, pp_lig, oil_source, lignite_source)
 
     # create the model
     om = Model(energysystem=es)
