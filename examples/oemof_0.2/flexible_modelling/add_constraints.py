@@ -31,6 +31,7 @@ from oemof.solph import (Sink, Transformer, Bus, Flow,
 
 import oemof.outputlib as outputlib
 
+
 def run_add_constraints_example(solver='cbc', nologg=False):
     if not nologg:
         logging.basicConfig(level=logging.INFO)
@@ -125,14 +126,17 @@ def run_add_constraints_example(solver='cbc', nologg=False):
 
     emitted = {}
     for k, v in results.items():
-        if k[0]==boil:
-            emitted['oil'] = v['sequences']['flow'].sum() * om.flows[k].emission_factor
-        if k[0]==blig:
-            emitted['lignite'] = v['sequences']['flow'].sum() * om.flows[k].emission_factor
+        if k[0] == boil:
+            emitted['oil'] = (
+                    v['sequences']['flow'].sum() * om.flows[k].emission_factor)
+        if k[0] == blig:
+            emitted['lignite'] = (
+                    v['sequences']['flow'].sum() * om.flows[k].emission_factor)
 
     print('emissions through oil consumption \n', emitted['oil'])
     print('emissions through lignite consumption \n', emitted['lignite'])
     print('total emissions \n', sum(emitted.values()))
+
 
 if __name__ == "__main__":
     run_add_constraints_example()
