@@ -5,7 +5,6 @@
 import pandas as pd
 
 import oemof.solph as solph
-from oemof.solph import constraints
 from oemof.network import Node
 from oemof.outputlib import processing, views
 try:
