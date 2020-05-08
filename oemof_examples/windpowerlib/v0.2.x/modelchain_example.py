@@ -22,9 +22,9 @@ SPDX-License-Identifier: MIT
 """
 import os
 import pandas as pd
-import logging
 import requests
-from windpowerlib import ModelChain, WindTurbine
+import logging
+from windpowerlib import ModelChain, WindTurbine, create_power_curve
 
 try:
     from matplotlib import pyplot as plt
@@ -32,7 +32,7 @@ except ImportError:
     plt = None
 
 
-def get_weather_data(filename='weather.csv', **kwargs):
+def get_weather_data(filename="weather.csv", **kwargs):
     r"""
     Imports weather data from a file.
 
@@ -102,7 +102,7 @@ def initialize_wind_turbines():
     that is provided along with the windpowerlib, as done for the
     'enercon_e126', or specify your own turbine by directly providing a power
     (coefficient) curve, as done below for 'my_turbine', or provide your own
-    turbine data in csv files, as done for 'dummy_turbine'.
+    turbine data in csv files, as done for 'my_turbine2'.
 
     To get a list of all wind turbines for which power and/or power coefficient
     curves are provided execute `
@@ -127,6 +127,7 @@ def initialize_wind_turbines():
     # ************************************************************************
     # **** Specification of wind turbine with your own data ******************
     # **** NOTE: power values and nominal power have to be in Watt
+
     my_turbine = {
         "nominal_power": 3e6,  # in W
         "hub_height": 105,  # in m
@@ -142,10 +143,34 @@ def initialize_wind_turbines():
     }
     my_turbine = WindTurbine(**my_turbine)
 
-    return my_turbine, e126
+    # ************************************************************************
+    # **** Specification of wind turbine with data in own file ***************
+
+    # Read your turbine data from your data file using functions like
+    # pandas.read_csv().
+    # >>> import pandas as pd
+    # >>> my_data = pd.read_csv("path/to/my/data/file")
+    # >>> my_power = my_data["my_power"]
+    # >>> my_wind_speed = my_data["my_wind_speed"]
+
+    my_power = pd.Series(
+        [0.0, 39000.0, 270000.0, 2250000.0, 4500000.0, 4500000.0]
+    )
+    my_wind_speed = (0.0, 3.0, 5.0, 10.0, 15.0, 25.0)
+
+    my_turbine2 = {
+        "nominal_power": 6e6,  # in W
+        "hub_height": 115,  # in m
+        "power_curve": create_power_curve(
+            wind_speed=my_wind_speed, power=my_power
+        ),
+    }
+    my_turbine2 = WindTurbine(**my_turbine2)
+
+    return my_turbine, e126, my_turbine2
 
 
-def calculate_power_output(weather, my_turbine, e126):
+def calculate_power_output(weather, my_turbine, e126, my_turbine2):
     r"""
     Calculates power output of wind turbines using the
     :class:`~.modelchain.ModelChain`.
@@ -155,7 +180,7 @@ def calculate_power_output(weather, my_turbine, e126):
     the default methods for the calculation steps, as done for 'my_turbine',
     or choose different methods, as done for the 'e126'. Of course, you can
     also use the default methods while only changing one or two of them, as
-    done for 'dummy_turbine'.
+    done for 'my_turbine2'.
 
     Parameters
     ----------
@@ -166,8 +191,11 @@ def calculate_power_output(weather, my_turbine, e126):
     e126 : :class:`~.wind_turbine.WindTurbine`
         WindTurbine object with power curve from the OpenEnergy Database
         turbine library.
+    my_turbine2 : :class:`~.wind_turbine.WindTurbine`
+        WindTurbine object with power coefficient curve from example file.
 
     """
+
     # ************************************************************************
     # **** Data is provided in the oedb turbine library **********************
     # **** ModelChain with non-default specifications
@@ -198,10 +226,18 @@ def calculate_power_output(weather, my_turbine, e126):
     # write power output time series to WindTurbine object
     my_turbine.power_output = mc_my_turbine.power_output
 
+    # ************************************************************************
+    # **** Specification of wind turbine with data in own file ***************
+    # **** Using "power_coefficient_curve" as "power_output_model".
+    mc_example_turbine = ModelChain(
+        my_turbine2, power_output_model="power_curve"
+    ).run_model(weather)
+    my_turbine2.power_output = mc_example_turbine.power_output
+
     return
 
 
-def plot_or_print(my_turbine, e126):
+def plot_or_print(my_turbine, e126, my_turbine2):
     r"""
     Plots or prints power output and power (coefficient) curves.
 
@@ -212,32 +248,55 @@ def plot_or_print(my_turbine, e126):
     e126 : :class:`~.wind_turbine.WindTurbine`
         WindTurbine object with power curve from the OpenEnergy Database
         turbine library.
+    my_turbine2 : :class:`~.wind_turbine.WindTurbine`
+        WindTurbine object with power coefficient curve from example file.
+
     """
 
     # plot or print turbine power output
     if plt:
-        e126.power_output.plot(legend=True, label='Enercon E126')
-        my_turbine.power_output.plot(legend=True, label='myTurbine')
-        plt.xlabel('Time')
-        plt.ylabel('Power in W')
+        e126.power_output.plot(legend=True, label="Enercon E126")
+        my_turbine.power_output.plot(legend=True, label="myTurbine")
+        my_turbine2.power_output.plot(legend=True, label="myTurbine2")
+        plt.xlabel("Time")
+        plt.ylabel("Power in W")
         plt.show()
     else:
         print(e126.power_output)
         print(my_turbine.power_output)
+        print(my_turbine2.power_output)
 
     # plot or print power curve
     if plt:
         if e126.power_curve is not False:
-            e126.power_curve.plot(x='wind_speed', y='value', style='*',
-                                  title='Enercon E126 power curve')
-            plt.xlabel('Wind speed in m/s')
-            plt.ylabel('Power in W')
+            e126.power_curve.plot(
+                x="wind_speed",
+                y="value",
+                style="*",
+                title="Enercon E126 power curve",
+            )
+            plt.xlabel("Wind speed in m/s")
+            plt.ylabel("Power in W")
             plt.show()
         if my_turbine.power_curve is not False:
-            my_turbine.power_curve.plot(x='wind_speed', y='value', style='*',
-                                        title='myTurbine power curve')
-            plt.xlabel('Wind speed in m/s')
-            plt.ylabel('Power in W')
+            my_turbine.power_curve.plot(
+                x="wind_speed",
+                y="value",
+                style="*",
+                title="myTurbine power curve",
+            )
+            plt.xlabel("Wind speed in m/s")
+            plt.ylabel("Power in W")
+            plt.show()
+        if my_turbine2.power_curve is not False:
+            my_turbine2.power_curve.plot(
+                x="wind_speed",
+                y="value",
+                style="*",
+                title="myTurbine2 power curve",
+            )
+            plt.xlabel("Wind speed in m/s")
+            plt.ylabel("Power in W")
             plt.show()
     else:
         if e126.power_coefficient_curve is not False:
@@ -255,12 +314,12 @@ def run_example():
     # windpowerlib. Change the logging level if you want more or less messages:
     # logging.DEBUG -> many messages
     # logging.INFO -> few messages
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
 
     weather = get_weather_data("weather.csv")
-    my_turbine, e126 = initialize_wind_turbines()
-    calculate_power_output(weather, my_turbine, e126)
-    plot_or_print(my_turbine, e126)
+    my_turbine, e126, my_turbine2 = initialize_wind_turbines()
+    calculate_power_output(weather, my_turbine, e126, my_turbine2)
+    plot_or_print(my_turbine, e126, my_turbine2)
 
 
 if __name__ == "__main__":
