@@ -2,6 +2,7 @@ import os
 from termcolor import colored
 import matplotlib
 import warnings
+from datetime import datetime
 
 warnings.filterwarnings("ignore", "", UserWarning)
 matplotlib.use('Agg')
@@ -14,6 +15,8 @@ fullpath = os.path.join(os.getcwd(), package, version)
 
 checker = {}
 number = 0
+
+start = datetime.now()
 
 for root, dirs, files in os.walk(fullpath):
     for name in files:
@@ -33,7 +36,7 @@ for root, dirs, files in os.walk(fullpath):
 
 print("******* TEST RESULTS ***********************************")
 
-print("\n{0} examples tested.\n".format(number))
+print("\n{0} examples tested in {1}.\n".format(number, datetime.now()-start))
 
 for k, v in checker.items():
     if v == "failed":
