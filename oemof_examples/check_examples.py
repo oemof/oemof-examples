@@ -12,7 +12,7 @@ matplotlib.use('Agg')
 
 package = "oemof.solph"  # e.g. "oemof.solph", "tespy", "windpowerlib"
 version = "v0.4.x"  # e.g. "", "v0.2.x", "0.4.x"
-debug = True  # If True script will stop if error is raised
+debug = False  # If True script will stop if error is raised
 exclude_notebooks = False
 exclude_python_scripts = False
 
@@ -59,8 +59,8 @@ number = 0
 
 start = datetime.now()
 
-for root, dirs, files in os.walk(fullpath):
-    for name in files:
+for root, dirs, files in sorted(os.walk(fullpath)):
+    for name in sorted(files):
         if name[-3:] == ".py" and not exclude_python_scripts:
             fn = os.path.join(root, name)
             os.chdir(root)
