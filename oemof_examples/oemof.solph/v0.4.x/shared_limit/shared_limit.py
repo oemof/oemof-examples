@@ -36,8 +36,6 @@ __license__ = "MIT"
 
 import pandas as pd
 import oemof.solph as solph
-from oemof.solph import constraints
-from oemof.outputlib import processing
 
 try:
     import matplotlib.pyplot as plt
@@ -74,13 +72,11 @@ energysystem.add(solph.Source(label='s2b',
 energysystem.add(solph.Sink(label='d1',
                             inputs={b1: solph.Flow(
                                 nominal_value=5,
-                                actual_value=[0, 0, 1, 0],
-                                fixed=True)}))
+                                fix=[0, 0, 1, 0])}))
 energysystem.add(solph.Sink(label='d2',
                             inputs={b2: solph.Flow(
                                 nominal_value=5,
-                                actual_value=[0, 0, 0, 1],
-                                fixed=True)}))
+                                fix=[0, 0, 0, 1])}))
 
 # create simple transformer object representing a gas power plant
 storage1 = solph.components.GenericStorage(
@@ -102,13 +98,14 @@ model = solph.Model(energysystem)
 components = [storage1, storage2]
 
 # add the shared limit constraint
-constraints.shared_limit(model, model.GenericStorageBlock.capacity,
-                         "limit_storage", components,
-                         [0.5, 1.25], upper_limit=7)
+solph.constraints.shared_limit(model,
+                               model.GenericStorageBlock.storage_content,
+                               "limit_storage", components,
+                               [0.5, 1.25], upper_limit=7)
 
 model.solve()
 
-results = processing.results(model)
+results = solph.processing.results(model)
 
 if plt is not None:
     plt.figure()
