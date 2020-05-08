@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 General description
 -------------------
@@ -7,25 +6,31 @@ This script shows how to add an individual constraint to the oemof solph
 OperationalModel.
 The constraint we add forces a flow to be greater or equal a certain share
 of all inflows of its target bus. Moreover we will set an emission constraint.
+If you want to model an emission constraint and do not want to get into
+the details of creating constraints, there is another example 
+
+https://github.com/oemof/oemof-examples/blob/master/oemof_examples/
+oemof.solph/v0.3.x/emission_constraint/emission_constraint.py
+
+that shows how to use the built-in oemof function.
 
 Installation requirements
 -------------------------
 This example requires the latest version of oemof. Install by:
 
-    pip install 'oemof>=0.3,<0.4'
+    pip install oemof
 
 31.10.2016 - simon.hilpert@uni-flensburg.de
+25.02.2020 - jann.launer@rl-institut.de
 """
-
-__copyright__ = "oemof developer group"
-__license__ = "GPLv3"
-
 import logging
 import pyomo.environ as po
 import pandas as pd
 
-from oemof.solph import (Sink, Transformer, Bus, Flow,
-                         Model, EnergySystem)
+from oemof.solph import (Sink, Source, Transformer, Bus, Flow, Model,
+                         EnergySystem)
+
+import oemof.outputlib as outputlib
 
 
 def run_add_constraints_example(solver='cbc', nologg=False):
@@ -36,11 +41,14 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     es = EnergySystem(timeindex=pd.date_range('1/1/2017', periods=4, freq='H'))
     # add some nodes
 
-    boil = Bus(label="oil", balanced=False)
-    blig = Bus(label="lignite", balanced=False)
+    boil = Bus(label="oil")
+    blig = Bus(label="lignite")
     b_el = Bus(label="b_el")
 
     es.add(boil, blig, b_el)
+
+    oil_source = Source(label="oil source", outputs={boil: Flow()})
+    lignite_source = Source(label="lignite source", outputs={blig: Flow()})
 
     sink = Sink(label="Sink", inputs={
                                 b_el: Flow(nominal_value=40,
@@ -59,7 +67,7 @@ def run_add_constraints_example(solver='cbc', nologg=False):
                                         variable_costs=10)},
                          conversion_factors={b_el: 0.41})
 
-    es.add(sink, pp_oil, pp_lig)
+    es.add(sink, pp_oil, pp_lig, oil_source, lignite_source)
 
     # create the model
     om = Model(energysystem=es)
@@ -70,7 +78,10 @@ def run_add_constraints_example(solver='cbc', nologg=False):
             om.flows[s, t].emission_factor = 0.27  # t/MWh
         if s is blig:
             om.flows[s, t].emission_factor = 0.39  # t/MWh
-    emission_limit = 60e3
+
+    # Increase the emission limit will increase the share of lignite, because
+    # lignite is cheaper in this example but has higher specific emissions.
+    emission_limit = 75
 
     # add the outflow share
     om.flows[(boil, pp_oil)].outflow_share = [1, 0.5, 0, 0.3]
@@ -107,7 +118,8 @@ def run_add_constraints_example(solver='cbc', nologg=False):
                                          rule=_inflow_share_rule)
     # add emission constraint
     myblock.emission_constr = po.Constraint(expr=(
-            sum(om.flow[i, o, t]
+            sum(om.flow[i, o, t] *
+                om.flows[i, o].emission_factor
                 for (i, o) in myblock.COMMODITYFLOWS
                 for t in om.TIMESTEPS) <= emission_limit))
 
@@ -115,6 +127,22 @@ def run_add_constraints_example(solver='cbc', nologg=False):
     # you may print the model with om.pprint()
     om.solve(solver=solver)
     logging.info("Successfully finished.")
+
+    # print the resulting emissions to verify
+    results = outputlib.processing.results(om)
+
+    emitted = {}
+    for k, v in results.items():
+        if k[0] == boil:
+            emitted['oil'] = (
+                    v['sequences']['flow'].sum() * om.flows[k].emission_factor)
+        if k[0] == blig:
+            emitted['lignite'] = (
+                    v['sequences']['flow'].sum() * om.flows[k].emission_factor)
+
+    print('emissions through oil consumption \n', emitted['oil'])
+    print('emissions through lignite consumption \n', emitted['lignite'])
+    print('total emissions \n', sum(emitted.values()))
 
 
 if __name__ == "__main__":

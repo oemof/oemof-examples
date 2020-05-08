@@ -12,7 +12,7 @@ from tespy.connections import connection
 # %% network
 
 # define full fluid list for the network's variable space
-fluid_list = ['TESPy::myAir', 'TESPy::myFuel', 'TESPy::myFuel_fg']
+fluid_list = ['myAir', 'myFuel', 'myFuel_fg']
 
 # define unit systems and fluid property ranges
 nw = network(fluids=fluid_list, p_unit='bar', T_unit='C',
@@ -49,13 +49,13 @@ comb.set_attr(fuel={'CH4': 0.96, 'CO2': 0.04},
 
 # air from abient (ambient pressure and temperature), air composition must be
 # stated component wise.
-amb_comb.set_attr(T=20, p=1, fluid={'TESPy::myAir': 1, 'TESPy::myFuel': 0,
-                                    'TESPy::myFuel_fg': 0})
+amb_comb.set_attr(T=20, p=1, fluid={'myAir': 1, 'myFuel': 0,
+                                    'myFuel_fg': 0})
 
 # fuel, pressure must not be stated, as pressure is the same at all inlets and
 # outlets of the combustion chamber
-sf_comb.set_attr(T=25, fluid={'TESPy::myAir': 0, 'TESPy::myFuel': 1,
-                              'TESPy::myFuel_fg': 0})
+sf_comb.set_attr(T=25, fluid={'myAir': 0, 'myFuel': 1,
+                              'myFuel_fg': 0})
 
 # %% solving
 
