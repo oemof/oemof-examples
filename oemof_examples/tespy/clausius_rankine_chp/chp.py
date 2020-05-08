@@ -163,12 +163,11 @@ for T in T_range:
 
         # use an initialisation file with parameters similar to next
         # calculation
-        if T == T_range[0]:
+        if m == m_range[0]:
             nw.solve(init_path=path, design_path=path, mode=mode)
         else:
-            nw.solve(init_path='chp_' + str(m), design_path=path, mode=mode)
+            nw.solve(design_path=path, mode=mode)
 
-        nw.save('chp_' + str(m))
         Q += [heat_bus.P.val]
         P += [power_bus.P.val]
 
