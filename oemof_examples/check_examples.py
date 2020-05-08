@@ -1,6 +1,7 @@
 import os
 from termcolor import colored
 import matplotlib
+from matplotlib import pyplot as plt
 import warnings
 from datetime import datetime
 import subprocess
@@ -77,6 +78,7 @@ for root, dirs, files in sorted(os.walk(fullpath)):
         elif name[-6:] == ".ipynb" and not exclude_notebooks:
             fn = os.path.join(root, name)
             os.chdir(root)
+            number += 1
             if debug:
                 print(fn)
                 notebook_run(fn)
@@ -86,6 +88,7 @@ for root, dirs, files in sorted(os.walk(fullpath)):
                     checker[name] = "okay"
                 except:
                     checker[name] = "failed"
+        plt.close()
 
 
 print("******* TEST RESULTS ***********************************")
