@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tespy.components import source, sink, heat_exchanger_simple, pipe
 from tespy.connections import connection, bus, ref
 from tespy.networks import network
@@ -27,37 +28,37 @@ si2 = sink('sink2')
 
 # pipe_feed
 
-pif1 = pipe('pipe1_feed', ks=7e-5, L=50, D=0.15, offdesign=['kA'])
-pif2 = pipe('pipe2_feed', ks=7e-5, L=200, D=0.15, offdesign=['kA'])
+pif1 = pipe('pipe1_feed', ks=7e-5, L=50, D=0.15, offdesign=['kA_char'])
+pif2 = pipe('pipe2_feed', ks=7e-5, L=200, D=0.15, offdesign=['kA_char'])
 
-pif4 = pipe('pipe4_feed', ks=7e-5, L=50, D=0.15, offdesign=['kA'])
-pif7 = pipe('pipe7_feed', ks=7e-5, L=175, D=0.15, offdesign=['kA'])
+pif4 = pipe('pipe4_feed', ks=7e-5, L=50, D=0.15, offdesign=['kA_char'])
+pif7 = pipe('pipe7_feed', ks=7e-5, L=175, D=0.15, offdesign=['kA_char'])
 
-pif8 = pipe('pipe8_feed', ks=7e-5, L=75, D=0.15, offdesign=['kA'])
-pif10 = pipe('pipe10_feed', ks=7e-5, L=450, D=0.1, offdesign=['kA'])
+pif8 = pipe('pipe8_feed', ks=7e-5, L=75, D=0.15, offdesign=['kA_char'])
+pif10 = pipe('pipe10_feed', ks=7e-5, L=450, D=0.1, offdesign=['kA_char'])
 
-pif11 = pipe('pipe11_feed', ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-pif16 = pipe('pipe16_feed', ks=7e-5, L=30, D=0.065, offdesign=['kA'])
+pif11 = pipe('pipe11_feed', ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+pif16 = pipe('pipe16_feed', ks=7e-5, L=30, D=0.065, offdesign=['kA_char'])
 
-pif17 = pipe('pipe17_feed', ks=7e-5, L=250, D=0.065, offdesign=['kA'])
-pif21 = pipe('pipe21_feed', ks=7e-5, L=30, D=0.04, offdesign=['kA'])
+pif17 = pipe('pipe17_feed', ks=7e-5, L=250, D=0.065, offdesign=['kA_char'])
+pif21 = pipe('pipe21_feed', ks=7e-5, L=30, D=0.04, offdesign=['kA_char'])
 
 # pipe_back
 
-pib1 = pipe('pipe1_back', ks=7e-5, L=50, D=0.15, offdesign=['kA'])
-pib2 = pipe('pipe2_back', ks=7e-5, L=200, D=0.15, offdesign=['kA'])
+pib1 = pipe('pipe1_back', ks=7e-5, L=50, D=0.15, offdesign=['kA_char'])
+pib2 = pipe('pipe2_back', ks=7e-5, L=200, D=0.15, offdesign=['kA_char'])
 
-pib4 = pipe('pipe4_back', ks=7e-5, L=50, D=0.15, offdesign=['kA'])
-pib7 = pipe('pipe7_back', ks=7e-5, L=175, D=0.15, offdesign=['kA'])
+pib4 = pipe('pipe4_back', ks=7e-5, L=50, D=0.15, offdesign=['kA_char'])
+pib7 = pipe('pipe7_back', ks=7e-5, L=175, D=0.15, offdesign=['kA_char'])
 
-pib8 = pipe('pipe8_back', ks=7e-5, L=75, D=0.15, offdesign=['kA'])
-pib10 = pipe('pipe10_back', ks=7e-5, L=450, D=0.1, offdesign=['kA'])
+pib8 = pipe('pipe8_back', ks=7e-5, L=75, D=0.15, offdesign=['kA_char'])
+pib10 = pipe('pipe10_back', ks=7e-5, L=450, D=0.1, offdesign=['kA_char'])
 
-pib11 = pipe('pipe11_back', ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-pib16 = pipe('pipe16_back', ks=7e-5, L=30, D=0.065, offdesign=['kA'])
+pib11 = pipe('pipe11_back', ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+pib16 = pipe('pipe16_back', ks=7e-5, L=30, D=0.065, offdesign=['kA_char'])
 
-pib17 = pipe('pipe17_back', ks=7e-5, L=250, D=0.065, offdesign=['kA'])
-pib21 = pipe('pipe21_back', ks=7e-5, L=30, D=0.04, offdesign=['kA'])
+pib17 = pipe('pipe17_back', ks=7e-5, L=250, D=0.065, offdesign=['kA_char'])
+pib21 = pipe('pipe21_back', ks=7e-5, L=30, D=0.04, offdesign=['kA_char'])
 
 # %% subsystems for forks
 
@@ -107,45 +108,45 @@ h4.comps['consumer_3'].set_attr(Q=-5e4, pr=0.99)
 # pipes of subsystems
 # feed flow
 
-h1.comps['feed_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
+h1.comps['feed_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA_char'])
 
-ia.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-ia.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+ia.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
+ia.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
 
-sc.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+sc.comps['feed_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
 
-h2.comps['feed_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['feed_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['feed_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['feed_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['feed_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['feed_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
 
-h3.comps['feed_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
-h3.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
+h3.comps['feed_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA_char'])
+h3.comps['feed_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA_char'])
 
-h4.comps['feed_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
-h4.comps['feed_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
-h4.comps['feed_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
+h4.comps['feed_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA_char'])
+h4.comps['feed_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA_char'])
+h4.comps['feed_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA_char'])
 
 # return flow
 
-h1.comps['return_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA'])
+h1.comps['return_0'].set_attr(ks=7e-5, L=150, D=0.15, offdesign=['kA_char'])
 
-ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
-ia.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+ia.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
+ia.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
 
-sc.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA'])
+sc.comps['return_0'].set_attr(ks=7e-5, L=100, D=0.15, offdesign=['kA_char'])
 
-h2.comps['return_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
-h2.comps['return_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA'])
+h2.comps['return_0'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['return_1'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['return_2'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
+h2.comps['return_3'].set_attr(ks=7e-5, L=60, D=0.04, offdesign=['kA_char'])
 
-h3.comps['return_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA'])
-h3.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA'])
+h3.comps['return_0'].set_attr(ks=7e-5, L=335, D=0.05, offdesign=['kA_char'])
+h3.comps['return_1'].set_attr(ks=7e-5, L=100, D=0.04, offdesign=['kA_char'])
 
-h4.comps['return_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA'])
-h4.comps['return_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
-h4.comps['return_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA'])
+h4.comps['return_0'].set_attr(ks=7e-5, L=30, D=0.04, offdesign=['kA_char'])
+h4.comps['return_1'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA_char'])
+h4.comps['return_2'].set_attr(ks=7e-5, L=10, D=0.04, offdesign=['kA_char'])
 
 
 # temperature difference factor for pipes:
@@ -165,13 +166,25 @@ for sub in [h1, ia, sc, h2, h3, h4]:
         for i in range(sub.num_consumer - 1):
 
             # feed
-            dT_feed_ref = ref(sub.conns['spfe_' + str(i)], 1,
-                              -sub.comps['feed_' + str(i)].L.val / dT_feed)
+            dT_feed_ref = ref(
+                sub.conns['spfe_' + str(i)], 1,
+                -sub.comps['feed_' + str(i)].L.val / dT_feed)
             # return
-            dT_return_ref = ref(sub.conns['mere_' + str(i + 1)], 1,
-                                -sub.comps['return_' + str(i)].L.val / dT_return)
+            if i == sub.num_consumer - 1:
+                dT_return_ref = ref(
+                    sub.conns['mere_' + str(i + 1)], 1,
+                    -sub.comps['return_' + str(i)].L.val / dT_return)
+            else:
+                dT_return_ref = ref(
+                    sub.conns['cova_' + str(i + 1)], 1,
+                    -sub.comps['return_' + str(i)].L.val / dT_return)
 
-            sub.conns['fesp_' + str(i + 1)].set_attr(T=dT_feed_ref, design=['T'])
+            if i == sub.num_consumer - 2:
+                sub.conns['spco_' + str(i + 1)].set_attr(
+                    T=dT_feed_ref, design=['T'])
+            else:
+                sub.conns['fesp_' + str(i + 1)].set_attr(
+                    T=dT_feed_ref, design=['T'])
             sub.conns['reme_' + str(i)].set_attr(T=dT_return_ref, design=['T'])
 
     elif isinstance(sub, lo):
@@ -179,14 +192,18 @@ for sub in [h1, ia, sc, h2, h3, h4]:
         for i in range(sub.num_consumer - 1):
 
             # feed
-            dT_feed_ref = ref(sub.conns['spfe_' + str(i)], 1,
-                              -sub.comps['feed_' + str(i)].L.val / dT_feed)
+            dT_feed_ref = ref(
+                sub.conns['spfe_' + str(i)], 1,
+                -sub.comps['feed_' + str(i)].L.val / dT_feed)
             # return
-            dT_return_ref = ref(sub.conns['mere_' + str(i + 1)], 1,
-                                -sub.comps['return_' + str(i)].L.val / dT_return)
+            dT_return_ref = ref(
+                sub.conns['mere_' + str(i + 1)], 1,
+                -sub.comps['return_' + str(i)].L.val / dT_return)
 
-            sub.conns['fesp_' + str(i + 1)].set_attr(T=dT_feed_ref, design=['T'])
-            sub.conns['reme_' + str(i)].set_attr(T=dT_return_ref, design=['T'])
+            sub.conns['fesp_' + str(i + 1)].set_attr(
+                T=dT_feed_ref, design=['T'])
+            sub.conns['reme_' + str(i)].set_attr(
+                T=dT_return_ref, design=['T'])
 
 
 # %% connections

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tespy.connections import connection
 from tespy.components import source, sink, pipe
 from tespy.networks import network

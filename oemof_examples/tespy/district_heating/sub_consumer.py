@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
 
@@ -122,10 +123,6 @@ class lin_consum_closed(subsystem):
 
         self.conns['spco_' + str(i + 1)] = connection(self.comps['feed_' + j], 'out1', self.comps['consumer_' + str(i + 1)], 'in1')
         self.conns['cova_' + str(i + 1)] = connection(self.comps['consumer_' + str(i + 1)], 'out1', self.comps['return_' + j], 'in1')
-
-        # for easy access
-        self.conns['fesp_' + str(i + 1)] = self.conns['spco_' + str(i + 1)]
-        self.conns['mere_' + str(i + 1)] = self.conns['cova_' + str(i + 1)]
 
 
 class fork(subsystem):

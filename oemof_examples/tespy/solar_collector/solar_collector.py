@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Jan  9 10:48:43 2020
-
-@author: Malte Fritz
-"""
-
 from tespy.networks import network
 from tespy.components import sink, source, solar_collector
 from tespy.connections import connection
