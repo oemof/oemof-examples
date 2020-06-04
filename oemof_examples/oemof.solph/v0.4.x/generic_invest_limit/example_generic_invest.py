@@ -116,7 +116,7 @@ solph.Transformer(
 om = solph.Model(es)
 
 # add constraint for generic investment limit
-om = solph.constraints.generic_investment_limit(om, "space", limit=24)
+om = solph.constraints.additional_investment_flow_limit(om, "space", limit=24)
 
 # export lp file
 filename = os.path.join(
