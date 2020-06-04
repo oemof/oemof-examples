@@ -53,9 +53,8 @@ solph.Source(label='source2', outputs={bel: solph.Flow(
 # Should be ignored because it is not NonConvex.
 solph.Sink(label='sink2', inputs={bel: solph.Flow(
     my_keyword=True,
-    actual_value=[0, 1, 1, 0],
-    fixed=True,
-    min=0.3,
+    fix=[0, 1, 1, 0],
+    # min=0.3,
     nominal_value=130)})
 
 model = solph.Model(energy_system)
