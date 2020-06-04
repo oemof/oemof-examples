@@ -5,8 +5,9 @@
 import pandas as pd
 
 import oemof.solph as solph
-from oemof.network import Node
-from oemof.outputlib import processing, views
+from oemof.network.network import Node
+from oemof.solph import processing, views
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
