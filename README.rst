@@ -30,7 +30,7 @@ oemof.solph (oemof)
 
 Examples of the latest release, some examples may not exist for older versions.
 
-* **activity_costs**:
+* **activity_costs**: Shows how to use activity costs for nonconvex flows.
 
 * **basic_example**:
      Introduction to the basic usage of oemof.solph
