@@ -53,6 +53,8 @@ Examples of the latest release, some examples may not exist for older versions.
 
 * **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
 
+* **flow_count_limit**: Shows how to limit the activity of two or more flows.
+
 * **generic_chp**: Illustrates how the custom component `GenericCHP` can be used...
 
   * bpt: \.\.\. to model a back pressure turbine.
@@ -60,6 +62,8 @@ Examples of the latest release, some examples may not exist for older versions.
   * ccet: \.\.\. to model a combined cycle extraction turbine.
 
   * mchp: \.\.\. to model a motoric chp.
+
+* **generic_invest_limit**: Shows how to add additional constraints for investment flows.
 
 * **installation test**: Test your oemof installation and the connected solvers
 
@@ -81,6 +85,8 @@ Examples of the latest release, some examples may not exist for older versions.
 * **flow_schedule (notebook)**:
 
 * **simple_dispatch**: Shows how to set up a dispatch model.
+
+* **shared_limit**: Shows how to use the shared limit constraint.
 
 * **start_and_shutdown_costs**: Example that illustrates how to model startup
   and shutdown costs attributed to a binary flow.
