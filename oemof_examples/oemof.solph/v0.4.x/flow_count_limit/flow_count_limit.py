@@ -54,7 +54,6 @@ solph.Source(label='source2', outputs={bel: solph.Flow(
 solph.Sink(label='sink2', inputs={bel: solph.Flow(
     my_keyword=True,
     fix=[0, 1, 1, 0],
-    # min=0.3,
     nominal_value=130)})
 
 model = solph.Model(energy_system)
