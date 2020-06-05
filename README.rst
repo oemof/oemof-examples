@@ -28,7 +28,8 @@ Examples
 oemof.solph (oemof)
 -------------------
 
-Examples of the latest release, some examples may not exist for older versions.
+Examples of the latest major release (`v0.4.x <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph/v0.4.x>`_), some examples may not exist for older versions.
+Check out the `oemof.solph directory <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph>`_ for all versions.
 
 * activity_costs
     Shows how to use activity costs for nonconvex flows.
