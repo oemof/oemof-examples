@@ -20,7 +20,7 @@ Installation requirements
 This example requires the latest version of oemof (v0.3.x) and others.
 Install by:
 
-    pip3 install 'oemof<0.4,>=0.3'
+    pip install 'oemof.solph>=0.4,<0.5'
     pip3 install xlrd
     pip3 install matplotlib
     pip3 install networkx

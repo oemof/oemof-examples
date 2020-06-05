@@ -20,7 +20,7 @@ Installation requirements
 -------------------------
 This example requires version 0.3 of oemof. Install by:
 
-    pip install 'oemof>=0.3'
+    pip install 'oemof.solph>=0.4,<0.5'
 
 """
 
