@@ -31,7 +31,7 @@ oemof.solph (oemof)
 Examples of the latest release, some examples may not exist for older versions.
 
 * activity_costs
-    Use activity costs.
+    Shows how to use activity costs for nonconvex flows.
 
 * `basic_example <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph/v0.4.x/basic_example>`_ :
      Introduction to the basic usage of oemof.solph
@@ -66,6 +66,9 @@ Examples of the latest release, some examples may not exist for older versions.
 
   * mchp: \.\.\. to model a motoric chp.
 
+* generic_invest_limit
+    Shows how to add additional constraints for investment flows.
+
 * installation test
     Test your oemof installation and the connected solvers
 
@@ -89,11 +92,14 @@ Examples of the latest release, some examples may not exist for older versions.
 * flow_schedule
     Notebook with a scheduled flow.
 
-* simple_dispatch
-    Shows how to set up a dispatch model.
+* **simple_dispatch**: Shows how to set up a dispatch model.
+
+* shared_limit
+    Shows how to use the shared limit constraint.
 
 * start_and_shutdown_costs
-    Example that illustrates how to model startup and shutdown costs attributed to a binary flow.
+    Example that illustrates how to model startup
+    and shutdown costs attributed to a binary flow.
 
 * Balanced and unbalanced storage
     Shows different use cases for the GenericStorage class.
