@@ -150,7 +150,7 @@ cons_cf.set_attr(h=ref(cb_dhp, 1, 0), p=ref(cb_dhp, 1, 0))
 # evaporator system cold side
 
 erp_ev.set_attr(m=ref(ves_dr, 1.25, 0), p0=5)
-su_cp1.set_attr(p0=5, h0=1700)
+su_cp1.set_attr(p0=5, state='g')
 
 # evaporator system hot side
 
