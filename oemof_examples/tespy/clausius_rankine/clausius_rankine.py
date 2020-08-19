@@ -112,15 +112,15 @@ gen = char_line(x=x, y=y)
 
 # motor of pump has a constant efficiency
 power = bus('total output power')
-power.add_comps({'c': turb, 'p': 'P', 'char': gen},
-                {'c': pu, 'char': 1 / 0.95})
+power.add_comps({'comp': turb, 'param': 'P', 'char': gen},
+                {'comp': pu, 'char': 1 / 0.95})
 nw.add_busses(power)
 
 # %% parametrization of components
 
 turb.set_attr(eta_s=0.9, design=['eta_s'], offdesign=['eta_s_char', 'cone'])
 con.set_attr(pr1=0.5, pr2=0.98, ttd_u=5, design=['pr2', 'ttd_u'],
-             offdesign=['zeta2', 'kA'])
+             offdesign=['zeta2', 'kA_char'])
 pu.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 steam_generator.set_attr(pr=0.95)
 
@@ -157,8 +157,7 @@ power.set_attr(P=-9e6)
 
 # the design file holds the information on the design case
 # initialisation from previously design process
-nw.solve(mode=mode, design_path='cr', init_path='cr')
+nw.solve(mode=mode, design_path='cr')
 nw.print_results()
-nw.save('cr_OD')
 
 thermal_efficiency(steam_generator, con, turb, pu)

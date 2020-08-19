@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Jan  9 10:32:24 2020
-
-@author: Malte Fritz
-"""
-
 from tespy.networks import network
-from tespy.components import (sink, source, splitter, compressor, condenser,
-                              pump, heat_exchanger_simple, valve, drum,
-                              heat_exchanger, cycle_closer)
+from tespy.components import (
+    sink, source, splitter, compressor, condenser, pump, heat_exchanger_simple,
+    valve, drum, heat_exchanger, cycle_closer
+)
 from tespy.connections import connection, ref
 from tespy.tools.characteristics import char_line
 from tespy.tools.characteristics import load_default_char as ldc
@@ -18,8 +13,10 @@ import pandas as pd
 
 # %% network
 
-nw = network(fluids=['water', 'NH3', 'air'],
-                 T_unit='C', p_unit='bar', h_unit='kJ / kg', m_unit='kg / s')
+nw = network(
+    fluids=['water', 'NH3', 'air'], T_unit='C', p_unit='bar', h_unit='kJ / kg',
+    m_unit='kg / s'
+)
 
 # %% components
 
@@ -114,7 +111,7 @@ nw.add_conns(cp1_he, he_cp2, sp_ic, ic_out, cp2_c_out)
 # condenser system
 
 cd.set_attr(pr1=0.99, pr2=0.99, ttd_u=5, design=['pr2', 'ttd_u'],
-            offdesign=['zeta2', 'kA'])
+            offdesign=['zeta2', 'kA_char'])
 dhp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 cons.set_attr(pr=0.99, design=['pr'], offdesign=['zeta'])
 
@@ -129,9 +126,9 @@ kA_char2 = ldc('heat exchanger', 'kA_char2', 'EVAPORATING FLUID', char_line)
 
 ev.set_attr(pr1=0.98, pr2=0.99, ttd_l=5,
             kA_char1=kA_char1, kA_char2=kA_char2,
-            design=['pr1', 'ttd_l'], offdesign=['zeta1', 'kA'])
+            design=['pr1', 'ttd_l'], offdesign=['zeta1', 'kA_char'])
 su.set_attr(pr1=0.98, pr2=0.99, ttd_u=2, design=['pr1', 'pr2', 'ttd_u'],
-            offdesign=['zeta1', 'zeta2', 'kA'])
+            offdesign=['zeta1', 'zeta2', 'kA_char'])
 erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 
 # compressor system
@@ -139,7 +136,7 @@ erp.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 cp1.set_attr(eta_s=0.85, design=['eta_s'], offdesign=['eta_s_char'])
 cp2.set_attr(eta_s=0.9, pr=3, design=['eta_s'], offdesign=['eta_s_char'])
 ic.set_attr(pr1=0.99, pr2=0.98, design=['pr1', 'pr2'],
-            offdesign=['zeta1', 'zeta2', 'kA'])
+            offdesign=['zeta1', 'zeta2', 'kA_char'])
 
 # %% connection parametrization
 
@@ -153,7 +150,7 @@ cons_cf.set_attr(h=ref(cb_dhp, 1, 0), p=ref(cb_dhp, 1, 0))
 # evaporator system cold side
 
 erp_ev.set_attr(m=ref(ves_dr, 1.25, 0), p0=5)
-su_cp1.set_attr(p0=5, h0=1700)
+su_cp1.set_attr(p0=5, state='g')
 
 # evaporator system hot side
 
@@ -193,8 +190,9 @@ for T in T_range:
         if nw.lin_dep:
             eps += [np.nan]
         else:
-            eps += [abs(cd.Q.val) / (cp1.P.val + cp2.P.val + erp.P.val +
-                    pu.P.val)]
+            eps += [
+                abs(cd.Q.val) / (cp1.P.val + cp2.P.val + erp.P.val + pu.P.val)
+            ]
 
     df.loc[T] = eps
 

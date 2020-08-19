@@ -20,14 +20,14 @@ Installation requirements
 -------------------------
 This example requires version 0.3 of oemof. Install by:
 
-    pip install 'oemof>=0.3'
+    pip install 'oemof.solph>=0.4,<0.5'
 
 """
 
 import numpy as np
 import pandas as pd
-import oemof.solph as solph
-from oemof.outputlib import processing, views
+from oemof import solph
+
 
 try:
     import matplotlib.pyplot as plt
@@ -56,10 +56,7 @@ es.add(b_heat)
 
 sink_heat = solph.Sink(
     label='demand',
-    inputs={b_heat: solph.Flow(
-        fixed=True,
-        actual_value=demand_heat,
-        nominal_value=1)})
+    inputs={b_heat: solph.Flow(fix=demand_heat, nominal_value=1)})
 
 fireplace = solph.Source(
     label='fireplace',
@@ -89,11 +86,11 @@ om.solve(solver='cbc', solve_kwargs={'tee': True})
 # Check and plot the results
 ##########################################################################
 
-results = processing.results(om)
+results = solph.processing.results(om)
 
 # plot data
 if plt is not None:
-    data = views.node(results, 'b_heat')['sequences']
+    data = solph.views.node(results, 'b_heat')['sequences']
     ax = data.plot(kind='line', drawstyle='steps-post', grid=True, rot=0)
     ax.set_xlabel('Time')
     ax.set_ylabel('Heat (arb. units)')

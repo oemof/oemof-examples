@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jan  6 09:22:17 2020
-
-@author: Malte Fritz
-"""
-
 from tespy.networks import network
-from tespy.components import (sink, source, valve, turbine, splitter, merge,
-                              condenser, pump, heat_exchanger_simple,
-                              cycle_closer)
+from tespy.components import (
+    sink, source, valve, turbine, splitter, merge, condenser, pump,
+    heat_exchanger_simple, cycle_closer
+)
 from tespy.connections import connection, bus, ref
 
 import matplotlib.pyplot as plt
@@ -78,13 +73,13 @@ nw.add_conns(cw_in, cw_out)
 
 # power bus
 power_bus = bus('power')
-power_bus.add_comps({'c': turbine_hp, 'char': -1},
-                    {'c': turbine_lp, 'char': -1},
-                    {'c': pump, 'char': -1})
+power_bus.add_comps({'comp': turbine_hp, 'char': -1},
+                    {'comp': turbine_lp, 'char': -1},
+                    {'comp': pump, 'char': -1})
 
 # heating bus
 heat_bus = bus('heat')
-heat_bus.add_comps({'c': cond, 'char': -1})
+heat_bus.add_comps({'comp': cond, 'char': -1})
 
 nw.add_busses(power_bus, heat_bus)
 
@@ -96,10 +91,10 @@ turbine_lp.set_attr(eta_s=0.9, design=['eta_s'],
                     offdesign=['eta_s_char', 'cone'])
 
 cond.set_attr(pr1=0.99, pr2=0.99, ttd_u=12, design=['pr2', 'ttd_u'],
-              offdesign=['zeta2', 'kA'])
+              offdesign=['zeta2', 'kA_char'])
 preheater.set_attr(pr1=0.99, pr2=0.99, ttd_u=5,
                    design=['pr2', 'ttd_u', 'ttd_l'],
-                   offdesign=['zeta2', 'kA'])
+                   offdesign=['zeta2', 'kA_char'])
 
 pump.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 steam_generator.set_attr(pr=0.95)
@@ -130,14 +125,10 @@ cw_out.set_attr(T=110)
 
 # %% solving
 
-mode = 'design'
-
-nw.solve(mode=mode)
-nw.save('chp')
-nw.print_results()
-
 path = 'chp'
-mode = 'offdesign'
+nw.solve('design')
+nw.save(path)
+nw.print_results()
 
 power_bus.set_attr(P=np.nan)
 m_design = fs_in.m.val_SI
@@ -163,12 +154,11 @@ for T in T_range:
 
         # use an initialisation file with parameters similar to next
         # calculation
-        if T == T_range[0]:
-            nw.solve(init_path=path, design_path=path, mode=mode)
+        if m == m_range[0]:
+            nw.solve('offdesign', init_path=path, design_path=path)
         else:
-            nw.solve(init_path='chp_' + str(m), design_path=path, mode=mode)
+            nw.solve('offdesign', design_path=path)
 
-        nw.save('chp_' + str(m))
         Q += [heat_bus.P.val]
         P += [power_bus.P.val]
 
@@ -202,7 +192,5 @@ ax.set_ylim([0, 7e6])
 ax.set_xlim([0, 14e6])
 plt.yticks(np.arange(0, 7e6, step=1e6), np.arange(0, 7, step=1))
 plt.xticks(np.arange(0, 14e6, step=2e6), np.arange(0, 14, step=2))
-
-plt.show()
 
 fig.savefig('PQ_diagram.svg')

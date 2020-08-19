@@ -28,58 +28,14 @@ Examples
 oemof.solph (oemof)
 -------------------
 
-v0.3.x
-++++++
+Examples of the latest major release (`v0.4.x <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph/v0.4.x>`_), some examples may not exist for older versions.
+Check out the `oemof.solph directory <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph>`_ for all versions.
 
-* **basic_example**: Introduction to the basic usage of oemof.solph
+* activity_costs
+    Shows how to use activity costs for nonconvex flows.
 
-  - basic optimisation with different solvers
-  - initiate the logger
-  - use the lp-file for debugging
-  - show/hide output of the solver
-  - store and process results
-
-* **electrical**: Linear Optimised Power Flow
-
-* **emission constraint**: Shows how to add an additional constraint to limit
-  the overall emissions.
-
-* **excel-reader (replacement for csv-reader)** Shows how to define the input data in a customisable excel-file (libreoffice etc.)
-
-* **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
-
-* **generic_chp**: Illustrates how the custom component `GenericCHP` can be used...
-
-  * bpt: \.\.\. to model a back pressure turbine.
-
-  * ccet: \.\.\. to model a combined cycle extraction turbine.
-
-  * mchp: \.\.\. to model a motoric chp.
-
-* **installation test**: Test your oemof installation and the connected solvers
-
-* **invest_non_convex**: This example illustrates a possible combination of
-  solph.Investment and solph.NonConvex. Note that both options are added to
-  different components of the energy system.
-
-* **min_max_runtimes**: Example that illustrates how to model min and
-  max runtimes.
-
-* **plotting_examples**: The examples shows how to use oemof_visio with solph
-  results.
-
-* **simple_dispatch**: Shows how to set up a dispatch model.
-
-* **start_and_shutdown_costs**: Example that illustrates how to model startup
-  and shutdown costs attributed to a binary flow.
-
-* **storage_investment**: Variation of parameters for a storage capacity optimization.
-* **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
-
-v0.2.x
-++++++
-
-* **basic_example**: Introduction to the basic usage of oemof.solph
+* `basic_example <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph/v0.4.x/basic_example>`_ :
+     Introduction to the basic usage of oemof.solph
 
   - basic optimisation with different solvers
   - initiate the logger
@@ -87,10 +43,23 @@ v0.2.x
   - show/hide output of the solver
   - store and process results
 
-* **excel-reader (replacement for csv-reader)** Shows how to define the input data in a customisable excel-file (libreoffice etc.)
+* electrical:
+    Linear Optimised Power Flow
 
-* **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
-* **generic_chp**: Illustrates how the custom component `GenericCHP` can be used...
+  - lopf
+  - transshipment
+
+* emission_constraint
+    Shows how to add an additional constraint to limit the overall emissions.
+
+* `excel-reader <https://github.com/oemof/oemof-examples/blob/master/oemof_examples/oemof.solph/v0.4.x/excel_reader/dispatch.py>`_
+     Shows how to define the input data in a customisable excel-file (libreoffice etc.)
+
+* flexible_modelling
+    Shows how to add an individual constraint to the oemof solph Model.
+
+* generic_chp
+     Illustrates how the custom component `GenericCHP` can be used...
 
   * bpt: \.\.\. to model a back pressure turbine.
 
@@ -98,35 +67,54 @@ v0.2.x
 
   * mchp: \.\.\. to model a motoric chp.
 
-* **sdewes_paper_2017**: Examples from the SDEWES conference paper.
+* generic_invest_limit
+    Shows how to add additional constraints for investment flows.
 
-  * economic_dispatch
+* installation test
+    Test your oemof installation and the connected solvers
 
-  * micro_grid_design_optimisation
+* invest_non_convex
+    This example illustrates a possible combination of
+    solph.Investment and solph.NonConvex. Note that both options are added to
+    different components of the energy system.
 
-  * unit_commitment_district_heating
+* `Basic Notebooks <https://github.com/oemof/oemof-examples/tree/master/oemof_examples/oemof.solph/v0.4.x/jupyter_tutorials>`_
+    Basic example in two jupyter notebooks.
 
-* **sector_coupling**: Jupyter notebook giving a simple example of how to couple the sectors power, heat and mobility.
+  - `Simple dispatch example <https://github.com/oemof/oemof-examples/blob/master/oemof_examples/oemof.solph/v0.4.x/jupyter_tutorials/1_Simple_dispatch_store_results.ipynb>`_ (store the results)
+  - `Processing results <https://github.com/oemof/oemof-examples/blob/master/oemof_examples/oemof.solph/v0.4.x/jupyter_tutorials/2_Processing_results_and_plotting.ipynb>`_  (restore the results, with plotting)
+
+* min_max_runtimes
+    Example that illustrates how to model min and max runtimes.
+
+* plotting_examples
+    The examples shows how to use oemof_visio with solph results.
+
+* flow_schedule
+    Notebook with a scheduled flow.
+
 * **simple_dispatch**: Shows how to set up a dispatch model.
-* **storage_investment**: Variation of parameters for a storage capacity optimization.
-* **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
+* shared_limit
+    Shows how to use the shared limit constraint.
 
-v0.1.x
-++++++
+* start_and_shutdown_costs
+    Example that illustrates how to model startup
+    and shutdown costs attributed to a binary flow.
 
-* **csv_reader**:
+* Balanced and unbalanced storage
+    Shows different use cases for the GenericStorage class.
 
-  * dispatch: Dispatch optimisation using oemof's csv-reader.
+* storage_investment
+    Variation of parameters for a storage capacity optimization.
 
-  * investment: Investment optimisation using oemof's csv-reader.
+  - v1_invest_optimize_all_technologies
+  - v2_invest_optimize_only_gas_and_storage
+  - v3_invest_optimize_only_storage_with_fossil_share
+  - v4_invest_optimize_all_technologies_with_fossil_share
 
-* **flexible_modelling**: Shows how to add an individual constraint to the oemof solph Model.
-* **sector_coupling**: Jupyter notebook giving a simple example of how to couple the sectors power, heat and mobility.
-* **simple_dispatch**: Shows how to set up a dispatch model.
-* **storage_invest**: Jupyter notebook of storage capacity optimization.
-* **storage_investment**: Example of storage capacity optimization.
-* **variable_chp**: Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
+* variable_chp
+     Presents how a variable combined heat and power plant (chp) works in contrast to a fixed chp.
 
 
 oemof.tabular
