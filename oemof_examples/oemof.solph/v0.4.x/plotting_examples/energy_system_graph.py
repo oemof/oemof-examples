@@ -14,6 +14,15 @@ The oemof-visio provides the base for the created energy system graph.
 
     pip install git+https://github.com/oemof/oemof_visio.git
 
+On windows the installation of pygraphviz might not work, you can install the package from conda
+
+    conda install -c alubbock graphviz pygraphviz
+
+You then need to initialize the plugins of the "dot" language by running
+
+    dot -c
+
+in a terminal
 """
 
 __copyright__ = "oemof developer group"
