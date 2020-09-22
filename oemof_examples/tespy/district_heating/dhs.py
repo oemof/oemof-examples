@@ -319,11 +319,11 @@ for comp in nw.comps.index:
     if isinstance(comp, pipe):
         comp.set_attr(Tamb=0)
 
-        heat_losses.add_comps({'c': comp})
+        heat_losses.add_comps({'comp': comp})
 
     if (isinstance(comp, heat_exchanger_simple) and
             not isinstance(comp, pipe)):
-        heat_consumer.add_comps({'c': comp})
+        heat_consumer.add_comps({'comp': comp})
 
 nw.add_busses(heat_losses, heat_consumer)
 
