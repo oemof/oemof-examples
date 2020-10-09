@@ -36,9 +36,10 @@ class PowerPlant():
         fwh1 = condenser('feed water preheater 1')
         fwh2 = condenser('feed water preheater 2')
         dsh = desuperheater('desuperheater')
+        me2 = merge('merge2', num_in=2)
         pu2 = pump('feed water pump 2')
         pu3 = pump('feed water pump 3')
-        me = merge('merge', num_in=3)
+        me = merge('merge', num_in=2)
 
         # cooling water
         cwi = source('cooling water source')
@@ -57,14 +58,15 @@ class PowerPlant():
         fwh1_me = connection(fwh1, 'out2', me, 'in1', state='l')
         me_fwh2 = connection(me, 'out1', fwh2, 'in2', state='l')
         fwh2_dsh = connection(fwh2, 'out2', dsh, 'in2', state='l')
-        dsh_eco = connection(dsh, 'out2', eco, 'in1', state='l')
+        dsh_me2 = connection(dsh, 'out2', me2, 'in1')
+        me2_eco = connection(me2, 'out1', eco, 'in1', state='l')
         eco_eva = connection(eco, 'out1', eva, 'in1')
         eva_sup = connection(eva, 'out1', sup, 'in1')
         sup_cc = connection(sup, 'out1', cc, 'in1')
 
         self.nw.add_conns(cc_hpt, hpt_sp1, sp1_mpt, mpt_sp2, sp2_lpt,
                           lpt_con, con_pu1, pu1_fwh1, fwh1_me, me_fwh2,
-                          fwh2_dsh, dsh_eco, eco_eva, eva_sup, sup_cc)
+                          fwh2_dsh, dsh_me2, me2_eco, eco_eva, eva_sup, sup_cc)
 
         # cooling water
         cwi_con = connection(cwi, 'out1', con, 'in2')
@@ -76,13 +78,13 @@ class PowerPlant():
         sp1_dsh = connection(sp1, 'out2', dsh, 'in1')
         dsh_fwh2 = connection(dsh, 'out1', fwh2, 'in1')
         fwh2_pu2 = connection(fwh2, 'out1', pu2, 'in1')
-        pu2_me = connection(pu2, 'out1', me, 'in2')
+        pu2_me2 = connection(pu2, 'out1', me2, 'in2')
 
         sp2_fwh1 = connection(sp2, 'out2', fwh1, 'in1')
         fwh1_pu3 = connection(fwh1, 'out1', pu3, 'in1')
-        pu3_me = connection(pu3, 'out1', me, 'in3')
+        pu3_me = connection(pu3, 'out1', me, 'in2')
 
-        self.nw.add_conns(sp1_dsh, dsh_fwh2, fwh2_pu2, pu2_me,
+        self.nw.add_conns(sp1_dsh, dsh_fwh2, fwh2_pu2, pu2_me2,
                           sp2_fwh1, fwh1_pu3, pu3_me)
 
         # busses
