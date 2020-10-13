@@ -134,6 +134,7 @@ tespy
 * **district_heating**: A small district heating systems with about 150 components.
 * **heat_pump**: An air to water and a water to water heat pump for power-to-heat applications.
 * **solar_collector**: An example to show, how the solar collector component can be implemented.
+* **efficiency_optimization**: Parameter optimization of a power plant using TESPy and PyGMO.
 
 windpowerlib
 ------------

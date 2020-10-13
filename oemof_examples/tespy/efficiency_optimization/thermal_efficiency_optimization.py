@@ -162,7 +162,6 @@ class optimization_problem():
     def fitness(self, x):
         f1 = 1 / self.model.calculate_efficiency(x)
         ci1 = -x[0] + x[1]
-        print(x)
         return [f1, ci1]
 
     def get_nobj(self):
@@ -219,21 +218,17 @@ print('Extraction 2: {} bar'.format(round(pop.champion_x[1], 4)))
 
 # scatter plot
 cm = plt.cm.get_cmap('RdYlBu')
-sc = plt.scatter(result['extraction 2'], result['extraction 1'],
-                 c=result['efficiency'], cmap=cm)
+sc = plt.scatter(result['extraction 2'], result['extraction 1'], linewidth=0.25,
+                 c=result['efficiency'], cmap=cm, alpha=0.5, edgecolors='black')
+plt.scatter(pop.champion_x[1], pop.champion_x[0], marker='x', linewidth=1,
+            c='red')
+plt.annotate('Optimum', xy=(pop.champion_x[1], pop.champion_x[0]), 
+             xytext=(pop.champion_x[1]+3, pop.champion_x[0]+3),
+             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5',
+                             color='red')
+            )
 plt.ylabel('$p_{extraction, 1}$ in bar')
 plt.xlabel('$p_{extraction, 2}$ in bar')
 plt.colorbar(sc, label='Cycle efficiency (%)')
 plt.savefig("scatterplot.svg")
-plt.show()
-
-
-# champion plot
-fig, ax = plt.subplots()
-ax.step(result['generation'], result['champion'])
-
-ax.set(xlabel='Generation', ylabel='Efficiency (%)')
-ax.grid()
-
-fig.savefig("efficiency.svg")
 plt.show()
