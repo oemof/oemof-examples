@@ -232,14 +232,3 @@ plt.xlabel('$p_{extraction, 2}$ in bar')
 plt.colorbar(sc, label='Cycle efficiency (%)')
 plt.savefig("scatterplot.svg")
 plt.show()
-
-
-# champion plot
-fig, ax = plt.subplots()
-ax.step(result['generation'], result['champion'])
-
-ax.set(xlabel='Generation', ylabel='Efficiency (%)')
-ax.grid()
-
-fig.savefig("efficiency.svg")
-plt.show()
