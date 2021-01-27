@@ -1,105 +1,48 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Dec 20 08:52:01 2019
 
-@author: Malte Fritz
-"""
-
-from tespy.networks import network
-from tespy.components import (sink, source, turbine, condenser,
-                              pump, heat_exchanger_simple, cycle_closer)
-from tespy.connections import connection, bus, ref
-from tespy.tools.characteristics import char_line
-from matplotlib import pyplot as plt
+from tespy.networks import Network
+from tespy.components import (Sink, Source, Turbine, Condenser,
+                              Pump, HeatExchangerSimple, CycleCloser)
+from tespy.connections import Connection, Bus, Ref
+from tespy.tools.characteristics import CharLine
+from tespy.tools import document_model
 import numpy as np
-from tespy.tools import logger
-import logging
-mypath = logger.define_logging(
-log_path=True, log_version=True, timed_rotating={'backupCount': 4},
-screen_level=logging.WARNING, screen_datefmt = "no_date")
-
-# %% calculation of thermal efficiency (for this specific process)
-
-def thermal_efficiency(sg, cond, turb, pump):
-
-    # carnot efficiency
-
-    T_m_in = sg.Q.val / sg.SQ1.val
-    T_m_out = cond.Q.val / cond.SQ1.val
-    eta_c = 1 - (T_m_out / T_m_in)
-
-    # irreversibility elements
-
-    f = T_m_out / sg.Q.val
-    d_eta_t = turb.Sirr.val * f
-    d_eta_p = pump.Sirr.val * f
-
-    # thermal efficiency
-
-    eta_th = abs(turb.P.val + pu.P.val) / sg.Q.val
-    print('Thermal efficiency by definition:', round(eta_th, 4))
-    print('Thermal efficiency by entropy analysis:',
-          round(eta_c - (d_eta_t + d_eta_p), 4))
-
-    # plot
-    fig, ax = plt.subplots()
-
-    x = [0, 1, 2, 3]
-    eta = [eta_c, d_eta_t, d_eta_p, eta_th]
-    plt.bar(x, eta, Color='#00395b', zorder=3)
-
-    ax.set_ylabel('efficiency')
-    ax.set_xticks(x)
-    ax.set_xticklabels(['$\eta_c$', '$\Delta \eta_t$', '$\Delta \eta_p$',
-                        '$\eta_{th}$'])
-    plt.title('thermal efficiency')
-    ax.grid(axis='y', zorder=0)
-
-    rects, labels = ax.patches, [round(val, 4) for val in eta]
-
-    for rect, label in zip(rects, labels):
-        height = rect.get_height()
-        ax.text(rect.get_x() + rect.get_width() / 2, height, label,
-                ha='center', va='bottom')
-
-    plt.show()
-
-    fig.savefig('efficiency.svg')
 
 # %% network
 
 fluids = ['water']
 
-nw = network(fluids=fluids)
-nw.set_attr(p_unit='bar', T_unit='C', h_unit='kJ / kg',
-            p_range=[0.01, 150], T_range=[5, 800], h_range=[10, 5000])
+nw = Network(fluids=fluids)
+nw.set_attr(
+    p_unit='bar', T_unit='C', h_unit='kJ / kg',
+    p_range=[0.01, 150], h_range=[10, 5000])
 
 # %% components
 
 # main components
-turb = turbine('turbine')
-con = condenser('condenser')
-pu = pump('pump')
-steam_generator = heat_exchanger_simple('steam generator')
-closer = cycle_closer('cycle closer')
+turb = Turbine('turbine')
+con = Condenser('condenser')
+pu = Pump('pump')
+steam_generator = HeatExchangerSimple('steam generator')
+closer = CycleCloser('cycle closer')
 
 # cooling water
-so_cw = source('cooling water inlet')
-si_cw = sink('cooling water outlet')
+so_cw = Source('cooling water inlet')
+si_cw = Sink('cooling water outlet')
 
 # %% connections
 
 # main cycle
-fs_in = connection(closer, 'out1', turb, 'in1')
-ws = connection(turb, 'out1', con, 'in1')
-cond = connection(con, 'out1', pu, 'in1')
-fw = connection(pu, 'out1', steam_generator, 'in1')
-fs_out = connection(steam_generator, 'out1', closer, 'in1')
+fs_in = Connection(closer, 'out1', turb, 'in1')
+ws = Connection(turb, 'out1', con, 'in1')
+cond = Connection(con, 'out1', pu, 'in1')
+fw = Connection(pu, 'out1', steam_generator, 'in1')
+fs_out = Connection(steam_generator, 'out1', closer, 'in1')
 nw.add_conns(fs_in, ws, cond, fw, fs_out)
 
 # cooling water
-cw_in = connection(so_cw, 'out1', con, 'in2')
-cw_out = connection(con, 'out2', si_cw, 'in1')
+cw_in = Connection(so_cw, 'out1', con, 'in2')
+cw_out = Connection(con, 'out2', si_cw, 'in1')
 nw.add_conns(cw_in, cw_out)
 
 # %% busses
@@ -108,18 +51,19 @@ nw.add_conns(cw_in, cw_out)
 x = np.array([0, 0.2, 0.4, 0.6, 0.8, 1, 1.2])
 y = np.array([0, 0.86, 0.9, 0.93, 0.95, 0.96, 0.95])
 
-gen = char_line(x=x, y=y)
+char = CharLine(x=x, y=y)
 
 # motor of pump has a constant efficiency
-power = bus('total output power')
-power.add_comps({'comp': turb, 'param': 'P', 'char': gen},
-                {'comp': pu, 'char': 1 / 0.95})
+power = Bus('total output power')
+power.add_comps(
+    {'comp': turb, 'char': char},
+    {'comp': pu, 'char': char, 'base': 'bus'})
 nw.add_busses(power)
 
 # %% parametrization of components
 
 turb.set_attr(eta_s=0.9, design=['eta_s'], offdesign=['eta_s_char', 'cone'])
-con.set_attr(pr1=0.5, pr2=0.98, ttd_u=5, design=['pr2', 'ttd_u'],
+con.set_attr(pr1=1, pr2=0.98, ttd_u=5, design=['pr2', 'ttd_u'],
              offdesign=['zeta2', 'kA_char'])
 pu.set_attr(eta_s=0.8, design=['eta_s'], offdesign=['eta_s_char'])
 steam_generator.set_attr(pr=0.95)
@@ -139,25 +83,18 @@ power.set_attr(P=-10e6)
 
 # %% solving
 
-mode = 'design'
-
-file = 'cr'
-
 # solve the network, print the results to prompt and save
-nw.solve(mode=mode)
+nw.solve('design')
 nw.print_results()
-nw.save(file)
-
-thermal_efficiency(steam_generator, con, turb, pu)
-# change to offdesign mode
-mode = 'offdesign'
+nw.save('design')
+document_model(nw, filename='report_design.tex')
 
 # reset power input
 power.set_attr(P=-9e6)
 
 # the design file holds the information on the design case
 # initialisation from previously design process
-nw.solve(mode=mode, design_path='cr')
+nw.solve('offdesign', design_path='design')
 nw.print_results()
 
-thermal_efficiency(steam_generator, con, turb, pu)
+document_model(nw, filename='report_offdesign.tex')

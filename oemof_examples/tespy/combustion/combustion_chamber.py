@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from tespy.networks import network
-from tespy.components import sink, source, combustion_chamber
-from tespy.connections import connection
+from tespy.connections import Connection
+from tespy.components import Source, Sink, CombustionChamber
+from tespy.networks import Network
+from tespy.tools import document_model
 
 # %% network
 
@@ -9,23 +10,23 @@ from tespy.connections import connection
 fluid_list = ['Ar', 'N2', 'O2', 'CO2', 'CH4', 'H2O']
 
 # define unit systems and fluid property ranges
-nw = network(fluids=fluid_list, p_unit='bar', T_unit='C', p_range=[0.5, 10])
+nw = Network(fluids=fluid_list, p_unit='bar', T_unit='C', p_range=[0.5, 10])
 
 # %% components
 
 # sinks & sources
-amb = source('ambient')
-sf = source('fuel')
-fg = sink('flue gas outlet')
+amb = Source('ambient')
+sf = Source('fuel')
+fg = Sink('flue gas outlet')
 
 # combustion chamber
-comb=combustion_chamber(label='combustion chamber')
+comb = CombustionChamber(label='combustion chamber')
 
 # %% connections
 
-amb_comb = connection(amb, 'out1', comb, 'in1')
-sf_comb = connection(sf, 'out1', comb, 'in2')
-comb_fg = connection(comb, 'out1', fg, 'in1')
+amb_comb = Connection(amb, 'out1', comb, 'in1')
+sf_comb = Connection(sf, 'out1', comb, 'in2')
+comb_fg = Connection(comb, 'out1', fg, 'in1')
 
 nw.add_conns(sf_comb, amb_comb, comb_fg)
 
@@ -57,3 +58,4 @@ sf_comb.set_attr(
 
 nw.solve('design')
 nw.print_results()
+document_model(nw)

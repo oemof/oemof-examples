@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from tespy.networks import network
-from tespy.components import sink, source, splitter, merge, combustion_engine
-from tespy.connections import connection
+from tespy.networks import Network
+from tespy.components import Sink, Source, Splitter, Merge, CombustionEngine
+from tespy.connections import Connection
+from tespy.tools import document_model
 
 import numpy as np
 
@@ -10,46 +11,46 @@ import numpy as np
 # define full fluid list for the network's variable space
 fluid_list = ['Ar', 'N2', 'O2', 'CO2', 'CH4', 'H2O']
 # define unit systems and fluid property ranges
-nw = network(fluids=fluid_list, p_unit='bar', T_unit='C', p_range=[0.5, 10])
+nw = Network(fluids=fluid_list, p_unit='bar', T_unit='C', p_range=[0.5, 10])
 
 # %% components
 
 # sinks & sources
-amb = source('ambient')
-sf = source('fuel')
-fg = sink('flue gas outlet')
-cw_in1 = source('cooling water inlet1')
-cw_in2 = source('cooling water inlet2')
-cw_out1 = sink('cooling water outlet1')
-cw_out2 = sink('cooling water outlet2')
-split = splitter('splitter')
-merge = merge('merge')
+amb = Source('ambient')
+sf = Source('fuel')
+fg = Sink('flue gas outlet')
+cw_in1 = Source('cooling water inlet1')
+cw_in2 = Source('cooling water inlet2')
+cw_out1 = Sink('cooling water outlet1')
+cw_out2 = Sink('cooling water outlet2')
+split = Splitter('splitter')
+merge = Merge('merge')
 
 # combustion chamber
-chp = combustion_engine(label='combustion engine')
+chp = CombustionEngine(label='combustion engine')
 
 # %% connections
 
-amb_comb = connection(amb, 'out1', chp, 'in3')
-sf_comb = connection(sf, 'out1', chp, 'in4')
-comb_fg = connection(chp, 'out3', fg, 'in1')
+amb_comb = Connection(amb, 'out1', chp, 'in3')
+sf_comb = Connection(sf, 'out1', chp, 'in4')
+comb_fg = Connection(chp, 'out3', fg, 'in1')
 
 nw.add_conns(sf_comb, amb_comb, comb_fg)
 
-cw1_chp1 = connection(cw_in1, 'out1', chp, 'in1')
-cw2_chp2 = connection(cw_in2, 'out1', chp, 'in2')
+cw1_chp1 = Connection(cw_in1, 'out1', chp, 'in1')
+cw2_chp2 = Connection(cw_in2, 'out1', chp, 'in2')
 
 nw.add_conns(cw1_chp1, cw2_chp2)
 
-chp1_cw = connection(chp, 'out1', cw_out1, 'in1')
-chp2_cw = connection(chp, 'out2', cw_out2, 'in1')
+chp1_cw = Connection(chp, 'out1', cw_out1, 'in1')
+chp2_cw = Connection(chp, 'out2', cw_out2, 'in1')
 
 nw.add_conns(chp1_cw, chp2_cw)
 
 # %% component parameters
 
 # set combustion chamber fuel, air to stoichometric air ratio and thermal input
-chp.set_attr(pr1=0.99, pr2=0.99, P=10e6, lamb=1.2)
+chp.set_attr(pr1=0.99, pr2=0.99, P=-10e6, lamb=1.2)
 
 
 # %% connection parameters
@@ -94,23 +95,29 @@ load = chp.P.val / chp.P.design
 power = chp.P.val
 heat = chp.Q1.val + chp.Q2.val
 ti = chp.ti.val
-print('Load: ' + str(round(load, 3)))
-print('Power generation: ' + str(round(chp.P.val / chp.ti.val, 3)))
-print('Heat generation: '
-      + str(round((chp.Q1.val + chp.Q2.val) / chp.ti.val, 3)))
-print('Fuel utilization: '
-      + str(round((chp.P.val + chp.Q1.val + chp.Q2.val) / chp.ti.val, 3)))
+print('Load: ' + '{:.3f}'.format(load))
+print('Power generation: ' + '{:.3f}'.format(abs(chp.P.val / chp.ti.val)))
+print(
+    'Heat generation: ' +
+    '{:.3f}'.format(abs((chp.Q1.val + chp.Q2.val) / chp.ti.val)))
+print(
+    'Fuel utilization: ' +
+    '{:.3f}'.format(abs((chp.P.val + chp.Q1.val + chp.Q2.val) / chp.ti.val)))
 
 
 mode = 'offdesign'
-for P in np.linspace(0.6, 1.0, 5) * 1e7:
+for P in np.linspace(1, 0.4, 5) * chp.P.design:
     chp.set_attr(P=P)
     nw.solve(mode=mode, design_path='chp')
 
     load = chp.P.val/chp.P.design
-    print('Load: ' + str(round(load, 3)))
-    print('Power generation: ' + str(round(chp.P.val / chp.ti.val, 3)))
-    print('Heat generation: '
-          + str(round((chp.Q1.val + chp.Q2.val) / chp.ti.val, 3)))
-    print('Fuel utilization: '
-          + str(round((chp.P.val + chp.Q1.val + chp.Q2.val) / chp.ti.val, 3)))
+    print('Load: ' + '{:.3f}'.format(load))
+    print('Power generation: ' + '{:.3f}'.format(abs(chp.P.val / chp.ti.val)))
+    print(
+        'Heat generation: ' +
+        '{:.3f}'.format(abs((chp.Q1.val + chp.Q2.val) / chp.ti.val)))
+    print(
+        'Fuel utilization: ' +
+        '{:.3f}'.format(abs((chp.P.val + chp.Q1.val + chp.Q2.val) / chp.ti.val)))
+
+document_model(nw)

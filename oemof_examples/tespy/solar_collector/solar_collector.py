@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from tespy.networks import network
-from tespy.components import sink, source, solar_collector
-from tespy.connections import connection
+from tespy.networks import Network
+from tespy.components import Sink, Source, SolarCollector
+from tespy.connections import Connection
+from tespy.tools import document_model
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -11,21 +12,21 @@ from mpl_toolkits.mplot3d import Axes3D
 # %% network
 
 fluid_list = ['H2O']
-nw = network(fluids=fluid_list, p_unit='bar', T_unit='C')
+nw = Network(fluids=fluid_list, p_unit='bar', T_unit='C')
 
 # %% components
 
 # sinks & sources
-back = source('to collector')
-feed = sink('from collector')
+back = Source('to collector')
+feed = Sink('from collector')
 
 # collector
-coll = solar_collector(label='solar thermal collector')
+coll = SolarCollector(label='solar thermal collector')
 
 # %% connections
 
-b_c = connection(back, 'out1', coll, 'in1')
-c_f = connection(coll, 'out1', feed, 'in1')
+b_c = Connection(back, 'out1', coll, 'in1')
+c_f = Connection(coll, 'out1', feed, 'in1')
 
 nw.add_conns(b_c, c_f)
 
@@ -57,6 +58,7 @@ print('###############')
 print('simulation 2')
 
 nw.solve(mode=mode)
+document_model(nw)
 nw.print_results()
 
 
