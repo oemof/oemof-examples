@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
-from tespy.connections import connection
-from tespy.components import source, sink, pipe
-from tespy.networks import network
+from tespy.connections import Connection
+from tespy.components import Source, Sink, Pipe
+from tespy.networks import Network
+from tespy.tools import document_model
 
 import numpy as np
 from matplotlib import pyplot as plt
 
-nw = network(['water'], p_unit='bar', T_unit='C', h_unit='kJ / kg')
+nw = Network(['water'], p_unit='bar', T_unit='C', h_unit='kJ / kg')
 
 # %% components
-pi = pipe('pipe')
-si = sink('sink')
-so = source('source')
+pi = Pipe('pipe')
+si = Sink('sink')
+so = Source('source')
 
 # %% connections
 
-a = connection(so, 'out1', pi, 'in1')
-b = connection(pi, 'out1', si, 'in1')
+a = Connection(so, 'out1', pi, 'in1')
+b = Connection(pi, 'out1', si, 'in1')
 
 nw.add_conns(a, b)
 
@@ -40,3 +41,5 @@ for pr in np.linspace(0.9, 0.999, 10):
     nw.solve(mode='design')
     print('Pressure ratio: ' + str(round(pr, 3)) +
           ', diameter: ' + str(round(pi.D.val * 1000, 0)) + ' mm.')
+
+document_model(nw)
