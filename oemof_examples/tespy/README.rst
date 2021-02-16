@@ -10,10 +10,14 @@ Usage
 =====
 
 Download the example you want to check out or the whole repository and you are
-ready to start. In your python3 environment with `TESPy installed 
+ready to start. In your python3 environment with `TESPy installed
 <http://tespy.readthedocs.io/en/master/installation.html>`_ run the python
 code, no additional package installation should be required.
 
+The PDF report files are created from :code:`.tex` files generated with the
+inbuilt TESPy model documentation feature. The report represents the inputs
+into the corresponding model at the point in the scripts, where the report
+method is called.
 
 Contributing
 ============
@@ -26,25 +30,25 @@ required packages to run the example.
 
 Examples
 ========
-    
+
 * clausius_rankine: Basic example of the clausius rankine process.
 * clausius_rankine_chp: A simple backpressure turbine.
 
     * backpressure-line at different loads and
     * varying feed flow temperature levels.
-    
-* combined_cycle_chp: Combined cycle power plant with backpressure steam turbine.    
+
+* combined_cycle_chp: Combined cycle power plant with backpressure steam turbine.
 * combustion: Examples on how to work with combustion in TESPy.
 
     * combustion_champer: using all fluid components individually
     * combustion_chamber_stoich: using fluid aliases (flue gas is mixture of
-      fresh air and stoichiometric flue gas)      
+      fresh air and stoichiometric flue gas)
     * combustion_engine: Motoric CHP.
-    
+
 * custom_variables: Example on how to calculate the diameter of a pipe at a given pressure ratio.
 
 * district_heating: A small district heating systems with about 150 components.
-    
+
     * modeling of pressure drop and
     * energy loss at different ambient temperature levels.
 
