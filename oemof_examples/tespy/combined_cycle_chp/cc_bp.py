@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 from tespy.networks import network
 from tespy.components import (
+<<<<<<< Updated upstream
     sink, source, compressor, turbine, condenser, combustion_chamber, pump,
     heat_exchanger, drum, cycle_closer)
 from tespy.connections import connection, bus, ref
+=======
+    Sink, Source, Compressor, Turbine, Condenser, CombustionChamber, Pump,
+    HeatExchanger, Drum, CycleCloser)
+from tespy.connections import Connection, Bus, Ref
+from tespy.tools import document_model
+from tespy.tools import CharLine
+import numpy as np
+>>>>>>> Stashed changes
 
 # %% network
 fluid_list = ['Ar', 'N2', 'O2', 'CO2', 'CH4', 'H2O']
@@ -80,9 +89,20 @@ dh_w = connection(dh_whr, 'out2', dh_out, 'in1')
 nw.add_conns(dh_c, dh_i, dh_w)
 
 
+# characteristic function for generator efficiency
+x = np.array([0, 0.2, 0.4, 0.6, 0.8, 1, 1.2])
+y = np.array([0, 0.86, 0.9, 0.93, 0.95, 0.96, 0.95])
+
+char = CharLine(x=x, y=y)
+
 # %% busses
+<<<<<<< Updated upstream
 power = bus('power output')
 power.add_comps({'comp': g_turb}, {'comp': comp}, {'comp': turb}, {'comp': pu})
+=======
+power = Bus('power output')
+power.add_comps({'comp': g_turb, 'char': char}, {'comp': comp, 'char': char, 'base': 'bus'}, {'comp': turb, 'char': char}, {'comp': pu, 'char': char, 'base': 'bus'})
+>>>>>>> Stashed changes
 
 heat_out = bus('heat output')
 heat_out.add_comps({'comp': cond}, {'comp': dh_whr})
@@ -150,7 +170,7 @@ nw.solve(mode='design')
 nw.print_results()
 nw.save('design_point')
 
-power.set_attr(P=0.9 * power.P.val)
+power.set_attr(P=-100e6)
 
 nw.solve(mode='offdesign', init_path='design_point',
          design_path='design_point')

@@ -117,9 +117,9 @@ class PowerPlant():
         eva.set_attr(pr=0.99)
         sup.set_attr(pr=0.99)
 
-        con.set_attr(pr1=0.99, pr2=0.99, ttd_u=5)
-        fwh1.set_attr(pr1=0.99, pr2=0.99, ttd_u=5)
-        fwh2.set_attr(pr1=0.99, pr2=0.99, ttd_u=5)
+        con.set_attr(pr1=1, pr2=0.99, ttd_u=5)
+        fwh1.set_attr(pr1=1, pr2=0.99, ttd_u=5)
+        fwh2.set_attr(pr1=1, pr2=0.99, ttd_u=5)
         dsh.set_attr(pr1=0.99, pr2=0.99)
 
         # connections
@@ -135,6 +135,7 @@ class PowerPlant():
 
     def calculate_efficiency(self, x):
         # set extraction pressure
+<<<<<<< Updated upstream
         self.nw.connections['extraction1'].set_attr(p=x[0])
         self.nw.connections['extraction2'].set_attr(p=x[1])
         
@@ -142,6 +143,15 @@ class PowerPlant():
 
         for cp in self.nw.components.values():
             if isinstance(cp, condenser) or isinstance(cp, desuperheater):
+=======
+        self.nw.get_conn('extraction1').set_attr(p=x[0])
+        self.nw.get_conn('extraction2').set_attr(p=x[1])
+
+        self.nw.solve('design')
+
+        for cp in self.nw.comps['object']:
+            if isinstance(cp, Condenser) or isinstance(cp, Desuperheater):
+>>>>>>> Stashed changes
                 if cp.Q.val > 0:
                     return np.nan
             elif isinstance(cp, pump):
