@@ -181,6 +181,10 @@ optimization_model.solve(
 # write back results from optimization object to energysystem
 optimization_model.results()
 
+# ################################ duals ##################################
+
+optimization_model.receive_duals()
+
 # ################################ results ################################
 
 # subset of results that includes all flows into and from electrical bus
