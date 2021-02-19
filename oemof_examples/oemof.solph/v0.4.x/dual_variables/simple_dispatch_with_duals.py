@@ -173,6 +173,8 @@ energysystem.add(
 # create optimization model based on energy_system
 optimization_model = Model(energysystem=energysystem)
 
+optimization_model.receive_duals()
+
 # solve problem
 optimization_model.solve(
     solver=solver, solve_kwargs={"tee": True, "keepfiles": False}
@@ -180,10 +182,6 @@ optimization_model.solve(
 
 # write back results from optimization object to energysystem
 optimization_model.results()
-
-# ################################ duals ##################################
-
-optimization_model.receive_duals()
 
 # ################################ results ################################
 
