@@ -316,7 +316,7 @@ heat_losses = Bus('network losses')
 heat_consumer = Bus('network consumer')
 nw.check_network()
 
-for comp in nw.comps.index:
+for comp in nw.comps['object']:
     if isinstance(comp, Pipe):
         comp.set_attr(Tamb=0)
 
@@ -342,7 +342,7 @@ print('network losses at 0 °C outside temperature (design):', heat_losses.P.val
 
 # offdesign case: 10 °C ambient temperature
 
-for comp in nw.comps.index:
+for comp in nw.comps['object']:
     if isinstance(comp, Pipe):
         comp.set_attr(Tamb=10)
 
@@ -350,7 +350,7 @@ nw.solve('offdesign', design_path='grid')
 print('Heat demand consumer:', heat_consumer.P.val)
 print('network losses at 10 °C outside temperature:', heat_losses.P.val)
 
-for comp in nw.comps.index:
+for comp in nw.comps['object']:
     if isinstance(comp, Pipe):
         comp.set_attr(Tamb=20)
 
@@ -360,7 +360,7 @@ print('network losses at 20 °C outside temperature:', heat_losses.P.val)
 
 # offdesign case: -10 °C ambient temperature
 
-for comp in nw.comps.index:
+for comp in nw.comps['object']:
     if isinstance(comp, Pipe):
         comp.set_attr(Tamb=-10)
 
@@ -371,7 +371,7 @@ print('network losses at -10 °C outside temperature:', heat_losses.P.val)
 
 # offdesign case: -20 °C ambient temperature
 
-for comp in nw.comps.index:
+for comp in nw.comps['object']:
     if isinstance(comp, Pipe):
         comp.set_attr(Tamb=-20)
 
