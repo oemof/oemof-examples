@@ -17,7 +17,7 @@ scenario.xlsx
 
 Installation requirements
 -------------------------
-This example requires the latest version of oemof (v0.3.x) and others.
+This example requires the latest version of oemof (v0.4.x) and others.
 Install by:
 
     pip install 'oemof.solph>=0.4,<0.5'

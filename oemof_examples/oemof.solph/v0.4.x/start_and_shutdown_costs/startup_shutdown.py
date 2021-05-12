@@ -8,7 +8,7 @@ to a binary flow.
 
 Installation requirements
 -------------------------
-This example requires the version v0.3.x of oemof. Install by:
+This example requires the version v0.4.x of oemof. Install by:
 
     pip install 'oemof.solph>=0.4,<0.5'
 
