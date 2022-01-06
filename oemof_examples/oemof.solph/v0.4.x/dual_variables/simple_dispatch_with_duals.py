@@ -165,10 +165,12 @@ node_results_flows.plot(ax=ax1, kind="bar", stacked=True, linewidth=0, width=1)
 bel_duals.plot(ax=ax2)
 
 ax1.set_title("Sums for optimization period")
-ax1.legend(loc="upper right", bbox_to_anchor=(1, 1))
-ax1.set_xlabel("Energy (MWh)")
-ax1.set_ylabel("Flow")
-plt.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
+ax1.set_ylabel("Power")
+ax2.set_ylabel("Dual")
+ax2.set_xlabel("Time")
+ax1.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
+ax2.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
+
 fig.subplots_adjust(right=0.8)
 
 dates = node_results_flows.index
