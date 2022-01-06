@@ -159,6 +159,9 @@ print("Optimization successful. Showing some results:")
 node_results_bel = views.node(optimization_model.results(), "bel")
 node_results_flows = node_results_bel["sequences"]
 bel_duals = node_results_flows.pop((("bel", "None"), "duals"))
+node_results_flows = node_results_flows.drop(
+    [(("bel", "demand_el"), "flow"), (("bel", "excess_el"), "flow")], 1
+)
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5))
 node_results_flows.plot(ax=ax1, kind="bar", stacked=True, linewidth=0, width=1)
