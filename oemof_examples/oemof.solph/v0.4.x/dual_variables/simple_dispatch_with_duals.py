@@ -10,8 +10,6 @@ Dispatch modelling is a typical thing to do with solph. However cost does not
 have to be monetary but can be emissions etc. In this example a least cost
 dispatch of different generators that meet an inelastic demand is undertaken.
 Some of the generators are renewable energies with marginal costs of zero.
-Additionally, it shows how combined heat and power units may be easily modelled
-as well.
 
 Data
 ----
@@ -65,11 +63,10 @@ bgas = Bus(label="gas", balanced=False)
 boil = Bus(label="oil", balanced=False)
 blig = Bus(label="lignite", balanced=False)
 
-# electricity and heat
+# electricity bus
 bel = Bus(label="bel")
-bth = Bus(label="bth")
 
-energysystem.add(bcoal, bgas, boil, blig, bel, bth)
+energysystem.add(bcoal, bgas, boil, blig, bel)
 
 # an excess and a shortage variable can help to avoid infeasible problems
 energysystem.add(Sink(label="excess_el", inputs={bel: Flow()}))
@@ -87,18 +84,11 @@ energysystem.add(
     Source(label="pv", outputs={bel: Flow(fix=data["pv"], nominal_value=65.3)})
 )
 
-# demands (electricity/heat)
+# electricity demand
 energysystem.add(
     Sink(
         label="demand_el",
         inputs={bel: Flow(nominal_value=85, fix=data["demand_el"])},
-    )
-)
-
-energysystem.add(
-    Sink(
-        label="demand_th",
-        inputs={bth: Flow(nominal_value=40, fix=data["demand_th"])},
     )
 )
 
@@ -116,7 +106,7 @@ energysystem.add(
     Transformer(
         label="pp_lig",
         inputs={blig: Flow()},
-        outputs={bel: Flow(nominal_value=11.8, variable_costs=19)},
+        outputs={bel: Flow(nominal_value=61.8, variable_costs=19)},
         conversion_factors={bel: 0.41},
     )
 )
@@ -136,35 +126,6 @@ energysystem.add(
         inputs={boil: Flow()},
         outputs={bel: Flow(nominal_value=5, variable_costs=50)},
         conversion_factors={bel: 0.28},
-    )
-)
-
-# combined heat and power plant (chp)
-energysystem.add(
-    Transformer(
-        label="pp_chp",
-        inputs={bgas: Flow()},
-        outputs={
-            bel: Flow(nominal_value=30, variable_costs=42),
-            bth: Flow(nominal_value=40),
-        },
-        conversion_factors={bel: 0.3, bth: 0.4},
-    )
-)
-
-# heat pump with a coefficient of performance (COP) of 3
-b_heat_source = Bus(label="b_heat_source")
-energysystem.add(b_heat_source)
-
-energysystem.add(Source(label="heat_source", outputs={b_heat_source: Flow()}))
-
-cop = 3
-energysystem.add(
-    Transformer(
-        label="heat_pump",
-        inputs={bel: Flow(), b_heat_source: Flow()},
-        outputs={bth: Flow(nominal_value=10)},
-        conversion_factors={bel: 1 / 3, b_heat_source: (cop - 1) / cop},
     )
 )
 
