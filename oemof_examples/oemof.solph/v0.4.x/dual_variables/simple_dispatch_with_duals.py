@@ -106,7 +106,7 @@ energysystem.add(
     Transformer(
         label="pp_lig",
         inputs={blig: Flow()},
-        outputs={bel: Flow(nominal_value=61.8, variable_costs=19)},
+        outputs={bel: Flow(nominal_value=41.8, variable_costs=19)},
         conversion_factors={bel: 0.41},
     )
 )
