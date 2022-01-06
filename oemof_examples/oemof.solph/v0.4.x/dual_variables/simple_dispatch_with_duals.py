@@ -197,20 +197,23 @@ print("Optimization successful. Showing some results:")
 # see: https://pandas.pydata.org/pandas-docs/stable/visualization.html
 node_results_bel = views.node(optimization_model.results(), "bel")
 node_results_flows = node_results_bel["sequences"]
+bel_duals = data["sequences"][(("bel", "None"), "duals")]
 
-fig, ax = plt.subplots(figsize=(10, 5))
-node_results_flows.plot(ax=ax, kind="bar", stacked=True, linewidth=0, width=1)
-ax.set_title("Sums for optimization period")
-ax.legend(loc="upper right", bbox_to_anchor=(1, 1))
-ax.set_xlabel("Energy (MWh)")
-ax.set_ylabel("Flow")
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5))
+node_results_flows.plot(ax=ax1, kind="bar", stacked=True, linewidth=0, width=1)
+bel_duals.plot(ax=ax2)
+
+ax1.set_title("Sums for optimization period")
+ax1.legend(loc="upper right", bbox_to_anchor=(1, 1))
+ax1.set_xlabel("Energy (MWh)")
+ax1.set_ylabel("Flow")
 plt.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
 fig.subplots_adjust(right=0.8)
 
 dates = node_results_flows.index
 tick_distance = int(len(dates) / 7) - 1
-ax.set_xticks(range(0, len(dates), tick_distance), minor=False)
-ax.set_xticklabels(
+ax1.set_xticks(range(0, len(dates), tick_distance), minor=False)
+ax1.set_xticklabels(
     [item.strftime("%d-%m-%Y") for item in dates.tolist()[0::tick_distance]],
     rotation=90,
     minor=False,
