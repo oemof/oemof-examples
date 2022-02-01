@@ -163,9 +163,15 @@ node_results_flows = node_results_flows.drop(
     [(("bel", "demand_el"), "flow"), (("bel", "excess_el"), "flow")], 1
 )
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5))
-node_results_flows.plot(ax=ax1, kind="bar", stacked=True, linewidth=0, width=1)
-bel_duals.plot(ax=ax2)
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5), sharex=True)
+node_result_flows_list = []
+for col in node_results_flows.columns:
+    node_result_flows_list.append(node_results_flows[col])
+ax1.stackplot(
+    node_results_flows.index, node_result_flows_list, labels=node_results_flows.columns
+)
+ax2.plot(bel_duals, label="bel_duals")
+
 
 ax1.set_title("Sums for optimization period")
 ax1.set_ylabel("Power")
@@ -173,16 +179,5 @@ ax2.set_ylabel("Dual")
 ax2.set_xlabel("Time")
 ax1.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
 ax2.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
-
-fig.subplots_adjust(right=0.8)
-
-dates = node_results_flows.index
-tick_distance = int(len(dates) / 7) - 1
-ax1.set_xticks(range(0, len(dates), tick_distance), minor=False)
-ax1.set_xticklabels(
-    [item.strftime("%d-%m-%Y") for item in dates.tolist()[0::tick_distance]],
-    rotation=90,
-    minor=False,
-)
 
 plt.show()
