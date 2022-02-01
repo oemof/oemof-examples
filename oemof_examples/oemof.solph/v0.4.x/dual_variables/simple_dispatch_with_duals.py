@@ -75,9 +75,7 @@ energysystem.add(Sink(label="excess_el", inputs={bel: Flow()}))
 
 # sources
 energysystem.add(
-    Source(
-        label="wind", outputs={bel: Flow(fix=data["wind"], nominal_value=66.3)}
-    )
+    Source(label="wind", outputs={bel: Flow(fix=data["wind"], nominal_value=66.3)})
 )
 
 energysystem.add(
@@ -137,9 +135,7 @@ optimization_model = Model(energysystem=energysystem)
 optimization_model.receive_duals()
 
 # solve problem
-optimization_model.solve(
-    solver=solver, solve_kwargs={"tee": True, "keepfiles": False}
-)
+optimization_model.solve(solver=solver, solve_kwargs={"tee": True, "keepfiles": False})
 
 # write back results from optimization object to energysystem
 optimization_model.results()
@@ -179,5 +175,7 @@ ax2.set_ylabel("Dual")
 ax2.set_xlabel("Time")
 ax1.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
 ax2.legend(loc="center left", prop={"size": 8}, bbox_to_anchor=(1, 0.5))
+ax2.tick_params(axis="x", rotation=45)
 
+plt.tight_layout()
 plt.show()
