@@ -185,12 +185,17 @@ for key, item in variable_costs_dict.items():
             merit_order_columns.append(column)
 node_results_flows = node_results_flows.reindex(columns=merit_order_columns)
 
+# Plot results
+colors = ["#FFA42C", "#99A8DA", "#7B513C", "dimgray", "FFA7AA", "navy"]
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5), sharex=True)
 node_result_flows_list = []
 for col in node_results_flows.columns:
     node_result_flows_list.append(node_results_flows[col])
 ax1.stackplot(
-    node_results_flows.index, node_result_flows_list, labels=node_results_flows.columns
+    node_results_flows.index,
+    node_result_flows_list,
+    labels=node_results_flows.columns,
+    colors=colors,
 )
 ax2.plot(bel_duals, label="bel_duals")
 
