@@ -57,6 +57,13 @@ data = pd.read_csv(filename, sep=",")
 
 # ######################### create energysystem components ################
 
+# Write variable costs in dictionary
+variable_costs_dict = {"pp_coal": 25, "pp_lig": 19, "pp_gas": 40, "pp_oil": 50}
+# Get Merit order of variable costs in dictionary
+variable_costs_dict = dict(
+    sorted(variable_costs_dict.items(), key=lambda item: item[1])
+)
+
 # resource buses
 bcoal = Bus(label="coal", balanced=False)
 bgas = Bus(label="gas", balanced=False)
@@ -85,8 +92,7 @@ energysystem.add(
 # electricity demand
 energysystem.add(
     Sink(
-        label="demand_el",
-        inputs={bel: Flow(nominal_value=85, fix=data["demand_el"])},
+        label="demand_el", inputs={bel: Flow(nominal_value=85, fix=data["demand_el"])},
     )
 )
 
@@ -95,7 +101,9 @@ energysystem.add(
     Transformer(
         label="pp_coal",
         inputs={bcoal: Flow()},
-        outputs={bel: Flow(nominal_value=20.2, variable_costs=25)},
+        outputs={
+            bel: Flow(nominal_value=20.2, variable_costs=variable_costs_dict["pp_coal"])
+        },
         conversion_factors={bel: 0.39},
     )
 )
@@ -104,7 +112,9 @@ energysystem.add(
     Transformer(
         label="pp_lig",
         inputs={blig: Flow()},
-        outputs={bel: Flow(nominal_value=41.8, variable_costs=19)},
+        outputs={
+            bel: Flow(nominal_value=41.8, variable_costs=variable_costs_dict["pp_lig"])
+        },
         conversion_factors={bel: 0.41},
     )
 )
@@ -113,7 +123,9 @@ energysystem.add(
     Transformer(
         label="pp_gas",
         inputs={bgas: Flow()},
-        outputs={bel: Flow(nominal_value=41, variable_costs=40)},
+        outputs={
+            bel: Flow(nominal_value=41, variable_costs=variable_costs_dict["pp_gas"])
+        },
         conversion_factors={bel: 0.50},
     )
 )
@@ -122,7 +134,9 @@ energysystem.add(
     Transformer(
         label="pp_oil",
         inputs={boil: Flow()},
-        outputs={bel: Flow(nominal_value=5, variable_costs=50)},
+        outputs={
+            bel: Flow(nominal_value=5, variable_costs=variable_costs_dict["pp_oil"])
+        },
         conversion_factors={bel: 0.28},
     )
 )
@@ -158,6 +172,18 @@ bel_duals = node_results_flows.pop((("bel", "None"), "duals"))
 node_results_flows = node_results_flows.drop(
     [(("bel", "demand_el"), "flow"), (("bel", "excess_el"), "flow")], 1
 )
+
+# Adjust node_results_flows to merit order
+merit_order_columns = ["", ""]
+for key, item in variable_costs_dict.items():
+    for column in node_results_flows.columns:
+        if "pv" in str(column):
+            merit_order_columns[0] = column
+        elif "wind" in str(column):
+            merit_order_columns[1] = column
+        if key in str(column):
+            merit_order_columns.append(column)
+node_results_flows = node_results_flows.reindex(columns=merit_order_columns)
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 5), sharex=True)
 node_result_flows_list = []
